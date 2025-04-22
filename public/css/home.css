@@ -58,33 +58,29 @@
             }
             
 
-        .info-boxes .box h3 {
-            margin-bottom: 10px;
-            }
+            .info-boxes .box h3 {
+                margin-bottom: 10px;
+                }
 
-        .info-boxes .box p {
-            margin: 0;
-            }
+            .info-boxes .box p {
+                margin: 0;
+                }
 
-        .weather-info, .team-info {
-            width: 300px; 
-            padding: 50px;
-            margin: 20px auto;
-            border: 1px solid var(--line-clr);
-            border-radius: 8px;
-            background-color: var(--hover-clr);
-            color: var(--text-clr);
-        }
-        
-        .weather-info h2, .team-info h2 {
-            margin-bottom: 10px;
-        }
-        
-        .team-info ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .team-info ul li {
-            margin: 5px 0;
-        }
+            .active-time {
+                font-size: 1rem;
+                color: #111528;
+                margin-top: 0.25rem;
+                flex: flex-end;
+                text-align: right;
+              }
+
+              .active-time span {
+                font-weight: bold;
+                color: var(--text-color);
+              }
+
+              .active-time p {
+                font-weight: bold;
+                color: var(--text-color);
+              }
+              

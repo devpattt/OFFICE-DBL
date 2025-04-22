@@ -89,26 +89,44 @@ include '../conn.php';
       <?php
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
       ?>  
-      <div class="welcome-message">
-        <h1>Welcome back, <?php echo htmlspecialchars($username); ?>!</h1>
-      </div>
+        <div class="welcome-message">
+          <h1>Welcome back, <?php echo htmlspecialchars($username); ?>!</h1>
+          <div class="active-time">
+            <p>Current Time: <span id="activeTime"></span></p>
+          </div>
+        </div>
 
       <div class="info-boxes">
-        <div class="box box-1">
-          <h3>Working Hours</h3>
-          <p>999hrs</p>
-        </div>
-        <div class="box box-2">
-          <h3>Today's Attendance</h3>
-          <p>Present: 32 | Absent: 4 | Late: 2</p>
-        </div>
-        <div class="box box-3">
-          <h3>Your Attendance Status</h3>
-          <p>Clocked In: 9:05 AM</p>
-        </div>
+      <div class="box box-1">
+        <h3>Working Hours</h3>
+        <p>999hrs</p>
       </div>
-          
+      <div class="box box-2">
+        <h3>Today's Attendance</h3>
+        <p>Present: 32 | Absent: 4 | Late: 2</p>
+      </div>
+      <div class="box box-3">
+        <h3>Your Attendance Status</h3>
+        <p>Clocked In: 9:05 AM</p>
+      </div>
+    </div>        
   </main>
+    <script>
+        function updateTime() {
+          const now = new Date();
+          let hours = now.getHours();
+          const minutes = now.getMinutes().toString().padStart(2, '0');
+          const seconds = now.getSeconds().toString().padStart(2, '0');
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+
+          hours = hours % 12 || 12;
+          const timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+          document.getElementById('activeTime').textContent = timeString;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+  </script>
+
 </body>
 <script src="../public/js/main.js"></script>
 </html>
