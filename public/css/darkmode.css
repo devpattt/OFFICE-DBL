@@ -1,0 +1,138 @@
+:root {
+  --base-color: white;
+  --base-variant: #e8e9ed;
+  --text-color: #111528;
+  --secondary-text: #232738;
+  --primary-color: #3a435d;
+  --accent-color: #0071ff;
+}
+
+.darkmode {
+  --base-color: #11121a;
+  --base-variant: #101425;
+  --text-color: #ffffff;
+  --secondary-text: #a4a5b8;
+  --primary-color: #3a435d;
+  --accent-color: #0071ff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: Poppins;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--base-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header,
+section {
+  padding: 70px min(50px, 7%);
+}
+
+section {
+  background-color: var(--base-variant);
+}
+
+p {
+  margin: 10px 0 20px 0;
+  color: var(--secondary-text);
+}
+
+button {
+  border: none;
+  padding: .8em 2em;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font: inherit;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.dark-mode-toggle {
+  margin-top: auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+.darkmode-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.darkmode-btn:hover {
+  background-color: var(--hover-clr);
+}
+
+.darkmode-btn svg {
+  fill: var(--text-clr);
+}
+
+.cta-button {
+  background-color: var(--accent-color);
+}
+
+#theme-switch {
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 20px;
+  background-color: var(--base-variant);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+  transition: background 0.3s ease;
+  color: var(--text-color);
+}
+
+#theme-switch:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+#theme-switch .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#theme-switch .icon svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+#theme-switch .icon.sun {
+  display: inline-flex;
+}
+
+#theme-switch .icon.moon {
+  display: none;
+}
+
+/* Show moon only in dark mode */
+body.darkmode #theme-switch .icon.sun {
+  display: none;
+}
+
+body.darkmode #theme-switch .icon.moon {
+  display: inline-flex;
+}
+
+.darkmode-btn span {
+  text-transform: none; /* Prevent the text from being uppercase */
+}
