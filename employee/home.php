@@ -94,20 +94,20 @@ include '../conn.php';
       </div>
 
       <div class="info-boxes">
-      <div class="box">
-        <h3>Working Hours</h3>
-        <p>999hrs</p>
+        <div class="box box-1">
+          <h3>Working Hours</h3>
+          <p>999hrs</p>
+        </div>
+        <div class="box box-2">
+          <h3>Today's Attendance</h3>
+          <p>Present: 32 | Absent: 4 | Late: 2</p>
+        </div>
+        <div class="box box-3">
+          <h3>Your Attendance Status</h3>
+          <p>Clocked In: 9:05 AM</p>
+        </div>
       </div>
-      <div class="box">
-        <h3>Today's Attendance</h3>
-        <p>Present: 32 | Absent: 4 | Late: 2</p>
-      </div>
-      <div class="box">
-        <h3>Your Attendance Status</h3>
-        <p>Clocked In: 9:05 AM</p>
-      </div>
-    </div>
-
+          
   </main>
 </body>
 <script src="../public/js/main.js"></script>
