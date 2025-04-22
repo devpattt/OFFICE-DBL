@@ -80,8 +80,8 @@
       </li>  
     </ul>
   </nav>
+  
   <main>
-    
   </main>
 </body>
 <script src="../public/js/main.js"></script>
