@@ -1,3 +1,9 @@
+<?php
+session_start(); 
+include '../conn.php';
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,27 +11,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../public/css/main.css">
   <link rel="stylesheet" href="../public/css/darkmode.css">
+  <link rel="stylesheet" href="../public/css/home.css">
   <link rel="icon" href="../public/img/DBL.png">
   <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
   <title>DBL ISTS</title>
 </head>
-<style>
-    .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .card h2 { margin-bottom: 10px; font-size: 18px; }
-    .bar { height: 20px; background-color: #4ade80; margin: 5px 0; }
-    .heatmap { display: flex; flex-wrap: wrap; gap: 4px; }
-    .day { width: 20px; height: 20px; border-radius: 3px; background-color: #e5e7eb; }
-    .count-0 { background-color: #fecaca; } 
-    .count-1 { background-color: #fde68a; } 
-    .count-2 { background-color: #bbf7d0; } 
-    .legend { display: flex; gap: 10px; margin-top: 10px; align-items: center; }
-    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 14px; }
-    .legend-color { width: 16px; height: 16px; border-radius: 3px; }
-    .legend-color.count-0 { background-color: #fecaca; }
-    .legend-color.count-1 { background-color: #fde68a; }
-    .legend-color.count-2 { background-color: #bbf7d0; }
-  </style>
 <body>
 <nav id="sidebar">
     <ul>
@@ -96,7 +86,28 @@
     </ul>
   </nav>
   <main>
-    
+      <?php
+        $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+      ?>  
+      <div class="welcome-message">
+        <h1>Welcome back, <?php echo htmlspecialchars($username); ?>!</h1>
+      </div>
+
+      <div class="info-boxes">
+      <div class="box">
+        <h3>Working Hours</h3>
+        <p>999hrs</p>
+      </div>
+      <div class="box">
+        <h3>Today's Attendance</h3>
+        <p>Present: 32 | Absent: 4 | Late: 2</p>
+      </div>
+      <div class="box">
+        <h3>Your Attendance Status</h3>
+        <p>Clocked In: 9:05 AM</p>
+      </div>
+    </div>
+
   </main>
 </body>
 <script src="../public/js/main.js"></script>

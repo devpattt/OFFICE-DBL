@@ -1,0 +1,49 @@
+    :root {
+        --base-color: white;
+        --base-variant: #e8e9ed;
+        --text-color: #111528;
+        --secondary-text: #232738;
+        --primary-color: #3a435d;
+        --accent-color: #0071ff;
+    }
+
+    .darkmode {
+        --base-color: #11121a;
+        --base-variant: #101425;
+        --text-color: #ffffff;
+        --secondary-text: #a4a5b8;
+        --primary-color: #3a435d;
+        --accent-color: #0071ff;
+    }
+
+    .welcome-message {
+        text-align: flex-start;
+        font-size: 0.6rem;
+        margin-bottom: 20px;
+        color: var(--text-color);
+        }
+
+    .info-boxes {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        margin-top: 20px;
+        }
+
+    .info-boxes .box {
+        flex: 1;
+        padding: 20px;
+        border: 1px solid var(--line-clr);
+        border-radius: 8px;
+        background-color: var(--hover-clr);
+        text-align: center;
+        color: var(--text-clr);
+        }
+
+    .info-boxes .box h3 {
+        margin-bottom: 10px;
+        }
+
+    .info-boxes .box p {
+        margin: 0;
+        }
