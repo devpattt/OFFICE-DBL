@@ -1,8 +1,3 @@
-<?php
-  include '../conn.php';
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -47,6 +42,12 @@
         <a href="reports.php">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
           <span>Reports</span>
+        </a>
+      </li>
+      <li>
+        <a href="map.php">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-240v-32q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v32q0 33-23.5 56.5T720-160H240q-33 0-56.5-23.5T160-240Zm80 0h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"/></svg>
+          <span>Map</span>
         </a>
       </li>
       <li>
@@ -184,10 +185,9 @@
           closeClockInModal();
           fetchAttendanceLogs();
 
-          // Change the button text to "Clock Out"
           const clockInBtn = document.getElementById('clock-in-btn');
           clockInBtn.innerText = 'Clock Out';
-          clockInBtn.onclick = submitClockOut; // Change the button's functionality
+          clockInBtn.onclick = submitClockOut; 
         })
         .catch((error) => {
           alert(error.message); 
@@ -220,13 +220,11 @@
             `;
             tableBody.innerHTML += row;
 
-            // Check if the user is clocked in (time_out is empty)
             if (log.time_out === 'N/A') {
               isClockedIn = true;
             }
           });
 
-          // Update the button text based on the clock-in state
           const clockInBtn = document.getElementById('clock-in-btn');
           if (isClockedIn) {
             clockInBtn.innerText = 'Clock Out';
@@ -242,10 +240,14 @@
     document.addEventListener('DOMContentLoaded', fetchAttendanceLogs);
 
     function submitClockOut() {
+      const location = document.getElementById('clock-in-location').innerText;
+      const latitude = document.getElementById('clock-in-lat').value;
+      const longitude = document.getElementById('clock-in-lng').value;
+
       fetch('../includes/attendance.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clockOut: true }), // Send a flag for clock-out
+        body: JSON.stringify({ location, latitude, longitude, clockOut: true }), // Include location data
       })
         .then((response) => {
           if (!response.ok) {
@@ -258,10 +260,9 @@
           document.getElementById('confirmation-modal').style.display = 'block';
           fetchAttendanceLogs();
 
-          // Change the button text back to "Clock In"
           const clockInBtn = document.getElementById('clock-in-btn');
           clockInBtn.innerText = 'Clock In';
-          clockInBtn.onclick = openClockInModal; // Reset the button's functionality
+          clockInBtn.onclick = openClockInModal; // Reset the button functionality
         })
         .catch((error) => {
           alert(error.message);

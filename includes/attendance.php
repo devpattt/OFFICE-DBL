@@ -40,10 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } else {
         $timeIn = date('l - n/j/Y - h:i A'); 
-        $currentTime = date('H:i'); // Get the current time in 24-hour format
-        $defaultTime = '08:30'; // Default time for "On Time"
+        $currentTime = date('H:i');
+        $defaultTime = '08:30';
 
-        // Determine the status based on the current time
         if ($currentTime > $defaultTime) {
             $status = 'Late';
         } else {

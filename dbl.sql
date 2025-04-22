@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 21, 2025 at 08:19 PM
+-- Generation Time: Apr 22, 2025 at 05:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,11 +32,11 @@ CREATE TABLE `dbl_attendance_logs` (
   `employee_id` varchar(20) DEFAULT NULL,
   `username` varchar(255) NOT NULL,
   `date` date DEFAULT NULL,
-  `time_in` datetime DEFAULT NULL,
+  `time_in` varchar(50) DEFAULT NULL,
   `location_in` varchar(255) DEFAULT NULL,
   `lat_in` double DEFAULT NULL,
   `lng_in` double DEFAULT NULL,
-  `time_out` datetime DEFAULT NULL,
+  `time_out` varchar(50) DEFAULT NULL,
   `location_out` varchar(255) DEFAULT NULL,
   `lat_out` double DEFAULT NULL,
   `lng_out` double DEFAULT NULL,
@@ -49,10 +49,8 @@ CREATE TABLE `dbl_attendance_logs` (
 --
 
 INSERT INTO `dbl_attendance_logs` (`id`, `employee_id`, `username`, `date`, `time_in`, `location_in`, `lat_in`, `lng_in`, `time_out`, `location_out`, `lat_out`, `lng_out`, `status`, `created_at`) VALUES
-(45, '0', '', '2025-04-21', '2025-04-21 20:05:39', 'Detected Location', 0, 0, NULL, NULL, NULL, NULL, 'On Time', '2025-04-21 18:05:39'),
-(46, '0', '', '2025-04-21', '2025-04-21 20:05:51', 'Detected Location', 0, 0, NULL, NULL, NULL, NULL, 'On Time', '2025-04-21 18:05:51'),
-(47, '0', '', '2025-04-21', '2025-04-21 20:06:18', 'Detected Location', 0, 0, NULL, NULL, NULL, NULL, 'On Time', '2025-04-21 18:06:18'),
-(48, '0', '', '2025-04-21', '2025-04-21 20:09:47', 'Detected Location', 14.7095552, 121.0056704, NULL, NULL, NULL, NULL, 'On Time', '2025-04-21 18:09:47');
+(1, 'EMP001', 'devpat', '2025-04-22', 'Tuesday - 4/22/2025 - 11:18 AM', '0', 14.7324928, 121.012224, NULL, NULL, NULL, NULL, 'Late', '2025-04-22 03:18:01'),
+(3, 'EMP002', 'employee', '2025-04-22', 'Tuesday - 4/22/2025 - 11:24 AM', '0', 14.7324928, 121.012224, NULL, NULL, NULL, NULL, 'Late', '2025-04-22 03:24:52');
 
 -- --------------------------------------------------------
 
@@ -77,7 +75,9 @@ CREATE TABLE `dbl_employees_acc` (
 --
 
 INSERT INTO `dbl_employees_acc` (`id`, `employee_id`, `username`, `email`, `password`, `full_name`, `role`, `status`, `created_at`) VALUES
-(1, 'EMP001', 'devpat', 'devpat@example.com', '$2y$10$23597VDiwg3yoM0pnVwKIeGm/xSoFf1qu9K.gOx8My.MEYFobSN5K', 'Patrick Nobleza', 'employee', 'active', '2025-04-21 17:06:18');
+(1, 'EMP001', 'devpat', 'devpat@example.com', '$2y$10$23597VDiwg3yoM0pnVwKIeGm/xSoFf1qu9K.gOx8My.MEYFobSN5K', 'Patrick Nobleza', 'employee', 'active', '2025-04-21 17:06:18'),
+(3, 'ADM001', 'admin', 'admin@example.com', '$2y$10$LLl1.d/qOJDRBgFgbsREE.O6kcO.9sOlNurZMMX4sdipqd8one1F.', 'DBL Admin', 'admin', 'active', '2025-04-22 01:10:23'),
+(6, 'EMP002', 'employee', 'employee@example.com', '$2y$10$boBoKPni4MbCep63MhB0Qe.TDAGOAWx83OSzzAn1GRn2HLrW6C.Bi', 'Juan Dela Cruz', 'employee', 'active', '2025-04-22 03:19:10');
 
 --
 -- Indexes for dumped tables
@@ -106,13 +106,13 @@ ALTER TABLE `dbl_employees_acc`
 -- AUTO_INCREMENT for table `dbl_attendance_logs`
 --
 ALTER TABLE `dbl_attendance_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `dbl_employees_acc`
 --
 ALTER TABLE `dbl_employees_acc`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -16,7 +16,6 @@ $result = $query->get_result();
 
 $logs = [];
 while ($row = $result->fetch_assoc()) {
-    // Since time_in and time_out are already formatted, fetch them directly
     $row['time_in'] = !empty($row['time_in']) ? $row['time_in'] : 'N/A';
     $row['time_out'] = !empty($row['time_out']) ? $row['time_out'] : 'N/A';
     $logs[] = $row;
