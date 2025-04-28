@@ -107,7 +107,7 @@ $result = $conn->query($sql); // Execute query
                     <th>Task</th>
                     <th>Status</th>
                     <th>Created At</th>
-                    <th>Action</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -128,7 +128,7 @@ $result = $conn->query($sql); // Execute query
                         <?php if ($row['status'] == 'Pending') { ?>
                             <a href="../includes/mark_completed.php?id=<?php echo $row['id']; ?>" class="btn btn-success btn-sm">Mark Completed</a>
                         <?php } else { ?>
-                            <button class="btn btn-secondary btn-sm" disabled>Done</button>
+                          <button style="background-color: green; color: white; padding: 4px 8px; font-size: 12px;">Done</button>
                         <?php } ?>
                     </td>
                 </tr>

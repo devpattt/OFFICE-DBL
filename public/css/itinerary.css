@@ -13,6 +13,15 @@ form {
     margin-bottom: 8px;
     font-weight: bold;
   }
+  .green-button {
+    background-color: green;
+    color: white;
+    padding: 5px 10px; /* smaller padding */
+    font-size: 12px;    /* smaller text */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
   
   select,
   input[type="text"],
