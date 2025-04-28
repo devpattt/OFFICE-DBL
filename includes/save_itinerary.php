@@ -1,11 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$conn = new mysqli("localhost", "root", "", "dbl"); 
-
-if ($conn->connect_error) {
-    die(json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . $conn->connect_error]));
-}
+include '../conn.php';
 
 $employee_id = $_POST['employee_id'] ?? '';
 $location = $_POST['location'] ?? '';

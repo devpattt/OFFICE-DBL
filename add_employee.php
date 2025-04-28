@@ -36,11 +36,11 @@ include 'conn.php';
         $employee_id = generateEmployeeId($conn);
     }
 
-        $username = 'employee';
-        $email = 'employee@example.com';
-        $raw_password = 'employee';
+        $username = 'ken';
+        $email = 'ken@example.com';
+        $raw_password = 'ken';
         $hashed_password = password_hash($raw_password, PASSWORD_DEFAULT);
-        $full_name = 'Juan Dela Cruz';
+        $full_name = 'Jobert Ken Bordamonte';
         $role = 'employee';
 
         $stmt = $conn->prepare("INSERT INTO dbl_employees_acc (employee_id, username, email, password, full_name, role) VALUES (?, ?, ?, ?, ?, ?)");

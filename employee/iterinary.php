@@ -1,3 +1,9 @@
+<?php 
+
+include __DIR__ . '/../conn.php'; 
+
+?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -80,9 +86,91 @@
       </li>  
     </ul>
   </nav>
-  
   <main>
+    <div id="userItinerary">
+      <!-- Loading message while data is being fetched -->
+      <p>Loading itinerary data...</p>
+    </div>
   </main>
-</body>
+
+<!-- PHP session code at the top of the body to get employee_id -->
+<?php
+  // Make sure session is started
+  if (session_status() === PHP_SESSION_NONE) {
+  }
+  
+  // Get employee ID from session
+  $employee_id = isset($_SESSION['employee_id']) ? $_SESSION['employee_id'] : '';
+?>
+
+<script>
+  // Get employee ID from PHP session
+  const employee_id = "<?php echo $employee_id; ?>";
+  
+  // If no employee ID is found, show an error message
+  if (!employee_id) {
+    document.getElementById('userItinerary').innerHTML = '<p>Error: No employee ID found. Please log in again.</p>';
+  } else {
+    // Fetch itinerary data with the employee ID
+    fetch(`../include/get_user_itinerary.php?employee_id=${employee_id}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Data received:", data); // For debugging
+        const itineraryContainer = document.getElementById('userItinerary');
+
+        if (data.error) {
+          itineraryContainer.innerHTML = `<p>No itinerary found: ${data.error}</p>`;
+        } else if (Array.isArray(data) && data.length > 0) {
+          let tableHTML = `
+            <h2>Your Itinerary</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr>
+                  <th style="border: 1px solid #ccc; padding: 8px;">Location</th>
+                  <th style="border: 1px solid #ccc; padding: 8px;">Date</th>
+                  <th style="border: 1px solid #ccc; padding: 8px;">Time</th>
+                  <th style="border: 1px solid #ccc; padding: 8px;">Description</th>
+                  <th style="border: 1px solid #ccc; padding: 8px;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          tableHTML += data.map(itin => `
+            <tr>
+              <td style="border: 1px solid #ccc; padding: 8px;">${itin.location || 'N/A'}</td>
+              <td style="border: 1px solid #ccc; padding: 8px;">${itin.date || 'N/A'}</td>
+              <td style="border: 1px solid #ccc; padding: 8px;">${itin.time || 'N/A'}</td>
+              <td style="border: 1px solid #ccc; padding: 8px;">${itin.description || 'N/A'}</td>
+              <td style="border: 1px solid #ccc; padding: 8px;">${itin.status || 'N/A'}</td>
+            </tr>
+          `).join('');
+
+          tableHTML += `
+              </tbody>
+            </table>
+          `;
+
+          itineraryContainer.innerHTML = tableHTML;
+        } else {
+          itineraryContainer.innerHTML = `<p>No itinerary entries found for your account.</p>`;
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching itinerary:', error);
+        document.getElementById('userItinerary').innerHTML = `
+          <p>Error loading itinerary: ${error.message}</p>
+          <p>Please check the console for more details or try refreshing the page.</p>
+        `;
+      });
+  }
+</script>
+
 <script src="../public/js/main.js"></script>
+</body>
 </html>
