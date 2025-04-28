@@ -1,6 +1,3 @@
-<?php 
-    include 'includes/login.php'; 
-?>
 
 
 <!DOCTYPE html>
@@ -89,14 +86,14 @@
         }
     </style>
 </head>
-<body>
+<body>  
     <div class="logo">
         <img src="public/img/DBL.png" alt="Logo">
     </div>
 
     <div class="login-container">
         <h2>Log Into Your Account</h2>
-        <form id="loginForm" action="includes/login.php" method="post">
+        <form id="loginForm" action="includes/index.php" method="post">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" required aria-label="Account ID">
 
@@ -115,11 +112,9 @@
 
     <script>
         window.onload = function () {
-            // Any login specific actions can be placed here
         };
     </script>
 
-    <!-- Logout detection -->
     <script>
         window.addEventListener("storage", function(event) {
             if (event.key === "forceLogout") {
@@ -141,7 +136,7 @@
         }
 
         function redirectToLogin() {
-            window.location.href = "employee/login.php"; 
+            window.location.href = "employee/index.php"; 
         }
     </script>
 </body>
