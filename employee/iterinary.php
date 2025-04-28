@@ -1,6 +1,9 @@
 <?php 
-
 include __DIR__ . '/../conn.php'; 
+
+// Fetch itinerary data
+$sql = "SELECT * FROM itinerary"; // Adjust table name
+$result = $conn->query($sql); // Execute query
 
 ?>
 
@@ -86,91 +89,60 @@ include __DIR__ . '/../conn.php';
       </li>  
     </ul>
   </nav>
+  
   <main>
-    <div id="userItinerary">
-      <!-- Loading message while data is being fetched -->
-      <p>Loading itinerary data...</p>
-    </div>
-  </main>
 
-<!-- PHP session code at the top of the body to get employee_id -->
-<?php
-  // Make sure session is started
-  if (session_status() === PHP_SESSION_NONE) {
-  }
-  
-  // Get employee ID from session
-  $employee_id = isset($_SESSION['employee_id']) ? $_SESSION['employee_id'] : '';
-?>
+    <div class="table-responsive">
+    <?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success">Itinerary marked as completed!</div>
+    <?php elseif (isset($_GET['error'])): ?>
+        <div class="alert alert-danger">Something went wrong.</div>
+    <?php endif; ?>
 
-<script>
-  // Get employee ID from PHP session
-  const employee_id = "<?php echo $employee_id; ?>";
-  
-  // If no employee ID is found, show an error message
-  if (!employee_id) {
-    document.getElementById('userItinerary').innerHTML = '<p>Error: No employee ID found. Please log in again.</p>';
-  } else {
-    // Fetch itinerary data with the employee ID
-    fetch(`../include/get_user_itinerary.php?employee_id=${employee_id}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log("Data received:", data); // For debugging
-        const itineraryContainer = document.getElementById('userItinerary');
-
-        if (data.error) {
-          itineraryContainer.innerHTML = `<p>No itinerary found: ${data.error}</p>`;
-        } else if (Array.isArray(data) && data.length > 0) {
-          let tableHTML = `
-            <h2>Your Itinerary</h2>
-            <table style="width: 100%; border-collapse: collapse;">
-              <thead>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle bg-white">
+            <thead class="table-success">
                 <tr>
-                  <th style="border: 1px solid #ccc; padding: 8px;">Location</th>
-                  <th style="border: 1px solid #ccc; padding: 8px;">Date</th>
-                  <th style="border: 1px solid #ccc; padding: 8px;">Time</th>
-                  <th style="border: 1px solid #ccc; padding: 8px;">Description</th>
-                  <th style="border: 1px solid #ccc; padding: 8px;">Status</th>
+                    <th>Location</th>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Action</th>
                 </tr>
-              </thead>
-              <tbody>
-          `;
+            </thead>
+            <tbody>
+            <?php if ($result->num_rows > 0) { 
+                while ($row = $result->fetch_assoc()) { ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['location']); ?></td>
+                    <td><?php echo htmlspecialchars($row['description']); ?></td>
+                    <td>
+                        <?php if ($row['status'] == 'Pending') { ?>
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        <?php } else { ?>
+                            <span class="badge bg-success">Completed</span>
+                        <?php } ?>
+                    </td>
+                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                    <td>
+                        <?php if ($row['status'] == 'Pending') { ?>
+                            <a href="../includes/mark_completed.php?id=<?php echo $row['id']; ?>" class="btn btn-success btn-sm">Mark Completed</a>
+                        <?php } else { ?>
+                            <button class="btn btn-secondary btn-sm" disabled>Done</button>
+                        <?php } ?>
+                    </td>
+                </tr>
+            <?php }} else { ?>
+                <tr>
+                    <td colspan="5" class="text-center">No itineraries assigned yet.</td>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
 
-          tableHTML += data.map(itin => `
-            <tr>
-              <td style="border: 1px solid #ccc; padding: 8px;">${itin.location || 'N/A'}</td>
-              <td style="border: 1px solid #ccc; padding: 8px;">${itin.date || 'N/A'}</td>
-              <td style="border: 1px solid #ccc; padding: 8px;">${itin.time || 'N/A'}</td>
-              <td style="border: 1px solid #ccc; padding: 8px;">${itin.description || 'N/A'}</td>
-              <td style="border: 1px solid #ccc; padding: 8px;">${itin.status || 'N/A'}</td>
-            </tr>
-          `).join('');
+    </div>
 
-          tableHTML += `
-              </tbody>
-            </table>
-          `;
-
-          itineraryContainer.innerHTML = tableHTML;
-        } else {
-          itineraryContainer.innerHTML = `<p>No itinerary entries found for your account.</p>`;
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching itinerary:', error);
-        document.getElementById('userItinerary').innerHTML = `
-          <p>Error loading itinerary: ${error.message}</p>
-          <p>Please check the console for more details or try refreshing the page.</p>
-        `;
-      });
-  }
-</script>
-
+  </main>
 <script src="../public/js/main.js"></script>
 </body>
 </html>
