@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="../public/css/main.css">
   <link rel="stylesheet" href="../public/css/darkmode.css">
   <link rel="icon" href="../public/img/DBL.png">
+  <link rel="stylesheet" href="../public/css/itinerary.css">
   <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
   <title>DBL ISTS</title>
 </head>
@@ -19,13 +20,14 @@
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-480 155 156q11 11 11.5 27.5T468-268q-11 11-28 11t-28-11L228-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 27.5-11.5T468-692q11 11 11 28t-11 28L313-480Zm264 0 155 156q11 11 11.5 27.5T732-268q-11 11-28 11t-28-11L492-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 27.5-11.5T732-692q11 11 11 28t-11 28L577-480Z"/></svg>
         </button>
       <li>
-        <li class="active">
+        <li>
           <a href="home.php">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M520-640v-160q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v160q0 17-11.5 28.5T800-600H560q-17 0-28.5-11.5T520-640ZM120-480v-320q0-17 11.5-28.5T160-840h240q17 0 28.5 11.5T440-800v320q0 17-11.5 28.5T400-440H160q-17 0-28.5-11.5T120-480Zm400 320v-320q0-17 11.5-28.5T560-520h240q17 0 28.5 11.5T840-480v320q0 17-11.5 28.5T800-120H560q-17 0-28.5-11.5T520-160Zm-400 0v-160q0-17 11.5-28.5T160-360h240q17 0 28.5 11.5T440-320v160q0 17-11.5 28.5T400-120H160q-17 0-28.5-11.5T120-160Zm80-360h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/></svg>
             <span>Dashboard</span>
           </a>
       </li>
     </li>
+    <li class="active">
     <a href="itinerary.php">
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-280h160v-160H280v160Zm240 0h160v-160H520v160ZM280-520h160v-160H280v160Zm240 0h160v-160H520v160ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
       <span>Itinerary</span>
@@ -68,48 +70,116 @@
     </ul>
   </nav>
   <main>
-    <div class="dashboard-container">
-      <div class="info-cards">
-        <div class="info-card purple">
-          <i class="fas fa-desktop"></i>
-          <div>
-            <small>Total Employees</small>
-            <h4>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-              </svg>
-              50
-            </h4>
-          </div>
-        </div>
-        <div class="info-card teal">
-          <i class="fas fa-calendar-alt"></i>
-          <div>
-            <small>Present Today</small>
-            <h4>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M10.854 5.646a.5.5 0 0 1 .146.354v4a.5.5 0 0 1-.5.5H5.5a.5.5 0 0 1-.5-.5V6a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .354.146zM6 1a1 1 0 0 0-1 1v1H2.5A1.5 1.5 0 0 0 1 4.5v9A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 13.5 3H11V2a1 1 0 0 0-1-1H6z"/>
-              </svg>
-              34
-            </h4>
-          </div>
-        </div>
-        <div class="info-card orange">
-          <i class="fas fa-layer-group"></i>
-          <div>
-            <small>Absent Today</small>
-            <h4>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 1a6 6 0 0 0 0 12A6 6 0 0 0 8 2zM5.5 5.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5v-.5zm0 3a.5.5 0 0 1 .5-.5H10a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5z"/>
-              </svg>
-              6
-            </h4>
-          </div>
-        </div>
-      </div>
+  <form id="itineraryForm" action="../includes/save_itinerary.php" method="POST">
+  <label for="employee_id">Select Employee:</label>
+      <select name="employee_id" id="employee_id" required>
+        <option value="" disabled selected>— Choose Employee —</option>
+        <?php
+          include '../conn.php';
+          $result = $conn->query("SELECT employee_id, full_name FROM dbl_employees_acc WHERE role='employee' AND status='active'");
+          while($row = $result->fetch_assoc()) {
+              echo "<option value='{$row['employee_id']}'>{$row['full_name']} ({$row['employee_id']})</option>";
+          }
+        ?>
+      </select>
+
+    <br><br>
+
+    <label for="location">Client Location:</label>
+      <select name="location" id="location" onchange="checkLocation()" required>
+        <option value="" disabled selected>— Choose Client Location —</option>
+        <?php
+          $clientResult = $conn->query("SELECT client_name FROM clients");
+          while($client = $clientResult->fetch_assoc()) {
+              echo "<option value='{$client['client_name']}'>{$client['client_name']}</option>";
+          }
+        ?>
+        <option value="Others">Others</option> 
+      </select>
+    <div id="otherLocationDiv" style="display: none;">
+        <label for="other_location">Enter Other Location:</label>
+        <input type="text" name="other_location" id="other_location">
     </div>
-    
+    <label for="description">Task:</label><br>
+    <textarea name="description" id="description" rows="4" cols="50"></textarea>
+    <button type="submit">Assign Itinerary</button>
+</form>
   </main>
+
+  <!-- Confirmation message -->
+  <div id="confirmationModal" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border-radius:10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index:999;">
+  <p>Are you sure you want to proceed?</p>
+  <button onclick="confirmSubmission()">Yes</button>
+  <button onclick="closeModal()">Cancel</button>
+</div>
+
+<!-- Toast message -->
+<div id="toast" style="display:none;">
+  Itinerary submitted successfully!
+</div>
+
 </body>
+  <script>
+  function checkLocation() {
+    var locationSelect = document.getElementById('location');
+    var otherLocationDiv = document.getElementById('otherLocationDiv');
+    if (locationSelect.value === 'Others') {
+        otherLocationDiv.style.display = 'block';
+    } else {
+        otherLocationDiv.style.display = 'none';
+    }
+}
+
+// Capture the form
+const form = document.getElementById('itineraryForm');
+
+// When user submits form -> open modal only
+form.addEventListener('submit', function(event) {
+    event.preventDefault(); 
+    openModal();
+});
+
+// When user clicks "Yes" in the modal
+function confirmSubmission() {
+    closeModal();
+
+    const formData = new FormData(form);
+
+    fetch('../includes/save_itinerary.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.status === 'success') {
+            showToast(result.message);
+            form.reset(); // Optional: reset form fields after submit
+        } else {
+            showToast('Something went wrong!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Something went wrong!');
+    });
+}
+
+function openModal() {
+    document.getElementById('confirmationModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('confirmationModal').style.display = 'none';
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+  </script>
 <script src="../public/js/main.js"></script>
 </html>
