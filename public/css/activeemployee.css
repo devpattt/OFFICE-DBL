@@ -1,0 +1,138 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  .add-btn {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  .status-active {
+    color: green;
+    font-weight: bold;
+  }
+  .status-inactive {
+    color: red;
+    font-weight: bold;
+  }
+  
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    text-align: center;
+    border-radius: 8px;
+  }
+  .modal-buttons {
+    margin-top: 20px;
+  }
+  .modal-buttons button {
+    margin: 0 10px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .confirm-btn {
+    background-color: #f44336;
+    color: white;
+  }
+  .cancel-btn {
+    background-color: #ccc;
+    color: black;
+  }
+  
+  .btn-active {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 2px 6px;
+    font-size: 11px;    
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-inactive {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 2px 6px;
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  
+  /* --------- MOBILE RESPONSIVE DESIGN --------- */
+  @media screen and (max-width: 600px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+      width: 100%;
+    }
+  
+    thead tr {
+      display: none;
+    }
+  
+    tr {
+      margin-bottom: 15px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+    }
+  
+    td {
+      text-align: right;
+      padding-left: 50%;
+      position: relative;
+    }
+  
+    td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 10px;
+      top: 12px;
+      font-weight: bold;
+      text-align: left;
+    }
+  
+    .modal-content {
+      width: 90%;
+      margin-top: 50%;
+    }
+  
+    .add-btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+  

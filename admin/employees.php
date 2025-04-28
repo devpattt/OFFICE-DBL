@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
     <link rel="icon" href="../public/img/DBL.png">
+    <link rel="stylesheet" href="../public/css/activeemployee.css">
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
   </head>
@@ -67,8 +68,121 @@
       </li>  
     </ul>
   </nav>
+
   <main>
+  <?php
+    include '../conn.php';
+
     
+    $sql = "SELECT id, employee_id, username, email, full_name, role, status, created_at FROM dbl_employees_acc";
+    $result = $conn->query($sql);
+    ?>
+        <?php if (isset($_GET['status']) && $_GET['status'] == 'success'): ?>
+        <script>
+          window.addEventListener('DOMContentLoaded', function() {
+            showToast('Employee inactivated successfully!');
+          });
+        </script>
+      <?php endif; ?>
+      <br>
+      <a href="add_employee.php" class="add-btn">Add Employee</a>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Employee ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Full Name</th>
+            <th>Role</th>
+            <th>Status & Action</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php if ($result && $result->num_rows > 0): ?>
+            <?php while($row = $result->fetch_assoc()): ?>
+              <tr>
+                <td data-label="ID"><?= htmlspecialchars($row["id"]) ?></td>
+                <td data-label="Employee ID"><?= htmlspecialchars($row["employee_id"]) ?></td>
+                <td data-label="Username"><?= htmlspecialchars($row["username"]) ?></td>
+                <td data-label="Email"><?= htmlspecialchars($row["email"]) ?></td>
+                <td data-label="Full Name"><?= htmlspecialchars($row["full_name"]) ?></td>
+                <td data-label="Role"><?= htmlspecialchars($row["role"]) ?></td>
+                <td data-label="Status">
+                  <button   
+                    class="<?= strtolower($row['status']) == 'active' ? 'btn-active' : 'btn-inactive' ?>" 
+                    <?= strtolower($row['status']) == 'inactive' ? 'disabled' : '' ?> 
+                    onclick="openModal(<?= $row['id'] ?>)"
+                  >
+                    <?= ucfirst(strtolower($row['status'])) ?>
+                  </button>
+                </td>
+                <td data-label="Created At"><?= htmlspecialchars($row["created_at"]) ?></td>
+              </tr>
+
+            <?php endwhile; ?>
+          <?php else: ?>
+            <tr><td colspan="8">No employees found.</td></tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+
+    </main>
+
+    <!-- Modal -->
+    <div id="confirmModal" class="modal">
+      <div class="modal-content">
+        <p>Are you sure you want to inactivate this employee?</p>
+        <div class="modal-buttons">
+          <form id="inactivateForm" method="POST" action="../includes/deactivate_employee.php">
+            <input type="hidden" name="id" id="employeeId">
+            <button type="submit" class="confirm-btn">Yes</button>
+            <button type="button" onclick="closeModal()" class="cancel-btn">No</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    function openModal(id) {
+      document.getElementById('employeeId').value = id;
+      document.getElementById('confirmModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('confirmModal').style.display = 'none';
+    }
+
+    // Close the modal if user clicks outside the modal
+    window.onclick = function(event) {
+      var modal = document.getElementById('confirmModal');
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    </script>
+    <!-- Toast container -->
+        <div id="toast" style="visibility:hidden; min-width:250px; margin-left:-125px; background-color:green; color:#fff; text-align:center; border-radius:2px; padding:16px; position:fixed; z-index:1; left:50%; bottom:30px; font-size:17px;">
+        </div>  
+
+        <script>
+        function showToast(message) {
+          var toast = document.getElementById("toast");
+          toast.textContent = message;
+          toast.style.visibility = "visible";
+          setTimeout(function(){ toast.style.visibility = "hidden"; }, 3000);
+        }
+        </script>
+
+    </body>
+    </html>
+
+    <?php
+    $conn->close();
+    ?>
+
   </main>
 </body>
 <script src="../public/js/main.js"></script>
