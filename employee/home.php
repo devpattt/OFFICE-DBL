@@ -89,49 +89,83 @@
         </nav>
         <main>
             <?php
-              $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+            $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
             ?>  
-              <div class="welcome-message">
-                <h1>Welcome back, <?php echo htmlspecialchars($username); ?>!</h1>
-                <div class="active-time">
-                  <p>Current Time: <span id="activeTime"></span></p>
-                </div>
+            <div class="welcome-message">
+              <h1>Welcome back, <?php echo htmlspecialchars($username); ?>!</h1>
+              <div class="active-time">
+                <p>Current Time: <span id="activeTime"></span></p>
+              </div>
+            </div>   
+
+            <div class="info-boxes">
+              <div class="box box-1">
+                <h3>Working Hours</h3>
+                <p><?php echo $totalWorkingHours; ?> hrs <?php echo $remainingMinutes > 0 ? $remainingMinutes . ' mins' : ''; ?></p>
               </div>
 
+              <div class="box box-2">
+                <h3>Attendance Summary</h3>
+                <?php
+                $today = date('Y-m-d');
+                $countQuery = "SELECT status, COUNT(*) as total FROM dbl_attendance_logs 
+                              WHERE date = ?
+                              GROUP BY status";
+
+                $countStmt = $conn->prepare($countQuery);
+                $countStmt->bind_param("s", $today);
+                $countStmt->execute();
+                $countResult = $countStmt->get_result();
+
+                $present = 0;
+                $absent = 0;
+                $late = 0;
+
+                while ($row = $countResult->fetch_assoc()) {
+                    if ($row['status'] == 'On Time') {
+                        $present += $row['total'];
+                    } elseif ($row['status'] == 'Late') {
+                        $late += $row['total'];
+                        $present += $row['total'];
+                    } elseif ($row['status'] == 'Missed Out') {
+                        $absent += $row['total'];
+                    }
+                }
+
+                echo "<p>Present: $present | Absent: $absent | Late: $late</p>";
+                ?>
+              </div> <!-- End of box-2 -->
+
+              <div class="box box-3">
+                <h3>Attendance Status</h3>
+                <?php
+                $todayQuery = "SELECT time_in, time_out, status FROM dbl_attendance_logs 
+                              WHERE username = ? AND date = ?";
                 
-            <div class="info-boxes">
-            <div class="box box-1">
-              <h3>Working Hours</h3>
-              <p><?php echo $totalWorkingHours; ?> hrs <?php echo $remainingMinutes > 0 ? $remainingMinutes . ' mins' : ''; ?></p>
-            </div>
-            <div class="box box-2">
-              <h3>Today's Attendance</h3>
-              <p>Present: 32 | Absent: 4 | Late: 2</p>
-            </div>
-            <div class="box box-3">
-              <h3>Your Attendance Status</h3>
-              <?php
-              // Get today's attendance status for the current user
-              $today = date('Y-m-d');
-              $todayQuery = "SELECT time_in, time_out, status FROM dbl_attendance_logs 
-                            WHERE username = ? AND date = ?";
-              
-              $todayStmt = $conn->prepare($todayQuery);
-              $todayStmt->bind_param("ss", $username, $today);
-              $todayStmt->execute();
-              $todayResult = $todayStmt->get_result();
-              
-              if ($row = $todayResult->fetch_assoc()) {
-                  echo "<p>Clocked In: " . htmlspecialchars($row['time_in']) . 
-                      ($row['time_out'] ? " | Clocked Out: " . htmlspecialchars($row['time_out']) : "") . 
-                      " | Status: " . htmlspecialchars($row['status']) . "</p>";
-              } else {
-                  echo "<p>Not clocked in today</p>";
-              }
-              ?>
-            </div>
-    </div>         
-        </main>
+                $todayStmt = $conn->prepare($todayQuery);
+                $todayStmt->bind_param("ss", $username, $today);
+                $todayStmt->execute();
+                $todayResult = $todayStmt->get_result();
+                
+                if ($row = $todayResult->fetch_assoc()) {
+                    if (!empty($row['time_in']) && empty($row['time_out'])) {
+                        echo "<p>Clocked In: " . htmlspecialchars($row['time_in']) . " | Status: " . htmlspecialchars($row['status']) . "</p>";
+                    } elseif (empty($row['time_in']) && !empty($row['time_out'])) {
+                        echo "<p>Clocked Out: " . htmlspecialchars($row['time_out']) . " | Status: " . htmlspecialchars($row['status']) . "</p>";
+                    } elseif (!empty($row['time_in']) && !empty($row['time_out'])) {
+                        echo "<p>All done for today!</p>";
+                    } else {
+                        echo "<p>Not yet clocked in/out</p>";
+                    }
+                } else {
+                    echo "<p>Not yet clocked in/out</p>";
+                }
+                ?>
+              </div> <!-- End of box-3 -->
+
+            </div> <!-- End of info-boxes -->
+            </main>
+
           <script>
               function updateTime() {
                 const now = new Date();

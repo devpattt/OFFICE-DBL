@@ -108,6 +108,7 @@
       <p>Location: <span id="clock-in-location"></span></p>
       <input type="hidden" id="clock-in-lat">
       <input type="hidden" id="clock-in-lng">
+      <input type="hidden" id="clock-in-location-hidden">
       <button onclick="submitClockIn()">Submit</button>
       <button onclick="closeClockInModal()">Cancel</button>
     </div>
@@ -122,154 +123,199 @@
   </div>
 
   <script>
-    function openClockInModal() {
-      const now = new Date();
-      const options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-      document.getElementById('clock-in-time').innerText = now.toLocaleString('en-US', options);
+function openClockInModal() {
+  const now = new Date();
+  const options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+  document.getElementById('clock-in-time').innerText = now.toLocaleString('en-US', options);
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const { latitude, longitude } = position.coords;
-          document.getElementById('clock-in-lat').value = latitude;
-          document.getElementById('clock-in-lng').value = longitude;
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      document.getElementById('clock-in-lat').value = latitude;
+      document.getElementById('clock-in-lng').value = longitude;
 
-          // Use Google Maps Geocoding API to get the address
-          const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
-          const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
+      // Use OpenStreetMap (Nominatim) to get the address
+      const geocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
 
-          fetch(geocodeUrl)
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.status === 'OK' && data.results.length > 0) {
-                const address = data.results[0].formatted_address;
-                document.getElementById('clock-in-location').innerText = address;
-              } else {
-                document.getElementById('clock-in-location').innerText = 'Address not found';
-              }
-            })
-            .catch((error) => {
-              console.error('Error fetching address:', error);
-              document.getElementById('clock-in-location').innerText = 'Error fetching address';
-            });
-        });
-      } else {
-        document.getElementById('clock-in-location').innerText = 'Location not available';
-      }
-
-      document.getElementById('clock-in-modal').style.display = 'block';
-    }
-
-    function closeClockInModal() {
-      document.getElementById('clock-in-modal').style.display = 'none';
-    }
-
-    function submitClockIn() {
-      const location = document.getElementById('clock-in-location').innerText;
-      const latitude = document.getElementById('clock-in-lat').value;
-      const longitude = document.getElementById('clock-in-lng').value;
-
-      fetch('../includes/attendance.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ location, latitude, longitude }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Session expired. Please log in again.');
-          }
-          return response.text();
-        })
-        .then((data) => {
-          document.getElementById('confirmation-message').innerText = data;
-          document.getElementById('confirmation-modal').style.display = 'block';
-          closeClockInModal();
-          fetchAttendanceLogs();
-
-          const clockInBtn = document.getElementById('clock-in-btn');
-          clockInBtn.innerText = 'Clock Out';
-          clockInBtn.onclick = submitClockOut; 
-        })
-        .catch((error) => {
-          alert(error.message); 
-          window.location.href = '../login.php'; 
-        });
-    }
-
-    function closeConfirmationModal() {
-      document.getElementById('confirmation-modal').style.display = 'none';
-    }
-
-    function fetchAttendanceLogs() {
-      fetch('../includes/fetch_attendance.php')
+      fetch(geocodeUrl)
         .then((response) => response.json())
         .then((data) => {
-          const tableBody = document.getElementById('attendance-logs');
-          tableBody.innerHTML = ''; 
-
-          let isClockedIn = false;
-
-          data.forEach((log) => {
-            const row = `
-              <tr>
-                <td>${log.date}</td>
-                <td>${log.time_in || 'N/A'}</td>
-                <td>${log.time_out || 'N/A'}</td>
-                <td>${log.status}</td>
-                <td>${log.location_in || 'N/A'}</td>
-              </tr>
-            `;
-            tableBody.innerHTML += row;
-
-            if (log.time_out === 'N/A') {
-              isClockedIn = true;
-            }
-          });
-
-          const clockInBtn = document.getElementById('clock-in-btn');
-          if (isClockedIn) {
-            clockInBtn.innerText = 'Clock Out';
-            clockInBtn.onclick = submitClockOut;
+          if (data && data.display_name) {
+            document.getElementById('clock-in-location').innerText = data.display_name;
+            document.getElementById('clock-in-location-hidden').value = data.display_name; // <-- Set hidden input
           } else {
-            clockInBtn.innerText = 'Clock In';
-            clockInBtn.onclick = openClockInModal;
+            document.getElementById('clock-in-location').innerText = 'Address not found';
+            document.getElementById('clock-in-location-hidden').value = '';
           }
-        })
-        .catch((error) => console.error('Error fetching attendance logs:', error));
-    }
-
-    document.addEventListener('DOMContentLoaded', fetchAttendanceLogs);
-
-    function submitClockOut() {
-      const location = document.getElementById('clock-in-location').innerText;
-      const latitude = document.getElementById('clock-in-lat').value;
-      const longitude = document.getElementById('clock-in-lng').value;
-
-      fetch('../includes/attendance.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ location, latitude, longitude, clockOut: true }), // Include location data
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Session expired. Please log in again.');
-          }
-          return response.text();
-        })
-        .then((data) => {
-          document.getElementById('confirmation-message').innerText = data;
-          document.getElementById('confirmation-modal').style.display = 'block';
-          fetchAttendanceLogs();
-
-          const clockInBtn = document.getElementById('clock-in-btn');
-          clockInBtn.innerText = 'Clock In';
-          clockInBtn.onclick = openClockInModal; // Reset the button functionality
         })
         .catch((error) => {
-          alert(error.message);
-          window.location.href = '../login.php';
+          console.error('Error fetching address:', error);
+          document.getElementById('clock-in-location').innerText = `Lat: ${latitude}, Lng: ${longitude}`;
+          document.getElementById('clock-in-location-hidden').value = `Lat: ${latitude}, Lng: ${longitude}`;
         });
-    }
-  </script>
+    }, function (error) {
+      console.error('Error getting location:', error);
+      document.getElementById('clock-in-location').innerText = 'Location not available';
+      document.getElementById('clock-in-location-hidden').value = '';
+    });
+  } else {
+    document.getElementById('clock-in-location').innerText = 'Geolocation not supported';
+    document.getElementById('clock-in-location-hidden').value = '';
+  }
+
+  document.getElementById('clock-in-modal').style.display = 'block';
+}
+
+function closeClockInModal() {
+  document.getElementById('clock-in-modal').style.display = 'none';
+}
+
+function submitClockIn() {
+  const location = document.getElementById('clock-in-location-hidden').value; // <-- Use hidden input
+  const latitude = document.getElementById('clock-in-lat').value;
+  const longitude = document.getElementById('clock-in-lng').value;
+
+  if (!location || location === "Address not found" || !latitude || !longitude) {
+    alert('Location not ready yet! Please wait for location to load.');
+    return;
+  }
+
+  fetch('../includes/attendance.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ location, latitude, longitude }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Session expired. Please log in again.');
+      }
+      return response.text();
+    })
+    .then((data) => {
+      document.getElementById('confirmation-message').innerText = data;
+      document.getElementById('confirmation-modal').style.display = 'block';
+      closeClockInModal();
+      fetchAttendanceLogs();
+
+      const clockInBtn = document.getElementById('clock-in-btn');
+      clockInBtn.innerText = 'Clock Out';
+      clockInBtn.onclick = submitClockOut;
+    })
+    .catch((error) => {
+      alert(error.message);
+      window.location.href = '../login.php';
+    });
+}
+
+function submitClockOut() {
+  const location = document.getElementById('clock-in-location-hidden').value; // <-- Use hidden input
+  const latitude = document.getElementById('clock-in-lat').value;
+  const longitude = document.getElementById('clock-in-lng').value;
+
+  fetch('../includes/attendance.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ location, latitude, longitude, clockOut: true }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Session expired. Please log in again.');
+      }
+      return response.text();
+    })
+    .then((data) => {
+      document.getElementById('confirmation-message').innerText = data;
+      document.getElementById('confirmation-modal').style.display = 'block';
+      fetchAttendanceLogs();
+
+      const clockInBtn = document.getElementById('clock-in-btn');
+      clockInBtn.innerText = 'Clock In';
+      clockInBtn.onclick = openClockInModal;
+    })
+    .catch((error) => {
+      alert(error.message);
+      window.location.href = '../login.php';
+    });
+}
+
+function closeConfirmationModal() {
+  document.getElementById('confirmation-modal').style.display = 'none';
+}
+
+function fetchAttendanceLogs() {
+  fetch('../includes/fetch_attendance.php')
+    .then((response) => response.json())
+    .then((data) => {
+      const tableBody = document.getElementById('attendance-logs');
+      tableBody.innerHTML = '';
+
+      let isClockedIn = false;
+
+      data.forEach((log) => {
+        const row = `
+          <tr>
+            <td>${log.date}</td>
+            <td>${log.time_in || 'N/A'}</td>
+            <td>${log.time_out || 'N/A'}</td>
+            <td>${log.status}</td>
+            <td>${log.location_in || 'N/A'}</td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+
+        if (log.time_out === 'N/A') {
+          isClockedIn = true;
+        }
+      });
+
+      const clockInBtn = document.getElementById('clock-in-btn');
+      if (isClockedIn) {
+        clockInBtn.innerText = 'Clock Out';
+        clockInBtn.onclick = submitClockOut;
+      } else {
+        clockInBtn.innerText = 'Clock In';
+        clockInBtn.onclick = openClockInModal;
+      }
+    })
+    .catch((error) => console.error('Error fetching attendance logs:', error));
+}
+
+document.addEventListener('DOMContentLoaded', fetchAttendanceLogs);
+
+
+  function submitClockOut() {
+    const location = document.getElementById('clock-in-location').innerText;
+    const latitude = document.getElementById('clock-in-lat').value;
+    const longitude = document.getElementById('clock-in-lng').value;
+
+    fetch('../includes/attendance.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ location, latitude, longitude, clockOut: true }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Session expired. Please log in again.');
+        }
+        return response.text();
+      })
+      .then((data) => {
+        document.getElementById('confirmation-message').innerText = data;
+        document.getElementById('confirmation-modal').style.display = 'block';
+        fetchAttendanceLogs();
+
+        const clockInBtn = document.getElementById('clock-in-btn');
+        clockInBtn.innerText = 'Clock In';
+        clockInBtn.onclick = openClockInModal;
+      })
+      .catch((error) => {
+        alert(error.message);
+        window.location.href = '../login.php';
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', fetchAttendanceLogs);
+</script>
 </main>
 </body>
 <script src="../public/js/main.js"></script>
