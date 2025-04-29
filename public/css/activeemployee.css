@@ -90,6 +90,40 @@ table {
     opacity: 0.6;
   }
   
+  /* New styles for action buttons and delete button */
+.action-buttons {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e74c3c;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.delete-btn:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+.delete-btn svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+/* Dark mode adjustments */
+.darkmode .delete-btn {
+  color: #ff6b6b;
+}
+
+.darkmode .delete-btn:hover {
+  background-color: rgba(255, 107, 107, 0.1);
+}
   
   /* --------- MOBILE RESPONSIVE DESIGN --------- */
   @media screen and (max-width: 600px) {

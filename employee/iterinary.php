@@ -1,7 +1,9 @@
 <?php 
+session_start();
 include __DIR__ . '/../conn.php'; 
 
-$sql = "SELECT * FROM itinerary"; 
+$employee_id = $_SESSION['employee_id'];
+$sql = "SELECT * FROM itinerary WHERE employee_id = '$employee_id'";
 $result = $conn->query($sql);
 
 ?>
@@ -124,19 +126,25 @@ $result = $conn->query($sql);
                     </td>
                     <td><?php echo htmlspecialchars($row['created_at']); ?></td>
                     <td>
-                        <?php if ($row['status'] == 'Pending') { ?>
-                            <a href="../includes/mark_completed.php?id=<?php echo $row['id']; ?>" class="btn btn-success btn-sm">Mark Completed</a>
-                        <?php } else { ?>
-                          <button style="background-color: green; color: white; padding: 4px 8px; font-size: 12px;">Done</button>
-                        <?php } ?>
-                    </td>
+                      <?php if ($row['status'] == 'Pending') { ?>
+                          <a href="../includes/mark_completed.php?id=<?php echo $row['id']; ?>"
+                            class="btn btn-success btn-sm"
+                            onclick="return confirm('Are you sure you want to mark this itinerary as completed?');">
+                            Mark as Completed
+                          </a>
+                      <?php } else { ?>
+                          <a href="../includes/undo_completed.php?id=<?php echo $row['id']; ?>"
+                            class="btn btn-warning btn-sm"
+                            onclick="return confirm('Are you sure you want to undo this completion?');">
+                            Undo
+                          </a>
+                      <?php } ?>
+                  </td>
                 </tr>
-            <?php }} else { ?>
-                <tr>
-                    <td colspan="5" class="text-center">No itineraries assigned yet.</td>
-                </tr>
-            <?php } ?>
-            </tbody>
+            <?php }
+            } ?>
+        </tbody>
+
         </table>
 
     </div>

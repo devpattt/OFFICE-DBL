@@ -1,0 +1,204 @@
+/* Enhanced Employee Management Styling */
+
+/* Table Styling */
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.table {
+  margin-bottom: 0;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  background-color: #198754;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 0.75rem;
+  vertical-align: middle;
+  border: none;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(25, 135, 84, 0.05);
+}
+
+.table tbody td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  border-color: #e9ecef;
+}
+
+/* Alternate row colors for better readability */
+.table tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Status Badge Styling */
+.badge {
+  font-weight: normal;
+  padding: 0.5em 0.75em;
+  border-radius: 50px;
+}
+
+.badge.bg-success {
+  background-color: #198754 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+/* Button Styling */
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+  transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #146c43;
+  border-color: #146c43;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-warning {
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.btn-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+.btn-sm {
+  border-radius: 4px;
+  margin-right: 0.25rem;
+}
+
+/* Action buttons container */
+td .btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* Add Employee Button */
+.text-end .btn-success {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Styling */
+.modal-content {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 1rem 1.5rem;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: #212529;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Form Styling */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.form-control, .form-select {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .table-responsive {
+      border-radius: 0;
+      box-shadow: none;
+  }
+  
+  .table thead {
+      display: none;
+  }
+  
+  .table tbody tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+  
+  .table tbody td {
+      display: block;
+      text-align: right;
+      padding: 0.75rem;
+      position: relative;
+      border-bottom: 1px solid #dee2e6;
+  }
+  
+  .table tbody td:last-child {
+      border-bottom: none;
+  }
+  
+  .table tbody td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0.75rem;
+      font-weight: 600;
+      text-align: left;
+  }
+  
+  td .btn-group {
+      justify-content: flex-end;
+  }
+}

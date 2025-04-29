@@ -7,6 +7,13 @@
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
+
+.modal-content,
+.modal-content p,
+.modal-content h2 {
+  color: #11121a;
+}
+
   
   #clock-in-modal, #confirmation-modal {
     position: fixed;
@@ -37,7 +44,9 @@
   }
 
   #clock-in-btn:hover {
-      background-color: #292c3f; 
+      background-color: #484b60;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.20); 
   }
 
   .clock-in-container {

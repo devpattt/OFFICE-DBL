@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
     <link rel="icon" href="../public/img/DBL.png">
-        <link rel="stylesheet" href="../public/css/attendance.css">
+    <link rel="stylesheet" href="../public/css/attendance.css">
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
   </head>

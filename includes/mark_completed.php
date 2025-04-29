@@ -20,10 +20,10 @@ if (isset($_GET['id'])) {
     $stmt->bind_param("is", $id, $_SESSION['employee_id']);
     
     if ($stmt->execute()) {
-        header("Location: ../employee/itinerary.php?success=MarkedCompleted");
+        header("Location: ../employee/iterinary.php?success=MarkedCompleted");
         exit();
     } else {
-        header("Location: ../employee/itinerary.php?error=FailedUpdate");
+        header("Location: ../employee/iterinary.php?error=FailedUpdate");
         exit();
     }
 }

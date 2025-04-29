@@ -1,3 +1,14 @@
+<?php
+session_start();
+$conn = new mysqli("localhost", "root", "", "dbl");
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$sql = "SELECT * FROM dbl_employees_acc ORDER BY created_at DESC";
+$result = $conn->query($sql);
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,12 +17,11 @@
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
     <link rel="icon" href="../public/img/DBL.png">
-    <link rel="stylesheet" href="../public/css/activeemployee.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
   </head>
 <body>
-
 <nav id="sidebar">
     <ul>
       <li>
@@ -68,122 +78,165 @@
       </li>  
     </ul>
   </nav>
-
   <main>
-  <?php
-    include '../conn.php';
-
     
-    $sql = "SELECT id, employee_id, username, email, full_name, role, status, created_at FROM dbl_employees_acc";
-    $result = $conn->query($sql);
-    ?>
-        <?php if (isset($_GET['status']) && $_GET['status'] == 'success'): ?>
-        <script>
-          window.addEventListener('DOMContentLoaded', function() {
-            showToast('Employee inactivated successfully!');
-          });
-        </script>
-      <?php endif; ?>
-      <br>
-      <a href="add_employee.php" class="add-btn">Add Employee</a>
+  <h2 class="text-center mb-4">Employee Management</h2>
 
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Employee ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Full Name</th>
-            <th>Role</th>
-            <th>Status & Action</th>
-            <th>Created At</th>
-          </tr>
+<div class="table-responsive">
+    <!-- Add New Employee Button -->
+<div class="mb-3 text-end">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+        + Add New Employee
+    </button>
+</div>
+
+<!-- Add Employee Modal -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="../includes/admin_add_employee.php" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEmployeeModalLabel">Add New Employee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="full_name" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" name="username" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select name="role" class="form-select" required>
+                            <option value="employee" selected>Employee</option>
+                            <option value="staff">Staff</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add Employee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <table class="table table-bordered table-hover align-middle bg-white">
+        <thead class="table-success">
+            <tr>
+                <th>Employee ID</th>
+                <th>Full Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
         </thead>
         <tbody>
-          <?php if ($result && $result->num_rows > 0): ?>
-            <?php while($row = $result->fetch_assoc()): ?>
-              <tr>
-                <td data-label="ID"><?= htmlspecialchars($row["id"]) ?></td>
-                <td data-label="Employee ID"><?= htmlspecialchars($row["employee_id"]) ?></td>
-                <td data-label="Username"><?= htmlspecialchars($row["username"]) ?></td>
-                <td data-label="Email"><?= htmlspecialchars($row["email"]) ?></td>
-                <td data-label="Full Name"><?= htmlspecialchars($row["full_name"]) ?></td>
-                <td data-label="Role"><?= htmlspecialchars($row["role"]) ?></td>
-                <td data-label="Status">
-                  <button   
-                    class="<?= strtolower($row['status']) == 'active' ? 'btn-active' : 'btn-inactive' ?>" 
-                    <?= strtolower($row['status']) == 'inactive' ? 'disabled' : '' ?> 
-                    onclick="openModal(<?= $row['id'] ?>)"
-                  >
-                    <?= ucfirst(strtolower($row['status'])) ?>
-                  </button>
+        <?php if ($result->num_rows > 0) { 
+            while ($row = $result->fetch_assoc()) { ?>
+            <tr>
+                <td><?php echo htmlspecialchars($row['employee_id']); ?></td>
+                <td><?php echo htmlspecialchars($row['full_name']); ?></td>
+                <td><?php echo htmlspecialchars($row['username']); ?></td>
+                <td><?php echo htmlspecialchars($row['email']); ?></td>
+                <td><?php echo ucfirst(htmlspecialchars($row['role'])); ?></td>
+                <td>
+                    <?php if ($row['status'] == 'active') { ?>
+                        <span class="badge bg-success">Active</span>
+                    <?php } else { ?>
+                        <span class="badge bg-danger">Inactive</span>
+                    <?php } ?>
                 </td>
-                <td data-label="Created At"><?= htmlspecialchars($row["created_at"]) ?></td>
-              </tr>
+                <td>
+                    <!-- Edit Button (Triggers Modal) -->
+                    <button class="btn btn-primary btn-sm mb-1" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#editModal<?php echo $row['id']; ?>">
+                        Edit
+                    </button>
 
-            <?php endwhile; ?>
-          <?php else: ?>
-            <tr><td colspan="8">No employees found.</td></tr>
-          <?php endif; ?>
+                    <!-- Activate/Deactivate -->
+                    <?php if ($row['status'] == 'active') { ?>
+                        <a href="../includes/admin_toggle_status.php?id=<?php echo $row['id']; ?>&action=deactivate" class="btn btn-warning btn-sm mb-1">Deactivate</a>
+                    <?php } else { ?>
+                        <a href="../includes/admin_toggle_status.php?id=<?php echo $row['id']; ?>&action=activate" class="btn btn-success btn-sm mb-1">Activate</a>
+                    <?php } ?>
+
+                    <!-- Edit Modal -->
+                    <div class="modal fade" id="editModal<?php echo $row['id']; ?>" tabindex="-1" aria-labelledby="editModalLabel<?php echo $row['id']; ?>" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form action="../includes/admin_update_employee.php" method="POST">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel<?php echo $row['id']; ?>">Edit Employee</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Full Name</label>
+                                            <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($row['full_name']); ?>" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($row['email']); ?>" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Role</label>
+                                            <select name="role" class="form-select" required>
+                                                <option value="employee" <?php echo ($row['role'] == 'employee') ? 'selected' : ''; ?>>Employee</option>
+                                                <option value="staff" <?php echo ($row['role'] == 'staff') ? 'selected' : ''; ?>>Staff</option>
+                                                <option value="admin" <?php echo ($row['role'] == 'admin') ? 'selected' : ''; ?>>Admin</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of Modal -->
+
+                </td>
+            </tr>
+        <?php }} else { ?>
+            <tr>
+                <td colspan="8" class="text-center">No employees found.</td>
+            </tr>
+        <?php } ?>
         </tbody>
-      </table>
-
-    </main>
-
-    <!-- Modal -->
-    <div id="confirmModal" class="modal">
-      <div class="modal-content">
-        <p>Are you sure you want to inactivate this employee?</p>
-        <div class="modal-buttons">
-          <form id="inactivateForm" method="POST" action="../includes/deactivate_employee.php">
-            <input type="hidden" name="id" id="employeeId">
-            <button type="submit" class="confirm-btn">Yes</button>
-            <button type="button" onclick="closeModal()" class="cancel-btn">No</button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <script>
-    function openModal(id) {
-      document.getElementById('employeeId').value = id;
-      document.getElementById('confirmModal').style.display = 'block';
-    }
-
-    function closeModal() {
-      document.getElementById('confirmModal').style.display = 'none';
-    }
-
-    // Close the modal if user clicks outside the modal
-    window.onclick = function(event) {
-      var modal = document.getElementById('confirmModal');
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
-    }
-    </script>
-    <!-- Toast container -->
-        <div id="toast" style="visibility:hidden; min-width:250px; margin-left:-125px; background-color:green; color:#fff; text-align:center; border-radius:2px; padding:16px; position:fixed; z-index:1; left:50%; bottom:30px; font-size:17px;">
-        </div>  
-
-        <script>
-        function showToast(message) {
-          var toast = document.getElementById("toast");
-          toast.textContent = message;
-          toast.style.visibility = "visible";
-          setTimeout(function(){ toast.style.visibility = "hidden"; }, 3000);
-        }
-        </script>
-
-    </body>
-    </html>
-
-    <?php
-    $conn->close();
-    ?>
+    </table>
+</div>
 
   </main>
 </body>
 <script src="../public/js/main.js"></script>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</html> 
