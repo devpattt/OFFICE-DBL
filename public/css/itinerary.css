@@ -16,8 +16,8 @@ form {
   .green-button {
     background-color: green;
     color: white;
-    padding: 5px 10px; /* smaller padding */
-    font-size: 12px;    /* smaller text */
+    padding: 5px 10px; 
+    font-size: 12px;   
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -72,7 +72,6 @@ form {
     text-align: center;
   }
   
-  /* Modal Responsive Adjustments */
   @media (max-width: 480px) {
     #confirmationModal {
       padding: 1.5rem;

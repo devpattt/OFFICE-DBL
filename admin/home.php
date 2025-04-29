@@ -1,3 +1,28 @@
+<?php
+include "../conn.php";
+
+$totalEmployees = 0;
+$presentToday = 0;
+$absentToday = 0;
+
+$sqlTotal = "SELECT COUNT(*) as total FROM dbl_employees_acc";
+$resultTotal = $conn->query($sqlTotal);
+if ($resultTotal && $row = $resultTotal->fetch_assoc()) {
+    $totalEmployees = (int)$row['total'];
+}
+
+$sqlPresent = "SELECT COUNT(*) as present FROM dbl_attendance_logs WHERE date = CURDATE() AND (status = 'On time' OR status = 'Late')";
+$resultPresent = $conn->query($sqlPresent);
+if ($resultPresent && $row = $resultPresent->fetch_assoc()) {
+    $presentToday = (int)$row['present'];
+}
+
+$absentToday = $totalEmployees - $presentToday;
+
+$conn->close();
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,45 +95,32 @@
   <main>
     <div class="dashboard-container">
       <div class="info-cards">
+
         <div class="info-card purple">
-          <i class="fas fa-desktop"></i>
+          <i class="fas fa-users"></i>
           <div>
             <small>Total Employees</small>
-            <h4>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-              </svg>
-              50
-            </h4>
+            <h4 id="total-employees"><?php echo $totalEmployees; ?></h4>
           </div>
         </div>
+
         <div class="info-card teal">
-          <i class="fas fa-calendar-alt"></i>
+          <i class="fas fa-user-check"></i>
           <div>
             <small>Present Today</small>
-            <h4>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M10.854 5.646a.5.5 0 0 1 .146.354v4a.5.5 0 0 1-.5.5H5.5a.5.5 0 0 1-.5-.5V6a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .354.146zM6 1a1 1 0 0 0-1 1v1H2.5A1.5 1.5 0 0 0 1 4.5v9A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 13.5 3H11V2a1 1 0 0 0-1-1H6z"/>
-              </svg>
-              34
-            </h4>
+            <h4 id="present-today"><?php echo $presentToday; ?></h4>
           </div>
         </div>
+
         <div class="info-card orange">
-          <i class="fas fa-layer-group"></i>
-          <div>
-            <small>Absent Today</small>
-            <h4>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zm0 1a6 6 0 0 0 0 12A6 6 0 0 0 8 2zM5.5 5.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5v-.5zm0 3a.5.5 0 0 1 .5-.5H10a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5z"/>
-              </svg>
-              6
-            </h4>
+            <i class="fas fa-user-times"></i>
+            <div>
+              <small>Absent Today</small>
+              <h4 id="absent-today"><?php echo $absentToday; ?></h4>
+            </div>
           </div>
-        </div>
       </div>
     </div>
-    
   </main>
 </body>
 <script src="../public/js/main.js"></script>

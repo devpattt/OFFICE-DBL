@@ -1,9 +1,8 @@
 <?php 
 include __DIR__ . '/../conn.php'; 
 
-// Fetch itinerary data
-$sql = "SELECT * FROM itinerary"; // Adjust table name
-$result = $conn->query($sql); // Execute query
+$sql = "SELECT * FROM itinerary"; 
+$result = $conn->query($sql);
 
 ?>
 
