@@ -102,64 +102,58 @@
   .status-absent {
     color: #c62828;
   }
-
-
 .welcome-message {
-    text-align: left;
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
+    text-align: flex-start;
+    font-size: 0.6rem;
+    margin-bottom: 20px;
     color: var(--text-color);
-    font-weight: 500;
 }
 
 .info-boxes {
     display: flex;
     justify-content: space-between;
-    gap: 1.5rem;
-    margin-top: 2rem;
-    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
 }
 
 .info-boxes .box {
-    flex: 1 1 30%;
-    padding: 1.5rem;
+    flex: 1;
+    padding: 20px;
     background-color: var(--hover-clr);
     text-align: center;
     color: var(--text-clr);
-    height: 140px;
+    height: 80px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    border-radius: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, background-color 0.3s ease;
     overflow: hidden;
+    border-radius: 12px;
 }
 
-.info-boxes .box:hover {
-    transform: translateY(-5px);
-    background-color: var(--hover-light);
+.info-boxes .box:nth-child(1) {
+    background-color:#6c5ce7;
+    color: white;
 }
 
-.info-boxes .box:nth-child(1),
-.info-boxes .box:nth-child(2),
+.info-boxes .box:nth-child(2) {
+    background-color: #00cec9;
+    color: white;
+}
+
 .info-boxes .box:nth-child(3) {
-    background-color: var(--base-color);
-    color: var(--white);
+    background-color:#fd9644;
+    color: white;
 }
 
 .info-boxes .box h3 {
-    margin-bottom: 0.75rem;
+    margin-bottom: 10px;
     color: var(--base-color);
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.2rem;
 }
 
 .info-boxes .box p {
     margin: 0;
     color: var(--base-color);
-    font-size: 0.95rem;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
