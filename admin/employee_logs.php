@@ -1,12 +1,18 @@
+<?php
+  include '../includes/tasklogs.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+  <head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
     <link rel="icon" href="../public/img/DBL.png">
-    <link rel="stylesheet" href="../public/css/activeemployee.css">
+    <link rel="stylesheet" href="../public/css/task.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
   </head>
@@ -32,14 +38,14 @@
       <span>Itinerary</span>
       </a>
       </li>
-      <li class="active">
+      <li>
         <a href="employees.php">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
           <span>Active Users</span>
         </a>
       </li>
       <li>
-      <li>
+      <li class="active">
         <a href="employee_logs.php">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
           <span>Logs</span>
@@ -68,182 +74,53 @@
       </li>  
     </ul>
   </nav>
-
   <main>
-  <?php
-    include '../conn.php';
+  <h2>Task Logs</h2>
+        <form method="GET" id="filterForm">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" value="<?php echo htmlspecialchars($selected_date); ?>" onchange="document.getElementById('filterForm').submit();">
 
-    $sql = "SELECT id, employee_id, username, email, full_name, role, status, created_at FROM dbl_employees_acc";
-    $result = $conn->query($sql);
-    
-    ?>
-    
-    <?php if (isset($_GET['status']) && $_GET['status'] == 'success'): ?>
-    <script>
-      window.addEventListener('DOMContentLoaded', function() {
-        showToast('Employee inactivated successfully!');
-      });
-    </script>
-    <?php endif; ?>  
-    <br>
-    <button id="openModalBtn" class="add-btn">Add Employee</button>
-      <table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Employee ID</th>
-      <th>Username</th>
-      <th>Email</th>
-      <th>Full Name</th>
-      <th>Role</th>
-      <th>Status</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php if ($result && $result->num_rows > 0): ?>
-      <?php while($row = $result->fetch_assoc()): ?>
-        <tr>
-          <td data-label="ID"><?= htmlspecialchars($row["id"]) ?></td>
-          <td data-label="Employee ID"><?= htmlspecialchars($row["employee_id"]) ?></td>
-          <td data-label="Username"><?= htmlspecialchars($row["username"]) ?></td>
-          <td data-label="Email"><?= htmlspecialchars($row["email"]) ?></td>
-          <td data-label="Full Name"><?= htmlspecialchars($row["full_name"]) ?></td>
-          <td data-label="Role"><?= htmlspecialchars($row["role"]) ?></td>
-          <td data-label="Status">
-            <button   
-              class="<?= strtolower($row['status']) == 'active' ? 'btn-active' : 'btn-inactive' ?>" 
-              <?= strtolower($row['status']) == 'inactive' ? 'disabled' : '' ?> 
-              onclick="openModal(<?= $row['id'] ?>)"
-            >
-              <?= ucfirst(strtolower($row['status'])) ?>
-            </button>
-          </td>
-          <td data-label="Action">
-            <!-- Edit Button -->
-            <button class="btn-edit" onclick="editEmployee(<?= $row['id'] ?>)">Edit</button>
-
-            <!-- Deactivate/Activate Button -->
-            <?php if (strtolower($row['status']) == 'active'): ?>
-              <button class="btn-deactivate" onclick="deactivateEmployee(<?= $row['id'] ?>)">Deactivate</button>
-            <?php else: ?>
-              <button class="btn-activate" onclick="activateEmployee(<?= $row['id'] ?>)">Activate</button>
-            <?php endif; ?>
-          </td>
-        </tr>
-      <?php endwhile; ?>
-    <?php else: ?>
-      <tr><td colspan="8">No employees found.</td></tr>
-    <?php endif; ?>
-  </tbody>
-</table>
-
-    </main>
-
-    <!-- Modal -->
-    <div id="confirmModal" class="modal">
-      <div class="modal-content">
-        <p>Are you sure you want to inactivate this employee?</p>
-        <div class="modal-buttons">
-          <form id="inactivateForm" method="POST" action="../includes/deactivate_employee.php">
-            <input type="hidden" name="id" id="employeeId">
-            <button type="submit" class="confirm-btn">Yes</button>
-            <button type="button" onclick="closeModal()" class="cancel-btn">No</button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Add Employee Modal -->
-    <div id="employeeModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeModalBtn">&times;</span>
-            <h2>Add New Employee</h2>
-            <form method="POST" action="">
-            <label for="full_name">Full Name:</label>
-            <input type="text" name="full_name" required>
-
-            <label for="username">Username:</label>
-            <input type="text" name="username" required>
-
-            <label for="email">Email:</label>
-            <input type="email" name="email" required>
-
-            <label for="password">Password:</label>
-            <input type="password" name="password" required>
-
-            <label for="role">Role:</label>
-            <select name="role" required>
-                <option value="">Select role</option>
-                <option value="admin">Admin</option>
-                <option value="staff">Staff</option>
+            <label for="employee">Select Employee:</label>
+            <select id="employee" name="employee" onchange="document.getElementById('filterForm').submit();">
+                <option value="">All Employees</option>
+                <?php
+                if ($employeeResult->num_rows > 0) {
+                    while ($emp = $employeeResult->fetch_assoc()) {
+                        $selected = ($selected_employee == $emp['employee_id']) ? 'selected' : '';
+                        echo "<option value='" . htmlspecialchars($emp['employee_id']) . "' $selected>" . htmlspecialchars($emp['full_name']) . "</option>";
+                    }
+                }
+                ?>
             </select>
+        </form>
 
-            <button type="submit">Add Employee</button>
-            </form>
-        </div>
-        </div>
+        <?php
+        if ($result->num_rows > 0) {
+            echo "<table>";
+            echo "<tr><th>Employee Name</th><th>Location</th><th>Start Time</th><th>Updated Time</th><th>Description</th><th>Status</th></tr>";
+            while($row = $result->fetch_assoc()) {
+                $status_class = strtolower($row["status"]); 
+                
+                $completion_time = ($row["updated_at"] != NULL) ? date("H:i:s", strtotime($row["updated_at"])) : "N/A";
+                $start_time = date("H:i:s", strtotime($row["start_time"]));
 
-
-    <script>
-    function openModal(id) {
-      document.getElementById('employeeId').value = id;
-      document.getElementById('confirmModal').style.display = 'block';
-    }
-
-    function closeModal() {
-      document.getElementById('confirmModal').style.display = 'none';
-    }
-
-    // Close the modal if user clicks outside the modal
-    window.onclick = function(event) {
-      var modal = document.getElementById('confirmModal');
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
-    }
-    </script>
-    <!-- Toast container -->
-        <div id="toast" style="visibility:hidden; min-width:250px; margin-left:-125px; background-color:green; color:#fff; text-align:center; border-radius:2px; padding:16px; position:fixed; z-index:1; left:50%; bottom:30px; font-size:17px;">
-        </div>  
-
-        <script>
-        function showToast(message) {
-          var toast = document.getElementById("toast");
-          toast.textContent = message;
-          toast.style.visibility = "visible";
-          setTimeout(function(){ toast.style.visibility = "hidden"; }, 3000);
+                echo "<tr class='" . htmlspecialchars($status_class) . "'>";
+                echo "<td>" . htmlspecialchars($row["employee_name"]) . "</td>";
+                echo "<td>" . htmlspecialchars($row["location"]) . "</td>";
+                echo "<td>" . $start_time . "</td>";
+                echo "<td>" . $completion_time . "</td>";
+                echo "<td>" . htmlspecialchars($row["description"]) . "</td>";
+                echo "<td>" . htmlspecialchars($row["status"]) . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+        } else {
+            echo "<p>No tasks found for this filter.</p>";
         }
-        </script>
-
-    </body>
-    </html>
-
-    <?php
-    $conn->close();
-    ?>
-
+        $conn->close();
+        ?>
   </main>
 </body>
-<script> 
- const openBtn = document.getElementById('openModalBtn');
-  const closeBtn = document.getElementById('closeModalBtn');
-  const modal = document.getElementById('employeeModal');
 
-  openBtn.onclick = function () {
-    modal.style.display = "block";
-  }
-
-  closeBtn.onclick = function () {
-    modal.style.display = "none";
-  }
-
-  window.onclick = function (event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  }
-</script>
 <script src="../public/js/main.js"></script>
 </html>
