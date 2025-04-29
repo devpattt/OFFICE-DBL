@@ -116,6 +116,50 @@ table {
   vertical-align: middle;
 }
 
+/* New Action Buttons */
+.btn-edit {
+  background-color: #3498db; /* blue */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  background-color: #2980b9;
+}
+
+.btn-deactivate {
+  background-color: #e74c3c; 
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-deactivate:hover {
+  background-color: #d35400;
+}
+
+.btn-activate {
+  background-color: #2ecc71; 
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-activate:hover {
+  background-color: #27ae60;
+}
+
+
 /* Dark mode adjustments */
 .darkmode .delete-btn {
   color: #ff6b6b;

@@ -134,7 +134,6 @@ function openClockInModal() {
       document.getElementById('clock-in-lat').value = latitude;
       document.getElementById('clock-in-lng').value = longitude;
 
-      // Use OpenStreetMap (Nominatim) to get the address
       const geocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
 
       fetch(geocodeUrl)
@@ -142,7 +141,7 @@ function openClockInModal() {
         .then((data) => {
           if (data && data.display_name) {
             document.getElementById('clock-in-location').innerText = data.display_name;
-            document.getElementById('clock-in-location-hidden').value = data.display_name; // <-- Set hidden input
+            document.getElementById('clock-in-location-hidden').value = data.display_name; 
           } else {
             document.getElementById('clock-in-location').innerText = 'Address not found';
             document.getElementById('clock-in-location-hidden').value = '';
@@ -208,7 +207,7 @@ function submitClockIn() {
 }
 
 function submitClockOut() {
-  const location = document.getElementById('clock-in-location-hidden').value; // <-- Use hidden input
+  const location = document.getElementById('clock-in-location-hidden').value; 
   const latitude = document.getElementById('clock-in-lat').value;
   const longitude = document.getElementById('clock-in-lng').value;
 
