@@ -21,8 +21,6 @@ $absentToday = $totalEmployees - $presentToday;
 
 $conn->close();
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +35,6 @@ $conn->close();
   <title>DBL ISTS</title>
 </head>
 <style>
-
 :root {
   --base-color: white;
   --base-variant: #f7f8fa;
@@ -60,8 +57,9 @@ $conn->close();
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  justify-content: center;
+  justify-content: space-between;
   margin: 30px 15px;
+  width: 100%;
 }
 
 .box-content {
@@ -94,11 +92,20 @@ $conn->close();
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   padding: 25px 20px;
-  flex: 1 1 450px;
-  min-height: 300px;
   transition: 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
+}
+
+.attendance-box {
+  flex: 0 0 65%;
+  min-height: 350px;
+}
+
+.task-box {
+  flex: 0 0 100%;
+  min-height: 300px;
+  margin-top: 20px;
 }
 
 .chart-container {
@@ -109,9 +116,8 @@ $conn->close();
   position: relative;
 }
 
-#itineraryChart {
-  max-width: 200px;
-  max-height: 300px;
+.task-chart-container {
+  width: 220px;
   margin: 0 auto;
 }
 
@@ -120,15 +126,17 @@ $conn->close();
   justify-content: center;
   gap: 20px;
   margin-top: 15px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--secondary-text);
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
 }
 
 .gold { background-color: #ffc107; }
@@ -145,57 +153,60 @@ $conn->close();
 
 canvas {
   max-width: 100%;
-  height: 250px !important;
 }
 
-.status {
-  font-weight: bold;
-  text-align: center;
-  background: #dc3545;
-  color: #fff;
-  padding: 8px 14px;
-  border-radius: 10px;
-  display: inline-block;
-  margin-top: 15px;
+#attendanceChart {
+  height: 280px !important;
 }
 
-.person {
+#taskChart {
+  height: 220px !important;
+}
+
+.info-cards {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.info-card {
+  background: var(--base-variant);
+  border-radius: 12px;
+  padding: 20px;
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.avatar {
-  width: 42px;
-  height: 42px;
-  background: #bbb;
-  border-radius: 50%;
+.info-card i {
+  font-size: 24px;
+  color: var(--accent-color);
 }
 
-.task-legend {
+.info-card div {
   display: flex;
-  justify-content: space-evenly;
-  margin-top: 18px;
-  font-size: 14px;
+  flex-direction: column;
+}
+
+.info-card small {
   color: var(--secondary-text);
+  font-size: 14px;
 }
 
-.task-legend span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.info-card h4 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 5px;
+  margin-bottom: 0;
+  color: var(--text-color);
 }
 
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.green { background-color: #28a745; }
-.orange { background-color: #ffc107; }
-.red { background-color: #dc3545; }
+.purple i { color: #7e57c2; }
+.teal i { color: #26a69a; }
+.orange i { color: #ff9800; }
 
 .logo {
   font-size: 20px;
@@ -203,7 +214,30 @@ canvas {
   margin-left: 10px;
   color: var(--accent-color);
 }
-  </style>
+
+.dashboard-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.stats-container {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.attendance-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-container {
+  width: 100%;
+}
+</style>
 <body>
 
   <nav id="sidebar">
@@ -220,11 +254,11 @@ canvas {
             <span>Dashboard</span>
           </a>
       </li>
-    </li>
-    <a href="itinerary.php">
-      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-280h160v-160H280v160Zm240 0h160v-160H520v160ZM280-520h160v-160H280v160Zm240 0h160v-160H520v160ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
-      <span>Itinerary</span>
-      </a>
+      <li>
+        <a href="itinerary.php">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-280h160v-160H280v160Zm240 0h160v-160H520v160ZM280-520h160v-160H280v160Zm240 0h160v-160H520v160ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
+          <span>Itinerary</span>
+        </a>
       </li>
       <li>
         <a href="employees.php">
@@ -232,7 +266,6 @@ canvas {
           <span>Active Users</span>
         </a>
       </li>
-      <li>
       <li>
         <a href="employee_logs.php">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
@@ -249,13 +282,9 @@ canvas {
         <button id="theme-switch" class="darkmode-btn">
           <span class="icon sun">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>
-              <path fill="currentColor" d="M12 4.5A1.5 1.5 0 1 1 12 1.5a1.5 1.5 0 0 1 0 3Zm0 18a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm7.5-9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM6 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm12.02-5.52a1.5 1.5 0 1 1-2.12-2.12 1.5 1.5 0 0 1 2.12 2.12ZM6.1 17.9a1.5 1.5 0 1 1-2.12-2.12 1.5 1.5 0 0 1 2.12 2.12Zm0-11.8A1.5 1.5 0 1 1 3.98 3.98 1.5 1.5 0 0 1 6.1 6.1Zm11.8 11.8a1.5 1.5 0 1 1-2.12-2.12 1.5 1.5 0 0 1 2.12 2.12ZM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" />
-            </svg>
           </span>
           <span class="icon moon">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-280q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>
-              <path fill="currentColor" d="M21 12.79A9 9 0 0 1 11.21 3a7 7 0 1 0 9.79 9.79Z"/>
-            </svg>
           </span>
           <span class="label">Dark Mode</span>
         </button>
@@ -265,7 +294,6 @@ canvas {
   <main>
     <div class="dashboard-container">
       <div class="info-cards">
-
         <div class="info-card purple">
           <i class="fas fa-users"></i>
           <div>
@@ -283,51 +311,40 @@ canvas {
         </div>
 
         <div class="info-card orange">
-            <i class="fas fa-user-times"></i>
-            <div>
-              <small>Absent Today</small>
-              <h4 id="absent-today"><?php echo $absentToday; ?></h4>
-            </div>
+          <i class="fas fa-user-times"></i>
+          <div>
+            <small>Absent Today</small>
+            <h4 id="absent-today"><?php echo $absentToday; ?></h4>
           </div>
-      </div>
-    </div>
- 
-    <div class="dashboard">
-    <div class="box">
-      <h3>Daily Attendance</h3>
-      <canvas id="attendanceChart"></canvas>
-    </div>
-
-
-  <div class="box">
-    <h3>Task Status</h3>
-    <div class="chart-container">
-      <canvas id="itineraryChart"></canvas>
-    </div>
-    <div class="task-legend">
-      <span><span class="dot gold"></span> Active</span>
-      <span><span class="dot green"></span> Completed</span>
-      <span><span class="dot red"></span> Ended</span>
-    </div>
-  </div>
-
- <!--
-   <div class="box invite-box">
-      <div>
-        <h3>Invite to Office Meet-up</h3>
-        <p><strong>Due:</strong> December 23, 2018</p>
-        <div class="person">
-          <div class="avatar"></div>
-          <span>Jobert Ken Borda</span>
         </div>
       </div>
-      <div class="status">Ended</div> 
-    </div>  -->
-
-</div>
+      
+      <!-- New layout with flex container -->
+      <div class="dashboard">
+        <!-- Left side - Attendance Graph -->
+        <div class="box attendance-box" style="flex: 0 0 65%;">
+          <h3>Visitor Statistics</h3>
+          <canvas id="attendanceChart"></canvas>
+        </div>
+        
+        <!-- Right side - Task Stats (now positioned to the right) -->
+        <div class="box" style="flex: 0 0 30%;">
+          <h3>Tasks</h3>
+          <div class="task-chart-container">
+            <canvas id="taskChart"></canvas>
+          </div>
+          <div class="task-legend">
+            <span><span class="dot gold"></span> Active</span>
+            <span><span class="dot green"></span> Completed</span>
+            <span><span class="dot red"></span> Ended</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
-</body>
+
 <script>
+// Attendance Chart - Similar to the visitor statistics chart from the reference
 const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
 const attendanceChart = new Chart(attendanceCtx, {
   type: 'line',
@@ -401,53 +418,55 @@ const attendanceChart = new Chart(attendanceCtx, {
   }
 });
 
-document.getElementById('attendanceChart').style.marginLeft = '20px'; 
-
-  const itineraryCtx = document.getElementById('itineraryChart').getContext('2d');
-  const centerTextPlugin = {
+// Task Status Chart - Circular progress similar to reference
+const taskCtx = document.getElementById('taskChart').getContext('2d');
+const centerTextPlugin = {
   id: 'centerText',
   beforeDraw(chart) {
     const { width, height } = chart;
     const ctx = chart.ctx;
     ctx.restore();
-
-    const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-    const percent = Math.round((chart.data.datasets[0].data[1] / total) * 100);
-    const text = percent + "%";
     
+    // Calculate the completed percentage (use the green slice value)
+    const completedPercent = 60;
+    const text = completedPercent + "%";
+    
+    // Set text style for the percentage
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = 'bold 3rem poppins';
+    ctx.font = 'bold 42px sans-serif';
     
+    // Draw the percentage text in the center
     ctx.fillStyle = "#00c853";  
     ctx.fillText(text, width / 2, height / 2);
     ctx.save();
   }
 };
-new Chart(itineraryCtx, {
+
+const taskChart = new Chart(taskCtx, {
   type: 'doughnut',
   data: {
     datasets: [{
       data: [20, 60, 20],
       backgroundColor: ['#ffc107', '#00c853', '#dc3545'],  
       borderWidth: 0,
-      borderRadius: 0  
+      hoverOffset: 5
     }]
   },
   options: {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: '92%', 
+    cutout: '80%',
     plugins: {
       legend: {
-        display: true,
-        position: 'bottom',
-        labels: {
-          usePointStyle: true,
-          pointStyle: 'circle',
-          padding: 20,
-          font: {
-            size: 12
+        display: false
+      },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: function(context) {
+            const labels = ['Active', 'Completed', 'Ended'];
+            return labels[context.dataIndex] + ': ' + context.raw + '%';
           }
         }
       }
@@ -455,7 +474,7 @@ new Chart(itineraryCtx, {
   },
   plugins: [centerTextPlugin]
 });
-
 </script>
 <script src="../public/js/main.js"></script>
+</body>
 </html>

@@ -17,6 +17,7 @@ $result = $conn->query($sql);
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
     <link rel="stylesheet" href="../public/css/attendance.css">
+    <link rel="stylesheet" href="../public/css/itinerary.css">
     <link rel="icon" href="../public/img/DBL.png">
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
@@ -125,21 +126,23 @@ $result = $conn->query($sql);
                         <?php } ?>
                     </td>
                     <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-                    <td>
-                      <?php if ($row['status'] == 'Pending') { ?>
-                          <a href="../includes/mark_completed.php?id=<?php echo $row['id']; ?>"
-                            class="btn btn-success btn-sm"
-                            onclick="return confirm('Are you sure you want to mark this itinerary as completed?');">
-                            Mark as Completed
-                          </a>
-                      <?php } else { ?>
-                          <a href="../includes/undo_completed.php?id=<?php echo $row['id']; ?>"
-                            class="btn btn-warning btn-sm"
-                            onclick="return confirm('Are you sure you want to undo this completion?');">
-                            Undo
-                          </a>
-                      <?php } ?>
-                  </td>
+                            <td>
+                              <div class="btn-container">
+                                <?php if ($row['status'] == 'Pending') { ?>
+                                  <a href="../includes/mark_completed.php?id=<?php echo $row['id']; ?>"
+                                    class="custom-btn success"
+                                    onclick="return confirm('Are you sure you want to mark this itinerary as completed?');">
+                                    <span class="text-container">Mark as Completed</span>
+                                  </a>
+                                <?php } else { ?>
+                                  <a href="../includes/undo_completed.php?id=<?php echo $row['id']; ?>"
+                                    class="custom-btn warning"
+                                    onclick="return confirm('Are you sure you want to undo this completion?');">
+                                    <span class="text-container">Undo</span>
+                                  </a>
+                                <?php } ?>
+                              </div>
+                            </td>
                 </tr>
             <?php }
             } ?>

@@ -22,6 +22,43 @@ form {
     border-radius: 5px;
     cursor: pointer;
   }
+
+  /* ITI BTN */
+
+  .btn-container {
+    display: flex;
+    gap: 10px; 
+  }
+
+  .custom-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+    text-decoration: none;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .custom-btn.success {
+    background-color: #28a745;
+  }
+  
+  .custom-btn.success:hover {
+    background-color: #218838;
+  }
+  
+  .custom-btn.warning {
+    background-color: #ffc107;
+    color: #000;
+  }
+  
+  .custom-btn.warning:hover {
+    background-color: #e0a800;
+  }
+  
   
   select,
   input[type="text"],
@@ -71,6 +108,8 @@ form {
     max-width: 350px;
     text-align: center;
   }
+
+
   
   @media (max-width: 480px) {
     #confirmationModal {
