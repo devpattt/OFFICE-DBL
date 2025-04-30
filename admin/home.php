@@ -394,6 +394,8 @@ const attendanceChart = new Chart(attendanceCtx, {
   }
 });
 
+// Adjust the canvas position after rendering the chart
+document.getElementById('attendanceChart').style.marginLeft = '20px'; // Adjust this value as needed
 
   const itineraryCtx = document.getElementById('itineraryChart').getContext('2d');
   const centerTextPlugin = {
@@ -432,7 +434,7 @@ new Chart(itineraryCtx, {
   options: {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: '90%', // Controls the thickness of the ring
+    cutout: '92%', // Controls the thickness of the ring
     plugins: {
       legend: {
         display: true,
