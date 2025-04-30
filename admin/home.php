@@ -32,8 +32,178 @@ $conn->close();
   <link rel="stylesheet" href="../public/css/darkmode.css">
   <link rel="icon" href="../public/img/DBL.png">
   <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <title>DBL ISTS</title>
 </head>
+<style>
+
+:root {
+  --base-color: white;
+  --base-variant: #f7f8fa;
+  --text-color: #1c1f2b;
+  --secondary-text: #4e5566;
+  --primary-color: #3a435d;
+  --accent-color: #0071ff;
+}
+
+.darkmode {
+  --base-color: #11121a;
+  --base-variant: #1a1c2e;
+  --text-color: #ffffff;
+  --secondary-text: #a4a5b8;
+  --primary-color: #3a435d;
+  --accent-color: #0071ff;
+}
+
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin: 30px 15px;
+}
+
+.box-content {
+  text-align: center;
+  font-size: 2.2rem;
+  color: var(--text-color);
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+}
+
+.status-text {
+  font-size: 1.1rem;
+  color: var(--secondary-text);
+  margin-top: 5px;
+  text-align: center;
+}
+
+.highlight {
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.box {
+  background: var(--base-variant);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  padding: 25px 20px;
+  flex: 1 1 450px;
+  min-height: 300px;
+  transition: 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+#itineraryChart {
+  max-width: 200px;
+  max-height: 300px;
+  margin: 0 auto;
+}
+
+.task-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 15px;
+  font-size: 12px;
+  color: var(--secondary-text);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.gold { background-color: #ffc107; }
+.green { background-color: #00c853; }
+.red { background-color: #dc3545; }
+
+.box h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+canvas {
+  max-width: 100%;
+  height: 250px !important;
+}
+
+.status {
+  font-weight: bold;
+  text-align: center;
+  background: #dc3545;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 15px;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  background: #bbb;
+  border-radius: 50%;
+}
+
+.task-legend {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--secondary-text);
+}
+
+.task-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.green { background-color: #28a745; }
+.orange { background-color: #ffc107; }
+.red { background-color: #dc3545; }
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 10px;
+  color: var(--accent-color);
+}
+  </style>
 <body>
 
   <nav id="sidebar">
@@ -121,7 +291,166 @@ $conn->close();
           </div>
       </div>
     </div>
+ 
+    <div class="dashboard">
+    <div class="box">
+      <h3>Daily Attendance</h3>
+      <canvas id="attendanceChart"></canvas>
+    </div>
+
+
+  <div class="box">
+    <h3>Task Status</h3>
+    <div class="chart-container">
+      <canvas id="itineraryChart"></canvas>
+    </div>
+    <div class="task-legend">
+      <span><span class="dot gold"></span> Active</span>
+      <span><span class="dot green"></span> Completed</span>
+      <span><span class="dot red"></span> Ended</span>
+    </div>
+  </div>
+
+ <!--
+   <div class="box invite-box">
+      <div>
+        <h3>Invite to Office Meet-up</h3>
+        <p><strong>Due:</strong> December 23, 2018</p>
+        <div class="person">
+          <div class="avatar"></div>
+          <span>Jobert Ken Borda</span>
+        </div>
+      </div>
+      <div class="status">Ended</div> 
+    </div>  -->
+
+</div>
   </main>
 </body>
+<script>
+ const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+const attendanceChart = new Chart(attendanceCtx, {
+  type: 'line',
+  data: {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    datasets: [{
+      label: 'People Present',
+      data: [23, 45, 38, 50, 41, 35, 28],
+      borderColor: '#007bff',
+      backgroundColor: 'rgba(0, 123, 255, 0.15)',
+      tension: 0.4,
+      fill: true,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointBackgroundColor: '#007bff',
+      pointHoverBackgroundColor: '#0056b3',
+      pointBorderWidth: 2,
+      pointHoverBorderWidth: 3
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#ffffff',
+        titleColor: '#000',
+        bodyColor: '#000',
+        borderColor: '#007bff',
+        borderWidth: 1,
+        padding: 10,
+        cornerRadius: 8
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 10,
+          font: { size: 14 }
+        },
+        title: {
+          display: true,
+          text: 'Number of People',
+          font: { size: 16, weight: 'bold' }
+        },
+        grid: {
+          color: '#e0e0e0',
+          drawBorder: false
+        }
+      },
+      x: {
+        ticks: { font: { size: 14 } },
+        grid: {
+          display: false
+        }
+      }
+    },
+    animation: {
+      duration: 1000,
+      easing: 'easeOutQuart'
+    }
+  }
+});
+
+
+  const itineraryCtx = document.getElementById('itineraryChart').getContext('2d');
+  const centerTextPlugin = {
+  id: 'centerText',
+  beforeDraw(chart) {
+    const { width, height } = chart;
+    const ctx = chart.ctx;
+    ctx.restore();
+    
+    // Calculate the completed percentage
+    const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+    const percent = Math.round((chart.data.datasets[0].data[1] / total) * 100);
+    const text = percent + "%";
+    
+    // Set text style
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 3rem poppins';
+    
+    // Draw the percentage text in the center
+    ctx.fillStyle = "#00c853";  
+    ctx.fillText(text, width / 2, height / 2);
+    ctx.save();
+  }
+};
+new Chart(itineraryCtx, {
+  type: 'doughnut',
+  data: {
+    datasets: [{
+      data: [20, 60, 20],
+      backgroundColor: ['#ffc107', '#00c853', '#dc3545'],  
+      borderWidth: 0,
+      borderRadius: 0  
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '90%', // Controls the thickness of the ring
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          padding: 20,
+          font: {
+            size: 12
+          }
+        }
+      }
+    }
+  },
+  plugins: [centerTextPlugin]
+});
+
+</script>
 <script src="../public/js/main.js"></script>
 </html>

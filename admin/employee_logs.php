@@ -76,6 +76,7 @@
   </nav>
   <main>
   <h2>Task Logs</h2>
+  <br>
         <form method="GET" id="filterForm">
             <label for="date">Select Date:</label>
             <input type="date" id="date" name="date" value="<?php echo htmlspecialchars($selected_date); ?>" onchange="document.getElementById('filterForm').submit();">

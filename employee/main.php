@@ -122,8 +122,8 @@
     </div>
   </div>
 
-  <script>
-function openClockInModal() {
+<script>
+ function openClockInModal() {
   const now = new Date();
   const options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
   document.getElementById('clock-in-time').innerText = now.toLocaleString('en-US', options);
@@ -170,7 +170,7 @@ function closeClockInModal() {
 }
 
 function submitClockIn() {
-  const location = document.getElementById('clock-in-location-hidden').value; // <-- Use hidden input
+  const location = document.getElementById('clock-in-location-hidden').value;
   const latitude = document.getElementById('clock-in-lat').value;
   const longitude = document.getElementById('clock-in-lng').value;
 
