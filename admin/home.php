@@ -11,7 +11,7 @@ if ($resultTotal && $row = $resultTotal->fetch_assoc()) {
     $totalEmployees = (int)$row['total'];
 }
 
-$sqlPresent = "SELECT COUNT(*) as present FROM dbl_attendance_logs WHERE date = CURDATE() AND (status = 'On time' OR status = 'Late')";
+$sqlPresent = "SELECT COUNT(*) as present FROM dbl_attendance_logs WHERE date = CURDATE() AND (status = 'Pending')";
 $resultPresent = $conn->query($sqlPresent);
 if ($resultPresent && $row = $resultPresent->fetch_assoc()) {
     $presentToday = (int)$row['present'];
@@ -291,7 +291,8 @@ canvas {
           </div>
       </div>
     </div>
- 
+    
+ <!--
     <div class="dashboard">
     <div class="box">
       <h3>Daily Attendance</h3>

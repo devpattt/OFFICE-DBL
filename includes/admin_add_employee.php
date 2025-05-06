@@ -1,8 +1,7 @@
 <?php
 session_start();
-include '../conn.php'; // Assume this creates $conn
+include '../conn.php'; 
 
-// Handle form submission first
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['full_name'], $_POST['username'], $_POST['email'], $_POST['password'], $_POST['role'])) {
         $full_name = trim($_POST['full_name']);

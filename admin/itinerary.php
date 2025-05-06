@@ -71,39 +71,48 @@
   </nav>
   <main>
   <form id="itineraryForm" action="../includes/save_itinerary.php" method="POST">
-  <label for="employee_id">Select Employee:</label>
-      <select name="employee_id" id="employee_id" required>
-        <option value="" disabled selected>— Choose Employee —</option>
-        <?php
-          include '../conn.php';
-          $result = $conn->query("SELECT employee_id, full_name FROM dbl_employees_acc WHERE role='employee' AND status='active'");
-          while($row = $result->fetch_assoc()) {
-              echo "<option value='{$row['employee_id']}'>{$row['full_name']} ({$row['employee_id']})</option>";
-          }
-        ?>
-      </select>
+  <label for="department_id">Select Department:</label>
+  <select name="department_id" id="department_id" required>
+    <option value="" disabled selected>— Choose Department —</option>
+    <?php
+      include '../conn.php';
+      $deptResult = $conn->query("SELECT id, depatment FROM dbl_employees_dept"); 
+      while($dept = $deptResult->fetch_assoc()) {
+          echo "<option value='{$dept['id']}'>{$dept['depatment']}</option>";
+      }
+    ?>
+  </select>
 
-    <br><br>
+      <label for="employee_id">Select Employee:</label>
+    <select name="employee_id" id="employee_id" required>
+      <option value="" disabled selected>— Choose Employee —</option>
+    </select>
 
-    <label for="location">Client Location:</label>
-      <select name="location" id="location" onchange="checkLocation()" required>
-        <option value="" disabled selected>— Choose Client Location —</option>
-        <?php
-          $clientResult = $conn->query("SELECT client_name FROM clients");
-          while($client = $clientResult->fetch_assoc()) {
-              echo "<option value='{$client['client_name']}'>{$client['client_name']}</option>";
-          }
-        ?>
-        <option value="Others">Others</option> 
-      </select>
-    <div id="otherLocationDiv" style="display: none;">
-        <label for="other_location">Enter Other Location:</label>
-        <input type="text" name="other_location" id="other_location">
-    </div>
-    <label for="description">Task:</label><br>
-    <textarea name="description" id="description" rows="4" cols="50"></textarea>
-    <button type="submit">Assign Itinerary</button>
+  <br><br>
+
+  <label for="location">Client Location:</label>
+  <select name="location" id="location" onchange="checkLocation()" required>
+    <option value="" disabled selected>— Choose Client Location —</option>
+    <?php
+      $clientResult = $conn->query("SELECT client_name FROM clients");
+      while($client = $clientResult->fetch_assoc()) {
+          echo "<option value='{$client['client_name']}'>{$client['client_name']}</option>";
+      }
+    ?>
+    <option value="Others">Others</option> 
+  </select>
+
+  <div id="otherLocationDiv" style="display: none;">
+    <label for="other_location">Enter Other Location:</label>
+    <input type="text" name="other_location" id="other_location">
+  </div>
+
+  <label for="description">Task:</label><br>
+  <textarea name="description" id="description" rows="4" cols="50"></textarea>
+
+  <button type="submit">Assign Itinerary</button>
 </form>
+
   </main>
 
   <!-- Confirmation message -->
@@ -120,6 +129,25 @@
 
 </body>
   <script>
+
+  document.getElementById('department_id').addEventListener('change', function() {
+    const deptName = this.options[this.selectedIndex].text;
+
+    fetch('../includes/get_employees_by_dept.php?department=' + encodeURIComponent(deptName))
+      .then(response => response.json())
+      .then(data => {
+        const employeeSelect = document.getElementById('employee_id');
+        employeeSelect.innerHTML = '<option value="" disabled selected>— Choose Employee —</option>';
+
+        data.forEach(emp => {
+          const option = document.createElement('option');
+          option.value = emp.employee_id;
+          option.textContent = `${emp.full_name} (${emp.employee_id})`;
+          employeeSelect.appendChild(option);
+        });
+      });
+  });
+
   function checkLocation() {
     var locationSelect = document.getElementById('location');
     var otherLocationDiv = document.getElementById('otherLocationDiv');
@@ -153,7 +181,7 @@ function confirmSubmission() {
     .then(result => {
         if (result.status === 'success') {
             showToast(result.message);
-            form.reset(); // Optional: reset form fields after submit
+            form.reset(); 
         } else {
             showToast('Something went wrong!');
         }

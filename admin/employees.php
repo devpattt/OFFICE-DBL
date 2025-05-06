@@ -111,25 +111,26 @@
           <td data-label="Full Name"><?= htmlspecialchars($row["full_name"]) ?></td>
           <td data-label="Role"><?= htmlspecialchars($row["role"]) ?></td>
           <td data-label="Status">
-            <button   
-              class="<?= strtolower($row['status']) == 'active' ? 'btn-active' : 'btn-inactive' ?>" 
-              <?= strtolower($row['status']) == 'inactive' ? 'disabled' : '' ?> 
-              onclick="openModal(<?= $row['id'] ?>)"
-            >
-              <?= ucfirst(strtolower($row['status'])) ?>
-            </button>
+          <button 
+            class="<?= strtolower($row['status']) == 'active' ? 'btn-active' : 'btn-inactive' ?>" 
+            disabled>
+            <?= ucfirst(strtolower($row['status'])) ?>
+          </button>
           </td>
           <td data-label="Action">
-            <!-- Edit Button -->
-            <button class="btn-edit" onclick="editEmployee(<?= $row['id'] ?>)">Edit</button>
+          <!-- Edit Button -->
+          <button class="btn-edit" onclick="editEmployee(<?= $row['id'] ?>)">Edit</button>
 
-            <!-- Deactivate/Activate Button -->
-            <?php if (strtolower($row['status']) == 'active'): ?>
-              <button class="btn-deactivate" onclick="deactivateEmployee(<?= $row['id'] ?>)">Deactivate</button>
-            <?php else: ?>
-              <button class="btn-activate" onclick="activateEmployee(<?= $row['id'] ?>)">Activate</button>
-            <?php endif; ?>
-          </td>
+          <!-- Deactivate/Activate Button -->
+          <?php if (strtolower($row['status']) == 'active'): ?>
+            <button class="btn-deactivate" onclick="openModal(<?= $row['id'] ?>)">Deactivate</button>
+          <?php else: ?>
+            <form method="POST" action="../includes/activate_employee.php" style="display:inline;">
+              <input type="hidden" name="id" value="<?= $row['id'] ?>">
+              <button type="submit" class="btn-activate">Activate</button>
+            </form>
+          <?php endif; ?>
+        </td>
         </tr>
       <?php endwhile; ?>
     <?php else: ?>

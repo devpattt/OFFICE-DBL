@@ -28,29 +28,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $row = $result->fetch_assoc();
         if ($row['time_out'] === NULL) {
             $timeOut = date('l - n/j/Y - h:i A'); 
-            $update = $conn->prepare("UPDATE dbl_attendance_logs SET time_out = ?, location_out = ?, lat_out = ?, lng_out = ? WHERE id = ?");
-            $update->bind_param("ssddi", $timeOut, $location, $latitude, $longitude, $row['id']);
-            if ($update->execute()) {
-                echo "Clocked Out successfully!";
+            
+            // Convert formatted time to UNIX timestamps
+            $timeInRaw = DateTime::createFromFormat('l - n/j/Y - h:i A', $row['time_in']);
+            $timeOutRaw = DateTime::createFromFormat('l - n/j/Y - h:i A', $timeOut);
+
+            if ($timeInRaw && $timeOutRaw) {
+                $hoursWorked = round(($timeOutRaw->getTimestamp() - $timeInRaw->getTimestamp()) / 3600, 2);
+
+                // Determine status based on total hours
+                if ($hoursWorked < 8) {
+                    $status = 'Under Hours';
+                } elseif ($hoursWorked == 8) {
+                    $status = 'Complete Hours';
+                } else {
+                    $status = 'Overtime';
+                }
+
+                // Update attendance log with clock-out and new status
+                $update = $conn->prepare("UPDATE dbl_attendance_logs SET time_out = ?, location_out = ?, lat_out = ?, lng_out = ?, status = ?, hours_worked = ? WHERE id = ?");
+                $update->bind_param("ssddsdi", $timeOut, $location, $latitude, $longitude, $status, $hoursWorked, $row['id']);
+
+                if ($update->execute()) {
+                    echo "Clocked Out successfully! Hours Worked: $hoursWorked hrs - $status";
+                } else {
+                    echo "Error: " . $update->error;
+                }
             } else {
-                echo "Error: " . $update->error;
+                echo "Invalid time format.";
             }
+
         } else {
             echo "You have already clocked out today.";
         }
     } else {
         $timeIn = date('l - n/j/Y - h:i A'); 
-        $currentTime = date('H:i');
-        $defaultTime = '08:30';
 
-        if ($currentTime > $defaultTime) {
-            $status = 'Late';
-        } else {
-            $status = 'On Time';
-        }
-
-        $insert = $conn->prepare("INSERT INTO dbl_attendance_logs (employee_id, username, date, time_in, location_in, lat_in, lng_in, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $insert->bind_param("ssssddss", $employeeid, $username, $date, $timeIn, $location, $latitude, $longitude, $status);
+        // Insert clock-in
+        $insert = $conn->prepare("INSERT INTO dbl_attendance_logs (employee_id, username, date, time_in, location_in, lat_in, lng_in) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $insert->bind_param("ssssddd", $employeeid, $username, $date, $timeIn, $location, $latitude, $longitude);
 
         if ($insert->execute()) {
             echo "Clocked In successfully!";
@@ -58,17 +74,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "Error: " . $insert->error;
         }
     }
-}
-
-/**
- * Validate the time format.
- * 
- * @param string $time The time string to validate.
- * @return bool True if valid, false otherwise.
- */
-function validateTime($time) {
-    $format = 'Y-m-d H:i:s'; // Expected format
-    $d = DateTime::createFromFormat($format, $time);
-    return $d && $d->format($format) === $time;
 }
 ?>
