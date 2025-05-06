@@ -3,7 +3,7 @@ include '../conn.php';
 // Fetch departments
 
 $departments = [];
-$dept_sql = "SELECT department FROM dbl_employees_dept";  // Fixed typo from 'depatment' to 'department'
+$dept_sql = "SELECT department FROM dbl_employees_dept";  
 $dept_result = $conn->query($dept_sql);
 while ($row = $dept_result->fetch_assoc()) {
     $departments[] = $row['department'];
