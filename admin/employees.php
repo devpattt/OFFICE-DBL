@@ -1,3 +1,14 @@
+<?php
+include '../conn.php';
+// Fetch departments
+
+$departments = [];
+$dept_sql = "SELECT department FROM dbl_employees_dept";  // Fixed typo from 'depatment' to 'department'
+$dept_result = $conn->query($dept_sql);
+while ($row = $dept_result->fetch_assoc()) {
+    $departments[] = $row['department'];
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -43,6 +54,12 @@
         <a href="employee_logs.php">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
           <span>Logs</span>
+        </a>
+      </li>
+      <li>
+        <a href="employee_logs.php">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
+          <span>Reports</span>
         </a>
       </li>
       <li>
@@ -156,35 +173,37 @@
     </div>
 
 
-    <!-- Add Employee Modal -->
-    <div id="employeeModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeModalBtn">&times;</span>
-            <h2>Add New Employee</h2>
-            <form method="POST" action="">
-            <label for="full_name">Full Name:</label>
-            <input type="text" name="full_name" required>
+<!-- Add Employee Modal -->
+<div id="employeeModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeModalBtn">&times;</span>
+    <h2>Add New Employee</h2>
+    <form method="POST" action="../includes/admin_add_employee.php">
+      <label for="full_name">Full Name:</label>
+      <input type="text" name="full_name" required>
 
-            <label for="username">Username:</label>
-            <input type="text" name="username" required>
+      <label for="username">Username:</label>
+      <input type="text" name="username" required>
 
-            <label for="email">Email:</label>
-            <input type="email" name="email" required>
+      <label for="email">Email:</label>
+      <input type="email" name="email" required>
 
-            <label for="password">Password:</label>
-            <input type="password" name="password" required>
+      <label for="password">Password:</label>
+      <input type="password" name="password" required>
 
-            <label for="role">Role:</label>
-            <select name="role" required>
-                <option value="">Select role</option>
-                <option value="admin">Admin</option>
-                <option value="staff">Staff</option>
-            </select>
+      <label for="department">Department:</label>
+      <select name="department" required>
+        <option value="">Select department</option>
+        <?php foreach ($departments as $dept): ?>
+          <option value="<?= $dept ?>"><?= $dept ?></option>
+        <?php endforeach; ?>
+      </select>
 
-            <button type="submit">Add Employee</button>
-            </form>
-        </div>
-        </div>
+      <button type="submit">Add Employee</button>
+    </form>
+  </div>
+</div>
+
 
 
     <script>

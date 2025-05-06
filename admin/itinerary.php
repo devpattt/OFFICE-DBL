@@ -76,9 +76,9 @@
     <option value="" disabled selected>— Choose Department —</option>
     <?php
       include '../conn.php';
-      $deptResult = $conn->query("SELECT id, depatment FROM dbl_employees_dept"); 
+      $deptResult = $conn->query("SELECT id, department FROM dbl_employees_dept"); 
       while($dept = $deptResult->fetch_assoc()) {
-          echo "<option value='{$dept['id']}'>{$dept['depatment']}</option>";
+          echo "<option value='{$dept['id']}'>{$dept['department']}</option>";
       }
     ?>
   </select>
