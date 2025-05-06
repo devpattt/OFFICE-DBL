@@ -28,6 +28,7 @@ $conn->close();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../public/css/dashboard.css">
   <link rel="stylesheet" href="../public/css/main.css">
   <link rel="stylesheet" href="../public/css/darkmode.css">
   <link rel="icon" href="../public/img/DBL.png">
@@ -36,192 +37,6 @@ $conn->close();
 
   <title>DBL ISTS</title>
 </head>
-<style>
-
-:root {
-  --base-color: white;
-  --base-variant: #f7f8fa;
-  --text-color: #1c1f2b;
-  --secondary-text: #4e5566;
-  --primary-color: #3a435d;
-  --accent-color: #0071ff;
-}
-
-.darkmode {
-  --base-color: #11121a;
-  --base-variant: #1a1c2e;
-  --text-color: #ffffff;
-  --secondary-text: #a4a5b8;
-  --primary-color: #3a435d;
-  --accent-color: #0071ff;
-}
-
-.dashboard {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  margin: 30px 15px;
-}
-
-.box-content {
-  text-align: center;
-  font-size: 2.2rem;
-  color: var(--text-color);
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.status-text {
-  font-size: 1.1rem;
-  color: var(--secondary-text);
-  margin-top: 5px;
-  text-align: center;
-}
-
-.highlight {
-  color: var(--accent-color);
-  font-weight: 600;
-}
-
-.box {
-  background: var(--base-variant);
-  border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  padding: 25px 20px;
-  flex: 1 1 450px;
-  min-height: 300px;
-  display: flex;
-  flex-direction: column;
-}
-
-.chart-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-#itineraryChart {
-  max-width: 200px;
-  max-height: 300px;
-  margin: 0 auto;
-}
-
-.task-legend {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 15px;
-  font-size: 12px;
-  color: var(--secondary-text);
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.gold { background-color: #ffc107; }
-.green { background-color: #00c853; }
-.red { background-color: #dc3545; }
-
-.box h3 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 15px;
-  color: var(--primary-color);
-  text-align: flex-start;
-}
-
-canvas {
-  max-width: 100%;
-  height: 250px !important;
-}
-
-.status {
-  font-weight: bold;
-  text-align: center;
-  background: #dc3545;
-  color: #fff;
-  padding: 8px 14px;
-  border-radius: 10px;
-  display: inline-block;
-  margin-top: 15px;
-}
-
-.person {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.avatar {
-  width: 42px;
-  height: 42px;
-  background: #bbb;
-  border-radius: 50%;
-}
-
-.task-legend {
-  display: flex;
-  justify-content: space-evenly;
-  margin-top: 18px;
-  font-size: 14px;
-  color: var(--secondary-text);
-}
-
-.task-legend span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.green { background-color: #28a745; }
-.orange { background-color: #ffc107; }
-.red { background-color: #dc3545; }
-
-.logo {
-  font-size: 20px;
-  font-weight: bold;
-  margin-left: 10px;
-  color: var(--accent-color);
-}
-
-.event-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.event-table th, .event-table td {
-  padding: 8px 12px;
-  border-bottom: 1px solid #ccc;
-  text-align: left;
-}
-
-.status {
-  padding: 5px 10px;
-  border-radius: 12px;
-  color: white;
-  font-size: 12px;
-  display: inline-block;
-}
-.status.national { background-color: #3498db; }
-.status.special  { background-color: #f1c40f; color: #333; }
-.status.regular  { background-color: #2ecc71; }
-
-  </style>
 <body>
 
   <nav id="sidebar">
@@ -345,25 +160,12 @@ canvas {
       <span><span class="dot red"></span> Ended</span>
     </div>
   </div>
-
-
-   <div class="box invite-box">
-      <div>
-        <h3>Invite to Office Meet-up</h3>
-        <p><strong>Due:</strong> December 23, 2018</p>
-        <div class="person">
-          <div class="avatar"></div>
-          <span>Jobert Ken Borda</span>
-        </div>
-      </div>
-      <div class="status">Ended</div> 
-    </div>  -->
+-->
 
 </div>
   </main>
 </body>
 <script>
-// Function to fetch Philippines holidays
 // This could be expanded with a complete dataset or API
 function getPhilippinesHolidays(year) {
   return [
@@ -385,46 +187,37 @@ function getPhilippinesHolidays(year) {
   ];
 }
 
-// Get only upcoming holidays and limit to the next 5
 function getNextHolidays(count = 5) {
   const currentYear = new Date().getFullYear();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  // Get holidays for current and next year to handle year-end cases
   const allHolidays = [
     ...getPhilippinesHolidays(currentYear),
     ...getPhilippinesHolidays(currentYear + 1)
   ];
   
-  // Filter only upcoming holidays
   const upcomingHolidays = allHolidays.filter(holiday => {
     const holidayDate = new Date(holiday.date);
     return holidayDate >= today;
   });
   
-  // Sort by date
   upcomingHolidays.sort((a, b) => new Date(a.date) - new Date(b.date));
   
-  // Return only the specified number of upcoming holidays
   return upcomingHolidays.slice(0, count);
 }
 
-// Update table with the next 5 holidays
 function updateHolidayTable() {
   const tableBody = document.getElementById("holidayTableBody");
   const nextHolidays = getNextHolidays(5);
   
-  // Clear existing rows
   tableBody.innerHTML = "";
-  
-  // Add each upcoming holiday to the table
+
   nextHolidays.forEach(holiday => {
     const holidayDate = new Date(holiday.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    // Determine if the holiday is today (active) or upcoming
     const status = holidayDate.getTime() === today.getTime() ? "active" : "upcoming";
     
     const row = document.createElement("tr");
@@ -443,14 +236,11 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Initialize table when page loads
 document.addEventListener("DOMContentLoaded", updateHolidayTable);
 
-// Update the table daily to reflect new upcoming holidays
-// For a live application, check and update more frequently
 setInterval(() => {
   updateHolidayTable();
-}, 86400000); // Update every 24 hours
+}, 86400000); 
 </script>
 
 <script>
@@ -584,4 +374,5 @@ new Chart(itineraryCtx, {
 
 </script>
 <script src="../public/js/main.js"></script>
+<script src="../public/js/dashboard.js"></script>
 </html>
