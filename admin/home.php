@@ -72,11 +72,6 @@ $conn->close();
   margin-top: 10px;
 }
 
-.box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
-}
-
 .status-text {
   font-size: 1.1rem;
   color: var(--secondary-text);
@@ -96,7 +91,6 @@ $conn->close();
   padding: 25px 20px;
   flex: 1 1 450px;
   min-height: 300px;
-  transition: 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
 }
@@ -140,7 +134,7 @@ $conn->close();
   font-weight: 600;
   margin-bottom: 15px;
   color: var(--primary-color);
-  text-align: center;
+  text-align: flex-start;
 }
 
 canvas {
@@ -203,6 +197,30 @@ canvas {
   margin-left: 10px;
   color: var(--accent-color);
 }
+
+.event-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.event-table th, .event-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 12px;
+  color: white;
+  font-size: 12px;
+  display: inline-block;
+}
+.status.national { background-color: #3498db; }
+.status.special  { background-color: #f1c40f; color: #333; }
+.status.regular  { background-color: #2ecc71; }
+
   </style>
 <body>
 
@@ -228,7 +246,7 @@ canvas {
       </li>
       <li>
         <a href="employees.php">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M0-240v-63q0-43 44-70t116-27q13 0 25 .5t23 2.5q-14 21-21 44t-7 48v65H0Zm240 0v-65q0-32 17.5-58.5T307-410q32-20 76.5-30t96.5-10q53 0 97.5 10t76.5 30q32 20 49 46.5t17 58.5v65H240Zm540 0v-65q0-26-6.5-49T754-397q11-2 22.5-2.5t23.5-.5q72 0 116 26.5t44 70.5v63H780Zm-455-80h311q-10-20-55.5-35T480-370q-55 0-100.5 15T325-320ZM160-440q-33 0-56.5-23.5T80-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T160-440Zm640 0q-33 0-56.5-23.5T720-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T800-440Zm-320-40q-50 0-85-35t-35-85q0-51 35-85.5t85-34.5q51 0 85.5 34.5T600-600q0 50-34.5 85T480-480Zm0-80q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Zm1 240Zm-1-280Z"/></svg>
           <span>Active Users</span>
         </a>
       </li>
@@ -241,13 +259,13 @@ canvas {
       </li>
       <li>
         <a href="report.php">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M320-480v-80h320v80H320Zm0-160v-80h320v80H320Zm-80 240h300q29 0 54 12.5t42 35.5l84 110v-558H240v400Zm0 240h442L573-303q-6-8-14.5-12.5T540-320H240v160Zm480 80H240q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h480q33 0 56.5 23.5T800-800v640q0 33-23.5 56.5T720-80Zm-480-80v-640 640Zm0-160v-80 80Z"/></svg>
           <span>Reports</span>
         </a>
       </li>
       <li>
         <a href="../logout.php">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-240v-32q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v32q0 33-23.5 56.5T720-160H240q-33 0-56.5-23.5T160-240Zm80 0h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M440-440q17 0 28.5-11.5T480-480q0-17-11.5-28.5T440-520q-17 0-28.5 11.5T400-480q0 17 11.5 28.5T440-440ZM280-120v-80l240-40v-445q0-15-9-27t-23-14l-208-34v-80l220 36q44 8 72 41t28 77v512l-320 54Zm-160 0v-80h80v-560q0-34 23.5-57t56.5-23h400q34 0 57 23t23 57v560h80v80H120Zm160-80h400v-560H280v560Z"/></svg>
           <span>Sign Out</span>
         </a>
       </li>
@@ -298,14 +316,24 @@ canvas {
       </div>
     </div>
     
- <!--
-    <div class="dashboard">
     <div class="box">
-      <h3>Daily Attendance</h3>
-      <canvas id="attendanceChart"></canvas>
-    </div>
+  <h3>Upcoming Holidays</h3>
+  <table class="event-table">
+    <thead>
+      <tr>
+        <th>Holiday</th>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="holidayTableBody">
+    </tbody>
+  </table>
+</div>
 
 
+ <!--
   <div class="box">
     <h3>Task Status</h3>
     <div class="chart-container">
@@ -318,7 +346,7 @@ canvas {
     </div>
   </div>
 
- <!--
+
    <div class="box invite-box">
       <div>
         <h3>Invite to Office Meet-up</h3>
@@ -334,6 +362,97 @@ canvas {
 </div>
   </main>
 </body>
+<script>
+// Function to fetch Philippines holidays
+// This could be expanded with a complete dataset or API
+function getPhilippinesHolidays(year) {
+  return [
+    { name: "New Year's Day", date: `January 1, ${year}`, type: "regular" },
+    { name: "Araw ng Kagitingan", date: `April 9, ${year}`, type: "regular" },
+    { name: "Maundy Thursday", date: "April 6, 2025", type: "regular" },
+    { name: "Good Friday", date: "April 7, 2025", type: "regular" },
+    { name: "Labor Day", date: `May 1, ${year}`, type: "regular" },
+    { name: "Independence Day", date: `June 12, ${year}`, type: "regular" },
+    { name: "National Heroes Day", date: `August 30, ${year}`, type: "regular" },
+    { name: "Bonifacio Day", date: `November 30, ${year}`, type: "regular" },
+    { name: "Christmas Day", date: `December 25, ${year}`, type: "regular" },
+    { name: "Rizal Day", date: `December 30, ${year}`, type: "regular" },
+    { name: "Chinese New Year", date: "February 10, 2025", type: "special" },
+    { name: "EDSA Revolution", date: `February 25, ${year}`, type: "special" },
+    { name: "All Saints' Day", date: `November 1, ${year}`, type: "special" },
+    { name: "All Souls' Day", date: `November 2, ${year}`, type: "special" },
+    { name: "Feast of the Immaculate Conception", date: `December 8, ${year}`, type: "special" },
+  ];
+}
+
+// Get only upcoming holidays and limit to the next 5
+function getNextHolidays(count = 5) {
+  const currentYear = new Date().getFullYear();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Get holidays for current and next year to handle year-end cases
+  const allHolidays = [
+    ...getPhilippinesHolidays(currentYear),
+    ...getPhilippinesHolidays(currentYear + 1)
+  ];
+  
+  // Filter only upcoming holidays
+  const upcomingHolidays = allHolidays.filter(holiday => {
+    const holidayDate = new Date(holiday.date);
+    return holidayDate >= today;
+  });
+  
+  // Sort by date
+  upcomingHolidays.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  // Return only the specified number of upcoming holidays
+  return upcomingHolidays.slice(0, count);
+}
+
+// Update table with the next 5 holidays
+function updateHolidayTable() {
+  const tableBody = document.getElementById("holidayTableBody");
+  const nextHolidays = getNextHolidays(5);
+  
+  // Clear existing rows
+  tableBody.innerHTML = "";
+  
+  // Add each upcoming holiday to the table
+  nextHolidays.forEach(holiday => {
+    const holidayDate = new Date(holiday.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Determine if the holiday is today (active) or upcoming
+    const status = holidayDate.getTime() === today.getTime() ? "active" : "upcoming";
+    
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${holiday.name}</td>
+      <td>${holiday.date}</td>
+      <td><span class="status ${holiday.type}">${capitalize(holiday.type)}</span></td>
+      <td><span class="status ${status}">${capitalize(status)}</span></td>
+    `;
+    
+    tableBody.appendChild(row);
+  });
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Initialize table when page loads
+document.addEventListener("DOMContentLoaded", updateHolidayTable);
+
+// Update the table daily to reflect new upcoming holidays
+// For a live application, check and update more frequently
+setInterval(() => {
+  updateHolidayTable();
+}, 86400000); // Update every 24 hours
+</script>
+
 <script>
 const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
 const attendanceChart = new Chart(attendanceCtx, {
