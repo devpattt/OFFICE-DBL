@@ -164,10 +164,8 @@ $conn->close();
 
 </div>
   </main>
-
-  
   <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
-      <strong>Inactive for 15 minutes.</strong><br>
+      <strong>Inactive for too long.</strong><br>
       Logging out in <span id="countdown">10</span> seconds...
   </div>
 

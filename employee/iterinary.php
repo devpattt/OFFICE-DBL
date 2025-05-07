@@ -179,8 +179,9 @@ $result = $conn->query($sql);
         </table>
     </div>
   </main>
+
   <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
-      <strong>Inactive for 15 minutes.</strong><br>
+      <strong>Inactive for too long.</strong><br>
       Logging out in <span id="countdown">10</span> seconds...
   </div>
 
@@ -191,8 +192,8 @@ $result = $conn->query($sql);
           <button id="logout-confirm-btn" style="padding:10px 20px; background-color:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">Okay</button>
       </div>
   </div>
-
-<script src="../public/js/main.js"></script>
+  
+<script src="../public/js/session.js"></script>
 <script src="../public/js/session.js"></script>
 </body>
 </html>
