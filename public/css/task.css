@@ -1,122 +1,124 @@
-#filterForm {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem; /* Increased gap for better spacing */
-    align-items: center;
-    background: #fefefe;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    font-family: 'Segoe UI', sans-serif;
-}
-
-#filterForm label {
-    font-weight: 600;
-    color: #444;
-    margin-right: 5px;
-    font-size: 16px; /* Slightly larger label font */
-}
-
-#filterForm input[type="date"],
-#filterForm select {
-    padding: 12px 14px; /* Increased padding for better touch targets */
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
-    min-width: 200px;
-    background-color: #fff;
-    transition: all 0.3s ease;
-    appearance: none; /* Remove default styling */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-position: right 10px center;
-    background-repeat: no-repeat;
-    background-size: 16px 16px;
-    cursor: pointer;
-}
-
-/* Custom calendar icon for date input */
-#filterForm input[type="date"] {
-    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 1a1 1 0 011 1v1h6V2a1 1 0 112 0v1h1a2 2 0 012 2v1H1V5a2 2 0 012-2h1V2a1 1 0 011-1zm10 6v7a2 2 0 01-2 2H4a2 2 0 01-2-2V7h12zm-2 2H4v1h8V9z'/%3E%3C/svg%3E");
-}
-
-/* Custom dropdown icon for select */
-#filterForm select {
-    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.293 6.293a1 1 0 011.414 0L8 8.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z'/%3E%3C/svg%3E");
-}
-
-/* Hover and focus effects */
-#filterForm input[type="date"]:hover,
-#filterForm select:hover {
-    border-color: #007BFF;
-}
-
-#filterForm input[type="date"]:focus,
-#filterForm select:focus {
-    outline: none;
-    border-color: #0056b3;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
-    background-color: #fff;
-}
-
-/* Table Styles */
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 20px; /* Add spacing between table and filter form */
-}
-
-th, td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-    font-size: 14px;
-}
-
-th {
-    background-color: #f2f2f2;
-}
-
-.completed {
-    background-color: #d4edda;
-}
-
-.pending {
-    background-color: #f8d7da;
-}
-
-form {
-    margin-bottom: 20px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
     #filterForm {
-        flex-direction: column; /* Stack vertically on smaller screens */
-        gap: 1.5rem;
-        padding: 15px; /* Reduce padding on small screens */
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem; /* Increased gap for better spacing */
+        align-items: center;
+        background: #fefefe;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', sans-serif;
     }
 
-    #filterForm label,
-    #filterForm input[type="date"],
-    #filterForm select {
-        width: 100%; /* Full width on mobile */
-        font-size: 16px;
-    }
-
-    #filterForm select {
-        margin-bottom: 10px;
-    }
-}
-
-@media (max-width: 480px) {
     #filterForm label {
-        font-size: 14px; /* Smaller font on very small screens */
+        font-weight: 600;
+        color: #444;
+        margin-right: 5px;
+        font-size: 16px; /* Slightly larger label font */
     }
 
     #filterForm input[type="date"],
     #filterForm select {
-        font-size: 16px; /* Larger font for easy readability */
+        padding: 12px 14px; /* Increased padding for better touch targets */
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+        min-width: 200px;
+        background-color: #fff;
+        transition: all 0.3s ease;
+        appearance: none; /* Remove default styling */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-position: right 10px center;
+        background-repeat: no-repeat;
+        background-size: 16px 16px;
+        cursor: pointer;
     }
-}
+
+    /* Custom calendar icon for date input */
+    #filterForm input[type="date"] {
+        background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 1a1 1 0 011 1v1h6V2a1 1 0 112 0v1h1a2 2 0 012 2v1H1V5a2 2 0 012-2h1V2a1 1 0 011-1zm10 6v7a2 2 0 01-2 2H4a2 2 0 01-2-2V7h12zm-2 2H4v1h8V9z'/%3E%3C/svg%3E");
+    }
+
+    /* Custom dropdown icon for select */
+    #filterForm select {
+        background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.293 6.293a1 1 0 011.414 0L8 8.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z'/%3E%3C/svg%3E");
+    }
+
+    /* Hover and focus effects */
+    #filterForm input[type="date"]:hover,
+    #filterForm select:hover {
+        border-color: #007BFF;
+    }
+
+    #filterForm input[type="date"]:focus,
+    #filterForm select:focus {
+        outline: none;
+        border-color: #0056b3;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
+        background-color: #fff;
+    }
+
+    /* Table Styles */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px; /* Add spacing between table and filter form */
+    }
+
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .completed {
+        background-color: #d4edda;
+    }
+
+    .pending {
+        background-color: #f8d7da;
+    }
+
+    form {
+        margin-bottom: 20px;
+    }
+
+    
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        #filterForm {
+            flex-direction: column; /* Stack vertically on smaller screens */
+            gap: 1.5rem;
+            padding: 15px; /* Reduce padding on small screens */
+        }
+
+        #filterForm label,
+        #filterForm input[type="date"],
+        #filterForm select {
+            width: 100%; /* Full width on mobile */
+            font-size: 16px;
+        }
+
+        #filterForm select {
+            margin-bottom: 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        #filterForm label {
+            font-size: 14px; /* Smaller font on very small screens */
+        }
+
+        #filterForm input[type="date"],
+        #filterForm select {
+            font-size: 16px; /* Larger font for easy readability */
+        }
+    }
 

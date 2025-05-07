@@ -1,3 +1,18 @@
+<?php
+include '../conn.php';
+
+$reportsPerPage = 10;
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($currentPage - 1) * $reportsPerPage;
+$totalSql = "SELECT COUNT(*) FROM reports";
+$totalResult = $conn->query($totalSql);
+$totalRows = $totalResult->fetch_row()[0];
+$totalPages = ceil($totalRows / $reportsPerPage);
+$sql = "SELECT * FROM reports ORDER BY submitted_at DESC LIMIT $reportsPerPage OFFSET $offset";
+$result = $conn->query($sql);
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,12 +20,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
-    <link rel="stylesheet" href="../public/css/report.css">
     <link rel="stylesheet" href="../public/css/home.css">
+    <link rel="stylesheet" href="../public/css/report.css">
     <link rel="icon" href="../public/img/DBL.png">
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
   </head>
+  <style> </style>
 <body>
 <nav id="sidebar">
     <ul>
@@ -76,41 +92,109 @@
     </ul>
   </nav>
   <main>
-  <div class="box">
-  <h3>Employee Reports</h3>
-  <table class="event-table">
-    <thead>
-      <tr>
-        <th>Subject</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Priority</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Broken Aircon in Clinic</td>
-        <td>May 4, 2025</td>
-        <td><span class="status pending">Pending</span></td>
-        <td><span class="priority high">High</span></td>
-      </tr>
-      <tr>
-        <td>System Bug in Booking Module</td>
-        <td>May 3, 2025</td>
-        <td><span class="status progress">In Progress</span></td>
-        <td><span class="priority medium">Medium</span></td>
-      </tr>
-      <tr>
-        <td>Wi-Fi Connectivity Issue</td>
-        <td>May 1, 2025</td>
-        <td><span class="status resolved">Resolved</span></td>
-        <td><span class="priority low">Low</span></td>
-      </tr>
-    </tbody>
-  </table>
+
+  <?php 
+// Pagination settings
+$itemsPerPage = 10;
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($currentPage - 1) * $itemsPerPage;
+
+// Count total rows for pagination
+$countSql = "
+    SELECT COUNT(*) AS total 
+    FROM reports r
+    LEFT JOIN dbl_employees_acc e ON r.client_name = e.full_name;
+";
+$countResult = $conn->query($countSql);
+$totalRows = $countResult->fetch_assoc()['total'];
+$totalPages = ceil($totalRows / $itemsPerPage);
+
+// Fetch the paginated data
+$sql = "
+    SELECT 
+        r.client_name, 
+        r.issue_type, 
+        r.issue_description, 
+        r.priority, 
+        r.date_observed, 
+        r.submitted_at 
+    FROM reports r
+    LEFT JOIN dbl_employees_acc e 
+    ON TRIM(LOWER(r.client_name)) = TRIM(LOWER(e.full_name))
+    LIMIT $offset, $itemsPerPage;
+";
+$result = $conn->query($sql);
+?>
+
+<div class="reports-box">
+    <h1>Reported Issues</h1>
+    <br>
+    <table class="event-table">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Issue Type</th>
+                <th>Description</th>
+                <th>Priority</th>
+                <th>Date Observed</th>
+                <th>Submitted At</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while($row = $result->fetch_assoc()): ?>
+            <tr>
+                <td><?php echo $row['client_name']; ?></td>
+                <td><?php echo $row['issue_type']; ?></td>
+                <td><?php echo $row['issue_description']; ?></td>
+                <td>
+                    <span class="priority <?php echo strtolower($row['priority']); ?>">
+                        <?php echo ucfirst($row['priority']); ?>
+                    </span>
+                </td>
+                <td><?php echo $row['date_observed']; ?></td>
+                <td><?php echo $row['submitted_at']; ?></td>
+            </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
 </div>
 
-  </main>
+<!-- Pagination Controls -->
+<div class="pagination">
+    <?php if ($totalPages > 1): ?>
+        <?php if ($currentPage > 1): ?>
+            <a href="?page=<?php echo $currentPage - 1; ?>" class="prev">Previous</a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="?page=<?php echo $i; ?>" class="<?php echo $i === $currentPage ? 'active' : ''; ?>">
+                <?php echo $i; ?>
+            </a>
+        <?php endfor; ?>
+
+        <?php if ($currentPage < $totalPages): ?>
+            <a href="?page=<?php echo $currentPage + 1; ?>" class="next">Next</a>
+        <?php endif; ?>
+    <?php else: ?>
+        <p>No reports found.</p>
+    <?php endif; ?>
+</div>
+</main>
+
+
+<div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
+      <strong>Inactive for 15 minutes.</strong><br>
+      Logging out in <span id="countdown">10</span> seconds...
+  </div>
+
+  <div id="session-expired-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
+      <div style="background:#fff; padding:30px; border-radius:12px; text-align:center; max-width:400px; margin:auto; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+          <h2 style="margin-bottom:10px;">Session Expired</h2>
+          <p style="margin-bottom:20px;">You've been inactive for too long. Please log in again.</p>
+          <button id="logout-confirm-btn" style="padding:10px 20px; background-color:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">Okay</button>
+      </div>
+  </div>
+  
+<script src="../public/js/session.js"></script>
 </body>
-<script src="../public/js/main.js"></script>
 </html>

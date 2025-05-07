@@ -4,6 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/css/empreport.css">
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
     <link rel="stylesheet" href="../public/css/attendance.css">
@@ -81,7 +82,39 @@
     </ul>
   </nav>
   <main>
-    
+  <form id="issueReportForm" action="../includes/submit_report.php" method="POST" enctype="multipart/form-data">
+    <label for="client_name">Client Name/Location</label>
+    <input type="text" id="client_name" name="client_name" required>
+
+    <label for="issue_type">Issue Type</label>
+    <select id="issue_type" name="issue_type" required>
+        <option value="">-- Select Issue Type --</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Network">Network</option>
+        <option value="Hardware">Hardware</option>
+        <option value="Software">Software</option>
+        <option value="Other">Other</option>
+    </select>
+
+
+    <label for="issue_description">Issue Description</label>
+    <textarea id="issue_description" name="issue_description" rows="4" required></textarea>
+
+    <label for="priority">Priority</label>
+    <select id="priority" name="priority" required>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+    </select>
+
+    <label for="date_observed">Date Observed</label>
+    <input type="date" id="date_observed" name="date_observed" required>
+
+    <label for="attachments">Attachments</label>
+    <input type="file" id="attachments" name="attachments[]" multiple>
+
+    <button type="submit">Submit</button>
+</form> 
   </main>
 </body>
 <script src="../public/js/main.js"></script>

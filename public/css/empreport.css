@@ -1,12 +1,3 @@
-:root {
-  --base-color: white;
-  --base-variant: #e8e9ed;
-  --text-color: #111528;
-  --secondary-text: #232738;
-  --primary-color: #3a435d;
-  --accent-color: #0071ff;
-}
-
 form {
     max-width: 600px;
     margin: 30px auto;
@@ -38,31 +29,48 @@ form {
     display: flex;
     gap: 10px; 
   }
+
   .custom-btn {
-    color: #111528;
+    padding: 6px 12px;
+    font-size: 14px;
     text-decoration: none;
-    padding: 8px 16px;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .custom-btn.success {
+    background-color: #28a745;
+  }
+  
+  .custom-btn.success:hover {
+    background-color: #218838;
+  }
+  
+  .custom-btn.warning {
+    background-color: #ffc107;
+    color: #000;
+  }
+  
+  .custom-btn.warning:hover {
+    background-color: #e0a800;
+  }
+  
+  
+  select,
+  input[type="text"],
+  textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
     border-radius: 6px;
-    transition: background-color 0.3s, color 0.3s;
+    box-sizing: border-box;
+    font-size: 16px;
   }
-
-
-  .custom-btn:hover {
-      background-color: #232738; 
-      color: #ffffff;
-  }
-    
-    select,
-    input[type="text"],
-    textarea {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
   
   button[type="submit"] {
     background-color: #232738;
@@ -83,7 +91,7 @@ form {
   #otherLocationDiv {
     margin-top: 10px;
   }
-
+  
   /* Modal Styles */
   #confirmationModal {
     display: none;
@@ -100,8 +108,6 @@ form {
     max-width: 350px;
     text-align: center;
   }
-
-
   
   @media (max-width: 480px) {
     #confirmationModal {
@@ -110,8 +116,83 @@ form {
       max-width: 70%;
     }
   }
+
+  /* Date and File Input Styles */
+input[type="date"],
+input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+input[type="date"]:hover,
+input[type="file"]:hover {
+    background-color: #f1f1f1;
+    border-color: #999;
+}
+
+input[type="date"]:focus,
+input[type="file"]:focus {
+    outline: none;
+    border-color: #666;
+    background-color: #fff;
+}
+
+input[type="file"]::file-selector-button {
+    background-color: #232738;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: #161e3d;
+}
+
+
+/* TOAST */
+button {
+    background-color: #232738;
+    color: #ffffff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+button:hover { background-color: #3a3f56; }
+.toast {
+    visibility: hidden;
+    min-width: 250px;
+    margin: auto;
+    background-color: #232738;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: visibility 0.3s, bottom 0.5s;
+}
+.toast.show { visibility: visible; bottom: 50px; }
+
   
-  /* Toast Notification Styles */
   #toast {
     display: none;
     position: fixed;
@@ -130,7 +211,6 @@ form {
   }
   
   
-  /* Toast Responsive Adjustments */
   @media (max-width: 480px) {
     #toastNotification {
       top: 10px;
@@ -141,7 +221,6 @@ form {
     }
   }
   
-  /* Toast Slide In Animation */
   @keyframes slideIn {
     from {
       opacity: 0;

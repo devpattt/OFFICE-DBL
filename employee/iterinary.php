@@ -102,57 +102,97 @@ $result = $conn->query($sql);
     <?php endif; ?>
 
     <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle bg-white">
-            <thead class="table-success">
-                <tr>
-                    <th>Location</th>
-                    <th>Task</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php if ($result->num_rows > 0) { 
-                while ($row = $result->fetch_assoc()) { ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($row['location']); ?></td>
-                    <td><?php echo htmlspecialchars($row['description']); ?></td>
-                    <td>
-                        <?php if ($row['status'] == 'Pending') { ?>
-                            <span class="badge bg-warning text-dark">Pending</span>
-                        <?php } else { ?>
-                            <span class="badge bg-success">Completed</span>
-                        <?php } ?>
-                    </td>
-                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-                            <td>
-                              <div class="btn-container">
-                                <?php if ($row['status'] == 'Pending') { ?>
-                                  <a href="../includes/mark_completed.php?id=<?php echo $row['id']; ?>"
-                                    class="custom-btn success"
-                                    onclick="return confirm('Are you sure you want to mark this itinerary as completed?');">
-                                    <span class="text-container">Mark as Completed</span>
-                                  </a>
-                                <?php } else { ?>
-                                  <a href="../includes/undo_completed.php?id=<?php echo $row['id']; ?>"
-                                    class="custom-btn warning"
-                                    onclick="return confirm('Are you sure you want to undo this completion?');">
-                                    <span class="text-container">Undo</span>
-                                  </a>
-                                <?php } ?>
-                              </div>
-                            </td>
-                </tr>
-            <?php }
-            } ?>
-        </tbody>
-
+        <table class="table table-bordered table-hover align-middle">
+        <thead class="table-success">
+    <tr>
+        <th>Location</th>
+        <th>Task</th>
+        <th>Status</th>
+        <th>Arrival Time</th> 
+        <th>Departure Time</th> 
+        <th>Status</th>
+        <th>Actions</th> 
+    </tr>
+</thead>
+<tbody>
+<?php if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) { ?>
+    <tr>
+        <td><?php echo htmlspecialchars($row['location']); ?></td>
+        <td><?php echo htmlspecialchars($row['description']); ?></td>
+        <td>
+            <?php if ($row['status'] == 'Pending') { ?>
+                <span class="badge bg-warning text-dark">Pending</span>
+            <?php } else { ?>
+                <span class="badge bg-success">Completed</span>
+            <?php } ?>
+        </td>
+        <td>
+            <?php if ($row['arrival_time'] != NULL) { ?>
+                <?php echo htmlspecialchars($row['arrival_time']); ?>
+            <?php } else { ?>
+                <span class="badge bg-secondary">Not Set</span>
+            <?php } ?>
+        </td>
+        <td>
+            <?php if ($row['departure_time'] != NULL) { ?>
+                <?php echo htmlspecialchars($row['departure_time']); ?>
+            <?php } else { ?>
+                <span class="badge bg-secondary">Not Set</span>
+            <?php } ?>
+        </td>
+        <td>
+            <div class="btn-container">
+                <?php if ($row['status'] == 'Pending') { ?>
+                    <a href="../includes/mark_completed.php?id=<?php echo $row['id']; ?>"
+                        class="custom-btn success"
+                        onclick="return confirm('Are you sure you want to mark this itinerary as completed?');">
+                        <span class="text-container">Mark as Completed</span>
+                    </a>
+                <?php } else { ?>
+                    <a href="../includes/undo_completed.php?id=<?php echo $row['id']; ?>"
+                        class="custom-btn warning"
+                        onclick="return confirm('Are you sure you want to undo this completion?');">
+                        <span class="text-container">Undo</span>
+                    </a>
+                <?php } ?>
+            </div>
+        </td>
+        <td>
+            <div class="btn-container d-flex flex-column gap-1">
+                <a href="../includes/set_arrival.php?id=<?php echo $row['id']; ?>"
+                    class="custom-btn info"
+                    onclick="return confirm('Set arrival time now?');">
+                    <span class="text-container">Set Arrival</span>
+                </a>
+                <a href="../includes/set_departure.php?id=<?php echo $row['id']; ?>"
+                    class="custom-btn secondary"
+                    onclick="return confirm('Set departure time now?');">
+                    <span class="text-container">Set Departure</span>
+                </a>
+            </div>
+        </td>
+    </tr>
+<?php }
+} ?>
+</tbody>
         </table>
-
     </div>
-
   </main>
+  <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
+      <strong>Inactive for 15 minutes.</strong><br>
+      Logging out in <span id="countdown">10</span> seconds...
+  </div>
+
+  <div id="session-expired-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
+      <div style="background:#fff; padding:30px; border-radius:12px; text-align:center; max-width:400px; margin:auto; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+          <h2 style="margin-bottom:10px;">Session Expired</h2>
+          <p style="margin-bottom:20px;">You've been inactive for too long. Please log in again.</p>
+          <button id="logout-confirm-btn" style="padding:10px 20px; background-color:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">Okay</button>
+      </div>
+  </div>
+
 <script src="../public/js/main.js"></script>
+<script src="../public/js/session.js"></script>
 </body>
 </html>

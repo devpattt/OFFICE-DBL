@@ -154,10 +154,8 @@ canvas {
 .red { background-color: #dc3545; }
 
 .logo {
-  font-size: 20px;
-  font-weight: bold;
-  margin-left: 10px;
-  color: var(--accent-color);
+  font-weight: 600;
+  padding: .85em;
 }
 
 .event-table {
