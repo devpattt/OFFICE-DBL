@@ -46,7 +46,6 @@ form {
     transition: background-color 0.3s, color 0.3s;
   }
 
-
   .custom-btn:hover {
       background-color: #232738; 
       color: #ffffff;
