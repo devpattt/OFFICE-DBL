@@ -20,7 +20,7 @@ document.onscroll = resetIdleTimer;
 setInterval(() => {
     idleTime++;
 
-    if (idleTime === 1) {
+    if (idleTime === 15) {
         warningShown = true;
         let countdown = 10;
         document.getElementById('logout-warning').style.display = 'block';
