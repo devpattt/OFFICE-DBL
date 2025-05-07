@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 06, 2025 at 08:35 AM
+-- Generation Time: May 07, 2025 at 08:54 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -71,7 +71,8 @@ CREATE TABLE `dbl_attendance_logs` (
 --
 
 INSERT INTO `dbl_attendance_logs` (`id`, `employee_id`, `username`, `date`, `time_in`, `location_in`, `lat_in`, `lng_in`, `time_out`, `location_out`, `lat_out`, `lng_out`, `status`, `created_at`, `hours_worked`) VALUES
-(19, 'EMP002', 'employee', '2025-05-06', 'Tuesday - 5/6/2025 - 01:07 PM', '0', 14.7226624, 121.0056704, NULL, NULL, NULL, NULL, 'Pending', '2025-05-06 05:07:46', 0.00);
+(19, 'EMP002', 'employee', '2025-05-06', 'Tuesday - 5/6/2025 - 01:07 PM', '0', 14.7226624, 121.0056704, NULL, NULL, NULL, NULL, 'Pending', '2025-05-06 05:07:46', 0.00),
+(21, 'EMP001', 'devpat', '2025-05-07', 'Wednesday - 5/7/2025 - 09:20 AM', '0', 14.7324928, 121.012224, NULL, NULL, NULL, NULL, 'Pending', '2025-05-07 01:20:05', 0.00);
 
 -- --------------------------------------------------------
 
@@ -139,22 +140,49 @@ CREATE TABLE `itinerary` (
   `description` text DEFAULT NULL,
   `status` enum('Pending','Completed') DEFAULT 'Pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `arrival_time` datetime DEFAULT NULL,
+  `departure_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `itinerary`
 --
 
-INSERT INTO `itinerary` (`id`, `employee_id`, `location`, `date`, `time`, `description`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'EMP001', 'Code Helix', '2025-04-28', '14:10:23', 'Fix CCTVs', 'Pending', '2025-04-28 06:10:23', '2025-04-30 06:32:23'),
-(2, 'EMP001', 'Code Helix', '2025-04-28', '16:11:49', 'Fix servers', 'Completed', '2025-04-28 08:11:49', '2025-04-28 08:12:19'),
-(3, 'EMP002', 'Code Helix', '2025-04-28', '16:24:54', 'dsadsdsds', 'Completed', '2025-04-28 08:24:54', '2025-04-30 06:18:56'),
-(4, 'EMP001', 'WL Valenzuela', '2025-04-29', '16:15:30', 'fix cctvs', 'Completed', '2025-04-29 08:15:30', '2025-04-30 06:18:40'),
-(5, 'EMP002', 'Code Helix', '2025-04-30', '08:38:42', 'fix cctv', 'Completed', '2025-04-30 00:38:42', '2025-04-30 06:18:58'),
-(6, 'EMP001', 'WL Main', '2025-04-30', '14:35:54', 'Server Daily Checkup', 'Pending', '2025-04-30 06:35:54', '2025-04-30 06:40:35'),
-(7, 'EMP001', 'WL Main', '2025-05-06', '08:43:20', 'Check CCTV', 'Pending', '2025-05-06 00:43:20', '2025-05-06 00:43:20'),
-(8, 'EMP003', 'BCP MAIN', '2025-05-06', '14:28:47', 'SUNUGIN MO', 'Pending', '2025-05-06 06:28:47', '2025-05-06 06:28:47');
+INSERT INTO `itinerary` (`id`, `employee_id`, `location`, `date`, `time`, `description`, `status`, `created_at`, `updated_at`, `arrival_time`, `departure_time`) VALUES
+(1, 'EMP001', 'Code Helix', '2025-04-28', '14:10:23', 'Fix CCTVs', 'Pending', '2025-04-28 06:10:23', '2025-04-30 06:32:23', NULL, NULL),
+(2, 'EMP001', 'Code Helix', '2025-04-28', '16:11:49', 'Fix servers', 'Completed', '2025-04-28 08:11:49', '2025-04-28 08:12:19', NULL, NULL),
+(3, 'EMP002', 'Code Helix', '2025-04-28', '16:24:54', 'dsadsdsds', 'Completed', '2025-04-28 08:24:54', '2025-04-30 06:18:56', NULL, NULL),
+(4, 'EMP001', 'WL Valenzuela', '2025-04-29', '16:15:30', 'fix cctvs', 'Completed', '2025-04-29 08:15:30', '2025-04-30 06:18:40', NULL, NULL),
+(5, 'EMP002', 'Code Helix', '2025-04-30', '08:38:42', 'fix cctv', 'Completed', '2025-04-30 00:38:42', '2025-04-30 06:18:58', NULL, NULL),
+(6, 'EMP001', 'WL Main', '2025-04-30', '14:35:54', 'Server Daily Checkup', 'Pending', '2025-04-30 06:35:54', '2025-04-30 06:40:35', NULL, NULL),
+(7, 'EMP001', 'WL Main', '2025-05-06', '08:43:20', 'Check CCTV', 'Pending', '2025-05-06 00:43:20', '2025-05-06 00:43:20', NULL, NULL),
+(8, 'EMP003', 'BCP MAIN', '2025-05-06', '14:28:47', 'SUNUGIN MO', 'Pending', '2025-05-06 06:28:47', '2025-05-06 06:28:47', NULL, NULL),
+(9, 'EMP001', 'Code Helix', '2025-05-07', '09:21:40', 'Develop a Attendance Tracking System', 'Pending', '2025-05-07 01:21:40', '2025-05-07 01:21:40', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reports`
+--
+
+CREATE TABLE `reports` (
+  `id` int(11) NOT NULL,
+  `client_name` varchar(255) DEFAULT NULL,
+  `issue_type` varchar(100) DEFAULT NULL,
+  `issue_description` text DEFAULT NULL,
+  `priority` varchar(50) DEFAULT NULL,
+  `date_observed` date DEFAULT NULL,
+  `attachments` text DEFAULT NULL,
+  `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `reports`
+--
+
+INSERT INTO `reports` (`id`, `client_name`, `issue_type`, `issue_description`, `priority`, `date_observed`, `attachments`, `submitted_at`) VALUES
+(1, 'CodeHelixCorp', 'Network', 'No internet connection', 'medium', '2025-05-07', 'uploads/1746598738-SHREK ASH.jfif', '2025-05-07 06:18:58');
 
 --
 -- Indexes for dumped tables
@@ -195,6 +223,12 @@ ALTER TABLE `itinerary`
   ADD KEY `employee_id` (`employee_id`);
 
 --
+-- Indexes for table `reports`
+--
+ALTER TABLE `reports`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -208,7 +242,7 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `dbl_attendance_logs`
 --
 ALTER TABLE `dbl_attendance_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `dbl_employees_acc`
@@ -226,7 +260,13 @@ ALTER TABLE `dbl_employees_dept`
 -- AUTO_INCREMENT for table `itinerary`
 --
 ALTER TABLE `itinerary`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `reports`
+--
+ALTER TABLE `reports`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
