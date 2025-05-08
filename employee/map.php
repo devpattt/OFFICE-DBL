@@ -248,7 +248,7 @@
         longitude: userPosition.lng
       };
       
-      // API call to the backend
+      // API call 
       fetch('attendance_api.php', {
         method: 'POST',
         headers: {
