@@ -11,6 +11,7 @@
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../public/css/dashboard.css">
         <link rel="stylesheet" href="../public/css/main.css">
         <link rel="stylesheet" href="../public/css/darkmode.css">
         <link rel="stylesheet" href="../public/css/home.css">
@@ -102,15 +103,16 @@
           </div>
           
         <script src="../public/js/session.js"></script>
-                    <?php
+                   <?php
+                   /*
             $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
-            ?>  
-            <div class="welcome-message">
-              <h1>Welcome back, <?php echo htmlspecialchars($username); ?>!</h1>
+            */?>  
+           <!-- <div class="welcome-message">
+              <h1>Welcome back, <?php /* echo htmlspecialchars($username); */?>!</h1>
               <div class="active-time">
                 <p>Current Time: <span id="activeTime"></span></p>
               </div>
-            </div>   
+            </div>   -->
 
             <div class="info-boxes">
               <div class="box box-1">
@@ -178,6 +180,26 @@
               </div> <!-- End of box-3 -->
 
             </div> <!-- End of info-boxes -->
+            
+            <br> 
+            
+            <div class="box">
+              <h3>Upcoming Holidays</h3>
+              <table class="event-table">
+                <thead>
+                  <tr>
+                    <th>Holiday</th>  
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="holidayTableBody">
+                </tbody>
+              </table>
+            </div>
+
+
             </main>
 
           <script>
@@ -195,6 +217,83 @@
               setInterval(updateTime, 1000);
               updateTime();
         </script>
+        <script>
+// This could be expanded with a complete dataset or API
+function getPhilippinesHolidays(year) {
+  return [
+    { name: "New Year's Day", date: `January 1, ${year}`, type: "regular" },
+    { name: "Araw ng Kagitingan", date: `April 9, ${year}`, type: "regular" },
+    { name: "Maundy Thursday", date: "April 6, 2025", type: "regular" },
+    { name: "Good Friday", date: "April 7, 2025", type: "regular" },
+    { name: "Labor Day", date: `May 1, ${year}`, type: "regular" },
+    { name: "Independence Day", date: `June 12, ${year}`, type: "regular" },
+    { name: "National Heroes Day", date: `August 30, ${year}`, type: "regular" },
+    { name: "Bonifacio Day", date: `November 30, ${year}`, type: "regular" },
+    { name: "Christmas Day", date: `December 25, ${year}`, type: "regular" },
+    { name: "Rizal Day", date: `December 30, ${year}`, type: "regular" },
+    { name: "Chinese New Year", date: "February 10, 2025", type: "special" },
+    { name: "EDSA Revolution", date: `February 25, ${year}`, type: "special" },
+    { name: "All Saints' Day", date: `November 1, ${year}`, type: "special" },
+    { name: "All Souls' Day", date: `November 2, ${year}`, type: "special" },
+    { name: "Feast of the Immaculate Conception", date: `December 8, ${year}`, type: "special" },
+  ];
+}
+
+function getNextHolidays(count = 5) {
+  const currentYear = new Date().getFullYear();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const allHolidays = [
+    ...getPhilippinesHolidays(currentYear),
+    ...getPhilippinesHolidays(currentYear + 1)
+  ];
+  
+  const upcomingHolidays = allHolidays.filter(holiday => {
+    const holidayDate = new Date(holiday.date);
+    return holidayDate >= today;
+  });
+  
+  upcomingHolidays.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  return upcomingHolidays.slice(0, count);
+}
+
+function updateHolidayTable() {
+  const tableBody = document.getElementById("holidayTableBody");
+  const nextHolidays = getNextHolidays(5);
+  
+  tableBody.innerHTML = "";
+
+  nextHolidays.forEach(holiday => {
+    const holidayDate = new Date(holiday.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const status = holidayDate.getTime() === today.getTime() ? "active" : "upcoming";
+    
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${holiday.name}</td>
+      <td>${holiday.date}</td>
+      <td><span class="status ${holiday.type}">${capitalize(holiday.type)}</span></td>
+      <td><span class="status ${status}">${capitalize(status)}</span></td>
+    `;
+    
+    tableBody.appendChild(row);
+  });
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+document.addEventListener("DOMContentLoaded", updateHolidayTable);
+
+setInterval(() => {
+  updateHolidayTable();
+}, 86400000); 
+</script>
       </body>
       <script src="../public/js/main.js"></script>
       </html>

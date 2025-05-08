@@ -138,20 +138,20 @@ $conn->close();
     </div>
     
     <div class="box">
-  <h3>Upcoming Holidays</h3>
-  <table class="event-table">
-    <thead>
-      <tr>
-        <th>Holiday</th>
-        <th>Date</th>
-        <th>Type</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody id="holidayTableBody">
-    </tbody>
-  </table>
-</div>
+          <h3>Upcoming Holidays</h3>
+          <table class="event-table">
+            <thead>
+              <tr>
+                <th>Holiday</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="holidayTableBody">
+            </tbody>
+          </table>
+        </div>
 
 
  <!--

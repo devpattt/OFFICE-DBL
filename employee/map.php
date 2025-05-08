@@ -13,7 +13,7 @@
     <title>DBL ISTS - Attendance</title>
   </head>
   <style>
-        #map { height: 400px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        #map { height: 400px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         #status { padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .success { color: green; font-weight: bold; }
         .error { color: red; font-weight: bold; }
@@ -25,7 +25,7 @@
         .btn {
             padding: 12px 25px;
             border: none;
-            border-radius: 5px;
+            border-radius: 20px;
             font-size: 16px;
             cursor: pointer;
             font-weight: bold;
@@ -35,13 +35,23 @@
             justify-content: center;
         }
         .btn-clockin {
-            background-color: #2196F3;
-            color: white;
+            background-color: #1976D2;
+            color: white; 
         }
         .btn-clockout {
-            background-color: #FF5252;
+            background-color: #E53935;
             color: white;
         }
+
+          .btn-clockin:hover {
+              background-color: #2196F3; 
+          }
+
+          .btn-clockout:hover {
+              background-color: #FF5252 ;
+          }
+
+
         .btn:disabled {
             background-color: #cccccc;
             color: #666666;
@@ -142,8 +152,11 @@
     </ul>
   </nav>
   <main>
-  <h1>Attendance Check In/Out System</h1>
+  <h1>Geofenced Attendance Tracker</h1>
   <br>
+  <p style="font-size: 16px; color: #555; margin-bottom: 10px;">
+  <strong>Note:</strong> <em>This system uses your device's location. Please ensure location services are enabled and you are within the designated area to check in or out.</em>
+  </p>
   <div id="message"></div>
     
   <div id="map"></div>
