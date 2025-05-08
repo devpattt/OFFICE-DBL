@@ -92,12 +92,29 @@
   <br>
     <div id="map"></div>
     <div id="status">Checking location...</div>
+  </main>
+<div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
+      <strong>Inactive for too long.</strong><br>
+      Logging out in <span id="countdown">10</span> seconds...
+  </div>
+
+  <div id="session-expired-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
+      <div style="background:#fff; padding:30px; border-radius:12px; text-align:center; max-width:400px; margin:auto; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+          <h2 style="margin-bottom:10px;">Session Expired</h2>
+          <p style="margin-bottom:20px;">You've been inactive for too long. Please log in again.</p>
+          <button id="logout-confirm-btn" style="padding:10px 20px; background-color:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">Okay</button>
+      </div>
+  </div>
+  
+<script src="../public/js/session.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
         const locations = [
             { name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50},
-            { name: "WL MAIN", lat: 14.737567, lng: 120.99018, radius: 50},
-            { name: "WL BIGNAY", lat: 14.747861, lng: 121.00390, radius: 50 }
+            { name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50},
+            { name: "WL Bignay", lat: 14.747861, lng: 121.00390, radius: 50 },
+            { name: "Labella Villa Homes", lat: 14.74117 , lng: 120.98624, radius: 50 },
+            { name: "Biglite Makati", lat: 14.53984, lng: 121.01433, radius: 50 }
         ];
         
         const map = L.map('map').setView([locations[0].lat, locations[0].lng], 13);
