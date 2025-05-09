@@ -8,80 +8,11 @@
     <link rel="icon" href="../public/img/DBL.png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="../public/css/attendance.css">
+    <link rel="stylesheet" href="../public/css/map.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
-    <title>DBL ISTS - Attendance</title>
+    <title>DBL ISTS - Geo Map</title>
   </head>
-  <style>
-        #map { height: 400px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        #status { padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .success { color: green; font-weight: bold; }
-        .error { color: red; font-weight: bold; }
-        .attendance-controls {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 20px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-clockin {
-            background-color: #1976D2;
-            color: white; 
-        }
-        .btn-clockout {
-            background-color: #E53935;
-            color: white;
-        }
-
-          .btn-clockin:hover {
-              background-color: #2196F3; 
-          }
-
-          .btn-clockout:hover {
-              background-color: #FF5252 ;
-          }
-
-
-        .btn:disabled {
-            background-color: #cccccc;
-            color: #666666;
-            cursor: not-allowed;
-        }
-        .btn svg {
-            margin-right: 8px;
-        }
-        #message {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        .message-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .message-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .location-details {
-            font-size: 14px;
-            color: #666;
-            margin-top: 5px;
-        }
-  </style>
 <body>
 <nav id="sidebar">
     <ul>
@@ -123,6 +54,12 @@
         </a>
       </li>
       <li>
+          <a href="leavemanagement.php">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M440-280h320v-22q0-45-44-71.5T600-400q-72 0-116 26.5T440-302v22Zm160-160q33 0 56.5-23.5T680-520q0-33-23.5-56.5T600-600q-33 0-56.5 23.5T520-520q0 33 23.5 56.5T600-440ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z"/></svg>
+                <span>Leave Management</span>
+              </a>
+        </li>
+      <li>
         <a href="profile.php">
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z"/></svg>
           <span>Profile</span>
@@ -151,219 +88,33 @@
       </li>  
     </ul>
   </nav>
-  <main>
-  <h1>Geofenced Attendance Tracker</h1>
-  <br>
-  <p style="font-size: 16px; color: #555; margin-bottom: 10px;">
-  <strong>Note:</strong> <em>This system uses your device's location. Please ensure location services are enabled and you are within the designated area to check in or out.</em>
-  </p>
-  <div id="message"></div>
-    
-  <div id="map"></div>
-  <div id="status">Checking your location...</div>
-  
-  <div class="attendance-controls">
-    <button id="clockInBtn" class="btn btn-clockin" disabled>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
-        <path d="M12 6v6l4 2"></path>
-      </svg>
-      Clock In
-    </button>
-    <button id="clockOutBtn" class="btn btn-clockout" disabled>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
-        <path d="M12 6v6l4 2"></path>
-      </svg>
-      Clock Out
-    </button>
-  </div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script>
-
-    const locations = [
-      { name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50},
-      { name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50},
-      { name: "WL Bignay", lat: 14.747861, lng: 121.00390, radius: 50 },
-      { name: "Labella Villa Homes", lat: 14.74117 , lng: 120.98624, radius: 50 },
-      { name: "Biglite Makati", lat: 14.53984, lng: 121.01433, radius: 50 },
-      { name: "Current Location", lat: 14.73263, lng: 121.00270, radius: 50 },
-      { name: "Weshop Taft", lat: 14.56245, lng: 120.99612, radius: 50 },
-      { name: "Kai Mall", lat: 14.75670, lng: 121.04391, radius: 50 },
-      { name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 }
-
-    ];
-    
-    const map = L.map('map').setView([locations[0].lat, locations[0].lng], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-    
-    locations.forEach(loc => {
-      L.circle([loc.lat, loc.lng], {
-        color: 'blue',
-        fillColor: '#99ccff',
-        fillOpacity: 0.3,
-        radius: loc.radius
-      }).addTo(map).bindPopup(loc.name);
-    });
-    
-    const statusDiv = document.getElementById('status');
-    const clockInBtn = document.getElementById('clockInBtn');
-    const clockOutBtn = document.getElementById('clockOutBtn');
-    const messageDiv = document.getElementById('message');
-    
-    let userPosition = null;
-    let isInsideGeofence = false;
-    let currentLocationName = "";
-    let userMarker = null;
-    
-    function checkGeofence(userLat, userLng) {
-      let inside = false;
-      let locationName = "";
-      
-      for (const loc of locations) {
-        const distance = map.distance([userLat, userLng], [loc.lat, loc.lng]);
-        if (distance <= loc.radius) {
-          inside = true;
-          locationName = loc.name;
-          break;
-        }
-      }
-      
-      return { inside, locationName };
-    }
-    
-    function showMessage(message, type) {
-      messageDiv.textContent = message;
-      messageDiv.style.display = 'block';
-      messageDiv.className = type === 'success' ? 'message-success' : 'message-error';
-      
-      setTimeout(() => {
-        messageDiv.style.display = 'none';
-      }, 5000);
-    }
-    
-    function handleAttendance(action) {
-      if (!isInsideGeofence) {
-        showMessage('You must be within a designated work area to clock in/out.', 'error');
-        return;
-      }
-      
-      clockInBtn.disabled = true;
-      clockOutBtn.disabled = true;
-      
-      const data = {
-        location: currentLocationName,
-        latitude: userPosition.lat,
-        longitude: userPosition.lng
-      };
-      
-      // API call 
-      fetch('attendance_api.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.text())
-      .then(result => {
-        showMessage(result, result.includes('Error') ? 'error' : 'success');
-        
-        if (action === 'in' && !result.includes('Error')) {
-          clockInBtn.disabled = true;
-          clockOutBtn.disabled = false;
-        } else if (action === 'out' && !result.includes('Error')) {
-          clockInBtn.disabled = false;
-          clockOutBtn.disabled = true;
-        } else {
-          updateButtonStates();
-        }
-      })
-      .catch(error => {
-        showMessage('Error: ' + error.message, 'error');
-        updateButtonStates();
-      });
-    }
-    
-    function updateButtonStates() {
-      fetch('check_status.php')
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 'clocked-in') {
-          clockInBtn.disabled = true;
-          clockOutBtn.disabled = !isInsideGeofence;
-        } else {
-          clockInBtn.disabled = !isInsideGeofence;
-          clockOutBtn.disabled = true;
-        }
-      })
-      .catch(error => {
-        console.error('Error checking status:', error);
-        clockInBtn.disabled = !isInsideGeofence;
-        clockOutBtn.disabled = !isInsideGeofence;
-      });
-    }
-  
-    function updateLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
-        
-          userPosition = { lat: userLat, lng: userLng };
-          
-          if (userMarker) {
-            userMarker.setLatLng([userLat, userLng]);
-          } else {
-            userMarker = L.marker([userLat, userLng]).addTo(map);
-            userMarker.bindPopup("Your current location").openPopup();
-            map.setView([userLat, userLng], 15);
-          }
-          
-          const geofenceCheck = checkGeofence(userLat, userLng);
-          isInsideGeofence = geofenceCheck.inside;
-          currentLocationName = geofenceCheck.locationName;
-
-          if (isInsideGeofence) {
-            statusDiv.innerHTML = `<span class="success">You are inside ${currentLocationName}.</span>
-                                  <div class="location-details">Lat: ${userLat.toFixed(6)}, Lng: ${userLng.toFixed(6)}</div>`;
-            statusDiv.className = 'success';
-          } else {
-            statusDiv.innerHTML = `<span class="error">You are outside all designated work areas.</span>
-                                  <div class="location-details">Lat: ${userLat.toFixed(6)}, Lng: ${userLng.toFixed(6)}</div>`;
-            statusDiv.className = 'error';
-          }
-          
-          updateButtonStates();
-          
-        }, error => {
-          statusDiv.textContent = "Error getting location: " + error.message;
-          statusDiv.className = 'error';
-d
-          clockInBtn.disabled = true;
-          clockOutBtn.disabled = true;
-        });
-      } else {
-        statusDiv.textContent = "Geolocation is not supported by this browser.";
-        statusDiv.className = 'error';
-  
-        clockInBtn.disabled = true;
-        clockOutBtn.disabled = true;
-      }
-    }
-    
-    clockInBtn.addEventListener('click', () => handleAttendance('in'));
-    clockOutBtn.addEventListener('click', () => handleAttendance('out'));
-    
-    updateLocation();
-    
-    setInterval(updateLocation, 30000);
-  </script>
-<script src="../public/js/session.js"></script>
-<script src="../public/js/main.js"></script>
 </body>
-</html>
+  <main>
+     <h1>Geofenced Attendance Tracker</h1><br>
+       <p style="font-size: 16px; color: #555; margin-bottom: 10px;">
+            <strong>Note:</strong> <em>This system uses your device's location. Please ensure location services are enabled and you are within the designated area to check in or out.</em>
+        </p>
+    <div id="message"></div>
+     <div id="map"></div>
+        <div id="status">Checking your location...</div>
+          <div class="attendance-controls">
+            <button id="clockInBtn" class="btn btn-clockin" disabled>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+              Clock In
+            </button>
+            <button id="clockOutBtn" class="btn btn-clockout" disabled>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+              Clock Out
+            </button>
+          </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../public/js/map.js"></script>
+  <script src="../public/js/session.js"></script>
+  <script src="../public/js/main.js"></script>
+  </html>
