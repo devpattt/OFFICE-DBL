@@ -96,7 +96,7 @@
   font-weight: 600;
   margin-bottom: 15px;
   color: var(--primary-color);
-  text-align: flex-start;
+  text-align: left;
 }
 
 canvas {

@@ -90,7 +90,6 @@
     <div class="logo">
         <img src="public/img/DBL.png" alt="Logo">
     </div>
-
     <div class="login-container">
         <h2>Log Into Your Account</h2>
         <form id="loginForm" action="includes/index.php" method="post">
