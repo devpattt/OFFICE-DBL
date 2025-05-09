@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 07, 2025 at 08:54 AM
+-- Generation Time: May 09, 2025 at 04:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -66,13 +66,34 @@ CREATE TABLE `dbl_attendance_logs` (
   `hours_worked` decimal(5,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `dbl_attendance_logs`
+-- Table structure for table `dbl_client_locations`
 --
 
-INSERT INTO `dbl_attendance_logs` (`id`, `employee_id`, `username`, `date`, `time_in`, `location_in`, `lat_in`, `lng_in`, `time_out`, `location_out`, `lat_out`, `lng_out`, `status`, `created_at`, `hours_worked`) VALUES
-(19, 'EMP002', 'employee', '2025-05-06', 'Tuesday - 5/6/2025 - 01:07 PM', '0', 14.7226624, 121.0056704, NULL, NULL, NULL, NULL, 'Pending', '2025-05-06 05:07:46', 0.00),
-(21, 'EMP001', 'devpat', '2025-05-07', 'Wednesday - 5/7/2025 - 09:20 AM', '0', 14.7324928, 121.012224, NULL, NULL, NULL, NULL, 'Pending', '2025-05-07 01:20:05', 0.00);
+CREATE TABLE `dbl_client_locations` (
+  `id` int(11) NOT NULL,
+  `client` varchar(255) NOT NULL,
+  `lat` decimal(10,6) NOT NULL,
+  `lng` decimal(10,6) NOT NULL,
+  `radius` int(11) DEFAULT 50
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `dbl_client_locations`
+--
+
+INSERT INTO `dbl_client_locations` (`id`, `client`, `lat`, `lng`, `radius`) VALUES
+(1, 'DBL ISTS', 14.739900, 120.987540, 50),
+(2, 'WL Headquarter', 14.737567, 120.990180, 50),
+(3, 'WL Bignay', 14.747861, 121.003900, 50),
+(4, 'Labella Villa Homes', 14.741170, 120.986240, 50),
+(5, 'Biglite Makati', 14.539840, 121.014330, 50),
+(6, 'Demo Location', 14.732630, 121.002700, 50),
+(7, 'Weshop Taft', 14.562450, 120.996120, 50),
+(8, 'Kai Mall', 14.756700, 121.043910, 50),
+(9, 'Ellec Parada', 14.695640, 120.995300, 50);
 
 -- --------------------------------------------------------
 
@@ -158,7 +179,9 @@ INSERT INTO `itinerary` (`id`, `employee_id`, `location`, `date`, `time`, `descr
 (6, 'EMP001', 'WL Main', '2025-04-30', '14:35:54', 'Server Daily Checkup', 'Pending', '2025-04-30 06:35:54', '2025-04-30 06:40:35', NULL, NULL),
 (7, 'EMP001', 'WL Main', '2025-05-06', '08:43:20', 'Check CCTV', 'Pending', '2025-05-06 00:43:20', '2025-05-06 00:43:20', NULL, NULL),
 (8, 'EMP003', 'BCP MAIN', '2025-05-06', '14:28:47', 'SUNUGIN MO', 'Pending', '2025-05-06 06:28:47', '2025-05-06 06:28:47', NULL, NULL),
-(9, 'EMP001', 'Code Helix', '2025-05-07', '09:21:40', 'Develop a Attendance Tracking System', 'Pending', '2025-05-07 01:21:40', '2025-05-07 01:21:40', NULL, NULL);
+(9, 'EMP001', 'Code Helix', '2025-05-07', '09:21:40', 'Develop a Attendance Tracking System', 'Pending', '2025-05-07 01:21:40', '2025-05-07 01:21:40', NULL, NULL),
+(10, 'EMP001', 'Code Helix', '2025-05-07', '15:49:22', 'Fix Internet', 'Pending', '2025-05-07 07:49:22', '2025-05-07 07:49:45', '2025-05-07 15:49:45', NULL),
+(11, 'EMP001', 'DBL ISTS', '2025-05-09', '10:17:53', 'Develop ATS', 'Pending', '2025-05-09 02:17:53', '2025-05-09 02:17:53', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -198,6 +221,12 @@ ALTER TABLE `clients`
 -- Indexes for table `dbl_attendance_logs`
 --
 ALTER TABLE `dbl_attendance_logs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `dbl_client_locations`
+--
+ALTER TABLE `dbl_client_locations`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -242,7 +271,13 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `dbl_attendance_logs`
 --
 ALTER TABLE `dbl_attendance_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT for table `dbl_client_locations`
+--
+ALTER TABLE `dbl_client_locations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `dbl_employees_acc`
@@ -260,7 +295,7 @@ ALTER TABLE `dbl_employees_dept`
 -- AUTO_INCREMENT for table `itinerary`
 --
 ALTER TABLE `itinerary`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `reports`
