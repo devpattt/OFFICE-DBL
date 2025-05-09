@@ -1,14 +1,14 @@
 
 const locations = [
-  { name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50},
-  { name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50},
-  { name: "WL Bignay", lat: 14.747861, lng: 121.00390, radius: 50 },
-  { name: "Labella Villa Homes", lat: 14.74117 , lng: 120.98624, radius: 50 },
-  { name: "Biglite Makati", lat: 14.53984, lng: 121.01433, radius: 50 },
-  { name: "Current Location", lat: 14.73263, lng: 121.00270, radius: 50 },
-  { name: "Weshop Taft", lat: 14.56245, lng: 120.99612, radius: 50 },
-  { name: "Kai Mall", lat: 14.75670, lng: 121.04391, radius: 50 },
-  { name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 }
+  { id: DBL_Ists, name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50},
+  { id: WL_Headquarter, name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50},
+  { id: WL_Bignay, name: "WL Bignay", lat: 14.747861, lng: 121.00390, radius: 50 },
+  { id: Labella_Villa_Homes, name: "Labella Villa Homes", lat: 14.74117 , lng: 120.98624, radius: 50 },
+  { id: Biglite_Makati, name: "Biglite Makati", lat: 14.53984, lng: 121.01433, radius: 50 },
+  { id: Demo_Location, name: "Demo Location", lat: 14.73263, lng: 121.00270, radius: 50 },
+  { id: Weshop_Taft, name: "Weshop Taft", lat: 14.56245, lng: 120.99612, radius: 50 },
+  { id: Kai_Mall, name: "Kai Mall", lat: 14.75670, lng: 121.04391, radius: 50 },
+  { id: Ellec_Parada, name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 }
 ];
 
 const map = L.map('map').setView([locations[0].lat, locations[0].lng], 13);
