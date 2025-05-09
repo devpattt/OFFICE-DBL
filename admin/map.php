@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../public/css/map.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
-  <title>DBL ISTS</title>
+  <title>DBL ISTS - Geo Map</title>
 </head>
 <body>
   <nav id="sidebar">
@@ -111,13 +111,16 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
         const locations = [
-            { name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50},
-            { name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50},
-            { name: "WL Bignay", lat: 14.747861, lng: 121.00390, radius: 50 },
-            { name: "Labella Villa Homes", lat: 14.74117 , lng: 120.98624, radius: 50 },
-            { name: "Biglite Makati", lat: 14.53984, lng: 121.01433, radius: 50 }
+          { id: "DBL ISTS", name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50 },
+          { id: "WL Headquarter", name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50 },
+          { id: "WL Bignay", name: "WL Bignay", lat: 14.747861, lng: 121.00390, radius: 50 },
+          { id: "Labella Villa Homes", name: "Labella Villa Homes", lat: 14.74117 , lng: 120.98624, radius: 50 },
+          { id: "Biglite Makati", name: "Biglite Makati", lat: 14.53984, lng: 121.01433, radius: 50 },
+          { id: "Demo Location", name: "Demo Location", lat: 14.73263, lng: 121.00270, radius: 50 },
+          { id: "Weshop Taft", name: "Weshop Taft", lat: 14.56245, lng: 120.99612, radius: 50 },
+          { id: "Kai Mall", name: "Kai Mall", lat: 14.75670, lng: 121.04391, radius: 50 },
+          { id: "Ellec Parada", name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 }
         ];
-        
         const map = L.map('map').setView([locations[0].lat, locations[0].lng], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,

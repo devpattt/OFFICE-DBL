@@ -112,9 +112,9 @@
   <select name="location" id="location" onchange="checkLocation()" required>
     <option value="" disabled selected>— Choose Client Location —</option>
     <?php
-      $clientResult = $conn->query("SELECT client_name FROM clients");
+      $clientResult = $conn->query("SELECT client FROM dbl_client_locations");
       while($client = $clientResult->fetch_assoc()) {
-          echo "<option value='{$client['client_name']}'>{$client['client_name']}</option>";
+          echo "<option value='{$client['client']}'>{$client['client']}</option>";
       }
     ?>
     <option value="Others">Others</option> 
