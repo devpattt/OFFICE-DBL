@@ -32,56 +32,83 @@ form {
     cursor: pointer;
   }
 
-  /* ITI BTN */
 
-  .btn-container {
-    display: flex;
-    gap: 10px; 
-  }
-  .custom-btn {
-    color: #111528;
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    transition: background-color 0.3s, color 0.3s;
+    /* Toast styles */
+  .toast {
+      visibility: hidden; 
+      min-width: 250px;
+      margin-left: -125px; 
+      background-color: #333; 
+      color: #fff;
+      text-align: center;
+      border-radius: 2px;
+      padding: 10px;
+      position: fixed;
+      z-index: 1;
+      left: 50%;
+      bottom: 30px; 
+      font-size: 17px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      opacity: 0; 
+      transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out;
   }
 
-  .custom-btn:hover {
-      background-color: #232738; 
-      color: #ffffff;
+  .toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px; 
   }
-    
-    select,
-    input[type="text"],
-    textarea {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-      font-size: 16px;
+
+    /* ITI BTN */
+
+    .btn-container {
+      display: flex;
+      gap: 10px; 
     }
-  
-  button[type="submit"] {
-    background-color: #232738;
-    color: white;
-    padding: 14px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 18px;
-    width: 100%;
-    transition: background-color 0.3s;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #161e3d;
-  }
-  
-  #otherLocationDiv {
-    margin-top: 10px;
-  }
+    .custom-btn {
+      color: #111528;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .custom-btn:hover {
+        background-color: #232738; 
+        color: #ffffff;
+    }
+      
+      select,
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+    
+    button[type="submit"] {
+      background-color: #232738;
+      color: white;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+    
+    button[type="submit"]:hover {
+      background-color: #161e3d;
+    }
+    
+    #otherLocationDiv {
+      margin-top: 10px;
+    }
 
   /* Modal Styles */
   #confirmationModal {

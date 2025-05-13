@@ -92,7 +92,7 @@
           <option value="" disabled selected>— Choose Department —</option>
           <?php
           include '../conn.php';
-          $deptResult = $conn->query("SELECT DISTINCT department FROM dbl_employees_acc"); 
+          $deptResult = $conn->query("SELECT DISTINCT department FROM dbl_employees_dept"); 
           while($dept = $deptResult->fetch_assoc()) {
               echo "<option value='{$dept['department']}'>{$dept['department']}</option>";
           }

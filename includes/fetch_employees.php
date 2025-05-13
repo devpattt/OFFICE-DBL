@@ -4,7 +4,6 @@ include '../conn.php';
 if (isset($_GET['department'])) {
     $department = $_GET['department'];
     
-    // Fetch employees based on the selected department
     $query = "SELECT id, full_name FROM dbl_employees_acc WHERE department = '$department'";
     $result = $conn->query($query);
     
