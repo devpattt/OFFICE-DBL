@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/css/itinerary.css">
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
     <link rel="icon" href="../public/img/DBL.png">
@@ -85,7 +86,94 @@
           </ul>
         </nav>
   <main>
-  </main>
+    <form action="../includes/save_leave_request.php" method="POST"> 
+      <label for="department_id">Select Department:</label>
+      <select name="department_id" id="department_id" required onchange="fetchEmployees(this.value)">
+          <option value="" disabled selected>— Choose Department —</option>
+          <?php
+          include '../conn.php';
+          $deptResult = $conn->query("SELECT DISTINCT department FROM dbl_employees_acc"); 
+          while($dept = $deptResult->fetch_assoc()) {
+              echo "<option value='{$dept['department']}'>{$dept['department']}</option>";
+          }
+          ?>
+      </select>
+
+    <label for="employee_id">Employee Name:</label>
+      <select name="employee_id" id="employee_id" required>
+          <option value="" disabled selected>— Choose Employee —</option>
+      </select>
+
+    <label for="leave_type">Leave Type:</label>
+      <select name="leave_type" id="leave_type" required onchange="toggleOtherLeaveType(this.value)">
+          <option value="" disabled selected>— Choose Leave Type —</option>
+          <option value="Vacation">Vacation</option>
+          <option value="Sick">Sick</option>
+          <option value="Emergency">Emergency</option>
+          <option value="Maternity">Maternity</option>
+          <option value="Paternity">Paternity</option>
+          <option value="Other">Other</option>
+      </select>
+
+    <div id="other_leave_type_container" style="display: none; margin-top: 10px;">
+        <label for="other_leave_type">Please Specify:</label>
+        <input type="text" name="other_leave_type" id="other_leave_type" placeholder="Enter your leave type">
+    </div>
+
+    <label for="start_date">Start Date:</label>
+    <input type="date" name="start_date" id="start_date" required>
+
+    <label for="end_date">End Date:</label>
+    <input type="date" name="end_date" id="end_date" required>
+
+    <label for="reason">Reason:</label>
+    <textarea name="reason" id="reason" rows="4" cols="50" required></textarea>
+
+    <button type="submit">Submit Leave Request</button>
+</form>
+
+    </main>
+
+<script>
+function fetchEmployees(department) {
+    const employeeSelect = document.getElementById("employee_id");
+    employeeSelect.innerHTML = "<option value='' disabled selected>— Choose Employee —</option>";
+
+    if (department) {
+        fetch(`../includes/fetch_employees.php?department=${department}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(employee => {
+                const option = document.createElement("option");
+                option.value = employee.id;
+                option.textContent = employee.full_name;
+                employeeSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error("Error fetching employees:", error));
+    }
+}
+
+function toggleOtherLeaveType(value) {
+    const otherContainer = document.getElementById("other_leave_type_container");
+    if (value === "Other") {
+        otherContainer.style.display = "block";
+        document.getElementById("other_leave_type").required = true;
+    } else {
+        otherContainer.style.display = "none";
+        document.getElementById("other_leave_type").required = false;
+    }
+}
+
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('start_date').setAttribute('min', today);
+  document.getElementById('end_date').setAttribute('min', today);
+  document.getElementById('start_date').addEventListener('change', function () {
+      const selectedStartDate = this.value;
+      document.getElementById('end_date').setAttribute('min', selectedStartDate);
+  });
+</script>
+
 </body>
 <script src="../public/js/main.js"></script>
 </html>

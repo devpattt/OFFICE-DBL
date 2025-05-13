@@ -7,7 +7,6 @@ $sql = "SELECT * FROM itinerary WHERE employee_id = '$employee_id'";
 $result = $conn->query($sql);
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
   <head>

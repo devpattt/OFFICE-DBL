@@ -150,6 +150,7 @@ $result = $conn->query($sql);
                 <th>Priority</th>
                 <th>Date Observed</th>
                 <th>Submitted At</th>
+                <th>Create Itinerary</th>
             </tr>
         </thead>
         <tbody>
@@ -165,6 +166,13 @@ $result = $conn->query($sql);
                 </td>
                 <td><?php echo $row['date_observed']; ?></td>
                 <td><?php echo $row['submitted_at']; ?></td>
+          <td>
+            <div class="btn-container d-flex flex-column gap-1">
+                    <class="custom-btn info";>
+                    <span class="text-container">Create Itinerary</span>
+                </a>
+            </div>
+        </td>
             </tr>
             <?php endwhile; ?>
         </tbody>
