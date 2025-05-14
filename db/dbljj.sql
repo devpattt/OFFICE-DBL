@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 14, 2025 at 04:11 AM
+-- Generation Time: May 09, 2025 at 04:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -65,13 +65,6 @@ CREATE TABLE `dbl_attendance_logs` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `hours_worked` decimal(5,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `dbl_attendance_logs`
---
-
-INSERT INTO `dbl_attendance_logs` (`id`, `employee_id`, `username`, `date`, `time_in`, `location_in`, `lat_in`, `lng_in`, `time_out`, `location_out`, `lat_out`, `lng_out`, `status`, `created_at`, `hours_worked`) VALUES
-(28, 'EMP001', 'devpat', '2025-05-13', 'Tuesday - 5/13/2025 - 10:16 AM', '76', 14.7399, 120.98754, NULL, NULL, NULL, NULL, 'Pending', '2025-05-13 02:16:20', 0.00);
 
 -- --------------------------------------------------------
 
@@ -156,34 +149,6 @@ INSERT INTO `dbl_employees_dept` (`id`, `department`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `dbl_leave_requests`
---
-
-CREATE TABLE `dbl_leave_requests` (
-  `id` int(11) NOT NULL,
-  `employee_id` int(11) NOT NULL,
-  `department_id` varchar(20) NOT NULL,
-  `leave_type` enum('Vacation','Sick','Emergency','Maternity','Paternity','Other') NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `reason` text DEFAULT NULL,
-  `status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `dbl_leave_requests`
---
-
-INSERT INTO `dbl_leave_requests` (`id`, `employee_id`, `department_id`, `leave_type`, `start_date`, `end_date`, `reason`, `status`, `created_at`, `updated_at`) VALUES
-(3, 1, 'Information Technolo', 'Sick', '2025-05-15', '2025-05-23', 'sds', 'Pending', '2025-05-13 03:32:25', '2025-05-13 03:32:25'),
-(4, 3, 'System Integration', 'Sick', '2025-05-14', '2025-05-17', 'sdsd', 'Pending', '2025-05-13 03:43:10', '2025-05-13 03:43:10'),
-(5, 1, 'Information Technolo', 'Emergency', '2025-05-14', '2025-05-17', 'sds', 'Pending', '2025-05-13 03:46:05', '2025-05-13 03:46:05');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `itinerary`
 --
 
@@ -206,18 +171,17 @@ CREATE TABLE `itinerary` (
 --
 
 INSERT INTO `itinerary` (`id`, `employee_id`, `location`, `date`, `time`, `description`, `status`, `created_at`, `updated_at`, `arrival_time`, `departure_time`) VALUES
-(1, 'EMP001', 'Code Helix', '2025-04-28', '14:10:23', 'Fix CCTVs', 'Completed', '2025-04-28 06:10:23', '2025-05-09 03:51:03', NULL, NULL),
+(1, 'EMP001', 'Code Helix', '2025-04-28', '14:10:23', 'Fix CCTVs', 'Pending', '2025-04-28 06:10:23', '2025-04-30 06:32:23', NULL, NULL),
 (2, 'EMP001', 'Code Helix', '2025-04-28', '16:11:49', 'Fix servers', 'Completed', '2025-04-28 08:11:49', '2025-04-28 08:12:19', NULL, NULL),
 (3, 'EMP002', 'Code Helix', '2025-04-28', '16:24:54', 'dsadsdsds', 'Completed', '2025-04-28 08:24:54', '2025-04-30 06:18:56', NULL, NULL),
 (4, 'EMP001', 'WL Valenzuela', '2025-04-29', '16:15:30', 'fix cctvs', 'Completed', '2025-04-29 08:15:30', '2025-04-30 06:18:40', NULL, NULL),
 (5, 'EMP002', 'Code Helix', '2025-04-30', '08:38:42', 'fix cctv', 'Completed', '2025-04-30 00:38:42', '2025-04-30 06:18:58', NULL, NULL),
-(6, 'EMP001', 'WL Main', '2025-04-30', '14:35:54', 'Server Daily Checkup', 'Completed', '2025-04-30 06:35:54', '2025-05-09 03:51:05', NULL, NULL),
-(7, 'EMP001', 'WL Main', '2025-05-06', '08:43:20', 'Check CCTV', 'Completed', '2025-05-06 00:43:20', '2025-05-09 03:51:07', NULL, NULL),
+(6, 'EMP001', 'WL Main', '2025-04-30', '14:35:54', 'Server Daily Checkup', 'Pending', '2025-04-30 06:35:54', '2025-04-30 06:40:35', NULL, NULL),
+(7, 'EMP001', 'WL Main', '2025-05-06', '08:43:20', 'Check CCTV', 'Pending', '2025-05-06 00:43:20', '2025-05-06 00:43:20', NULL, NULL),
 (8, 'EMP003', 'BCP MAIN', '2025-05-06', '14:28:47', 'SUNUGIN MO', 'Pending', '2025-05-06 06:28:47', '2025-05-06 06:28:47', NULL, NULL),
-(9, 'EMP001', 'Code Helix', '2025-05-07', '09:21:40', 'Develop a Attendance Tracking System', 'Completed', '2025-05-07 01:21:40', '2025-05-09 03:51:06', NULL, NULL),
-(10, 'EMP001', 'Code Helix', '2025-05-07', '15:49:22', 'Fix Internet', 'Completed', '2025-05-07 07:49:22', '2025-05-09 03:51:09', '2025-05-07 15:49:45', NULL),
-(11, 'EMP001', 'DBL ISTS', '2025-05-09', '10:17:53', 'Develop ATS', 'Completed', '2025-05-09 02:17:53', '2025-05-09 03:49:15', NULL, NULL),
-(12, 'EMP002', 'Labella Villa Homes', '2025-05-09', '11:51:57', 'Cables', 'Pending', '2025-05-09 03:51:57', '2025-05-09 03:53:07', '2025-05-09 11:53:05', '2025-05-09 11:53:07');
+(9, 'EMP001', 'Code Helix', '2025-05-07', '09:21:40', 'Develop a Attendance Tracking System', 'Pending', '2025-05-07 01:21:40', '2025-05-07 01:21:40', NULL, NULL),
+(10, 'EMP001', 'Code Helix', '2025-05-07', '15:49:22', 'Fix Internet', 'Pending', '2025-05-07 07:49:22', '2025-05-07 07:49:45', '2025-05-07 15:49:45', NULL),
+(11, 'EMP001', 'DBL ISTS', '2025-05-09', '10:17:53', 'Develop ATS', 'Pending', '2025-05-09 02:17:53', '2025-05-09 02:17:53', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -241,8 +205,7 @@ CREATE TABLE `reports` (
 --
 
 INSERT INTO `reports` (`id`, `client_name`, `issue_type`, `issue_description`, `priority`, `date_observed`, `attachments`, `submitted_at`) VALUES
-(1, 'CodeHelixCorp', 'Network', 'No internet connection', 'medium', '2025-05-07', 'uploads/1746598738-SHREK ASH.jfif', '2025-05-07 06:18:58'),
-(2, 'WL Bignay', 'Electronics', 'Sira printers', 'low', '2025-05-13', 'uploads/1747098171-SHREK ASH.jfif', '2025-05-13 01:02:51');
+(1, 'CodeHelixCorp', 'Network', 'No internet connection', 'medium', '2025-05-07', 'uploads/1746598738-SHREK ASH.jfif', '2025-05-07 06:18:58');
 
 --
 -- Indexes for dumped tables
@@ -282,12 +245,6 @@ ALTER TABLE `dbl_employees_dept`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `dbl_leave_requests`
---
-ALTER TABLE `dbl_leave_requests`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `itinerary`
 --
 ALTER TABLE `itinerary`
@@ -314,7 +271,7 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `dbl_attendance_logs`
 --
 ALTER TABLE `dbl_attendance_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `dbl_client_locations`
@@ -335,22 +292,16 @@ ALTER TABLE `dbl_employees_dept`
   MODIFY `id` int(55) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `dbl_leave_requests`
---
-ALTER TABLE `dbl_leave_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT for table `itinerary`
 --
 ALTER TABLE `itinerary`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
