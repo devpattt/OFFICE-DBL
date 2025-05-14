@@ -7,7 +7,9 @@ const locations = [
   { id: "Demo Location", name: "Demo Location", lat: 14.73263, lng: 121.00270, radius: 50 },
   { id: "Weshop Taft", name: "Weshop Taft", lat: 14.56245, lng: 120.99612, radius: 50 },
   { id: "Kai Mall", name: "Kai Mall", lat: 14.75670, lng: 121.04391, radius: 50 },
-  { id: "Ellec Parada", name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 }
+  { id: "Ellec Parada", name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 },
+  { id: "Demo Location", name: "Demo Location", lat: 14.73254, lng: 121.00566, radius: 50 }
+
 ];
 
 const map = L.map('map').setView([locations[0].lat, locations[0].lng], 13);
@@ -77,7 +79,7 @@ function handleAttendance(action) {
   };
   
   // API call 
-  fetch('attendance_api.php', {
+  fetch('../api/attendance_api.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -105,7 +107,7 @@ function handleAttendance(action) {
 }
 
 function updateButtonStates() {
-  fetch('check_status.php')
+  fetch('../includes/check_status.php')
   .then(response => response.json())
   .then(data => {
     if (data.status === 'clocked-in') {
@@ -158,7 +160,7 @@ function updateLocation() {
     }, error => {
       statusDiv.textContent = "Error getting location: " + error.message;
       statusDiv.className = 'error';
-d
+      
       clockInBtn.disabled = true;
       clockOutBtn.disabled = true;
     });
