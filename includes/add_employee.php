@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $full_name = $_POST['full_name'];
     $role = $_POST['role'];
-    $status = 'active'; // default
+    $status = 'active'; 
 
     $sql = "INSERT INTO dbl_employees_acc (employee_id, username, email, full_name, role, status, created_at)
             VALUES ('$employee_id', '$username', '$email', '$full_name', '$role', '$status', NOW())";

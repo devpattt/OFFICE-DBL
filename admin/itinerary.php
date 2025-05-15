@@ -193,16 +193,13 @@
     }
 }
 
-// Capture the form
 const form = document.getElementById('itineraryForm');
 
-// When user submits form -> open modal only
 form.addEventListener('submit', function(event) {
     event.preventDefault(); 
     openModal();
 });
 
-// When user clicks "Yes" in the modal
 function confirmSubmission() {
     closeModal();
 

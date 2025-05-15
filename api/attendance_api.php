@@ -44,14 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $employee_id = $_SESSION['employee_id'];
-    $username = $_SESSION['username']; // Use from session, or pass in the request
+    $username = $_SESSION['username']; 
     $location = $conn->real_escape_string($data['location']);
     $latitude = floatval($data['latitude']);
     $longitude = floatval($data['longitude']);
     $current_date = date('Y-m-d');
     $current_time = date('H:i:s');
 
-    // Check if user is already clocked in today
     $sql = "SELECT * FROM dbl_attendance_logs 
             WHERE employee_id = ? AND date = ? AND time_out IS NULL 
             ORDER BY id DESC LIMIT 1";

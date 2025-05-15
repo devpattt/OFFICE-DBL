@@ -1,6 +1,5 @@
 <?php
 include '../conn.php';
-// Fetch departments
 
 $departments = [];
 $dept_sql = "SELECT department FROM dbl_employees_dept";  
@@ -239,7 +238,6 @@ while ($row = $dept_result->fetch_assoc()) {
       document.getElementById('confirmModal').style.display = 'none';
     }
 
-    // Close the modal if user clicks outside the modal
     window.onclick = function(event) {
       var modal = document.getElementById('confirmModal');
       if (event.target == modal) {
@@ -247,6 +245,7 @@ while ($row = $dept_result->fetch_assoc()) {
       }
     }
     </script>
+    
     <!-- Toast container -->
         <div id="toast" style="visibility:hidden; min-width:250px; margin-left:-125px; background-color:green; color:#fff; text-align:center; border-radius:2px; padding:16px; position:fixed; z-index:1; left:50%; bottom:30px; font-size:17px;">
         </div>  
