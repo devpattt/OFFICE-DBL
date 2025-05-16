@@ -5,7 +5,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 
 session_start();
-
+date_default_timezone_set('Asia/Manila');
 $db_host = "localhost";
 $db_user = "root";
 $db_pass = "";
@@ -48,9 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $location = $conn->real_escape_string($data['location']);
     $latitude = floatval($data['latitude']);
     $longitude = floatval($data['longitude']);
-    $current_date = date('Y-m-d');
+    $current_date = date('Y-m-d'); 
     $current_time = date('H:i:s');
-
+    $display_date = date('F j, Y');
     // Check if user is already clocked in today
     $sql = "SELECT * FROM dbl_attendance_logs 
             WHERE employee_id = ? AND date = ? AND time_out IS NULL 

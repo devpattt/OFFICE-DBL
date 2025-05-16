@@ -16,6 +16,7 @@ $result = $query->get_result();
 
 $logs = [];
 while ($row = $result->fetch_assoc()) {
+    $row['date'] = date('F j, Y', strtotime($row['date']));
     $row['time_in'] = !empty($row['time_in']) ? $row['time_in'] : 'N/A';
     $row['time_out'] = !empty($row['time_out']) ? $row['time_out'] : 'N/A';
     $logs[] = $row;
