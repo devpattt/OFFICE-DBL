@@ -106,12 +106,10 @@ $result = $conn->query($sql);
   <main>
 
   <?php 
-// Pagination settings
 $itemsPerPage = 10;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $itemsPerPage;
 
-// Count total rows for pagination
 $countSql = "
     SELECT COUNT(*) AS total 
     FROM reports r
@@ -121,7 +119,6 @@ $countResult = $conn->query($countSql);
 $totalRows = $countResult->fetch_assoc()['total'];
 $totalPages = ceil($totalRows / $itemsPerPage);
 
-// Fetch the paginated data
 $sql = "
     SELECT 
         r.client_name, 
@@ -179,7 +176,6 @@ $result = $conn->query($sql);
     </table>
 </div>
 
-<!-- Pagination Controls -->
 <div class="pagination">
     <?php if ($totalPages > 1): ?>
         <?php if ($currentPage > 1): ?>

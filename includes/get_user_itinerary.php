@@ -1,8 +1,7 @@
 <?php
 
-include '../conn.php'; // Include your database connection file
+include '../conn.php';
 
-// Get the employee ID from the request
 $employee_id = $_GET['employee_id'] ?? '';
 
 if ($employee_id) {

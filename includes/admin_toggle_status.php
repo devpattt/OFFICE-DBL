@@ -34,7 +34,6 @@ if (isset($_GET['id']) && isset($_GET['action'])) {
 
     $stmt->close();
 } else {
-    // Missing parameters
     header("Location: admin_employees.php?error=MissingParameters");
     exit();
 }
