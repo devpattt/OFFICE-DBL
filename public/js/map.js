@@ -155,7 +155,7 @@ function updateLocation() {
         userMarker.setLatLng([userLat, userLng]);
       } else {
         userMarker = L.marker([userLat, userLng]).addTo(map);
-        userMarker.bindPopup("Your current location").openPopup();
+      //userMarker.bindPopup("Your current location").openPopup();
         map.setView([userLat, userLng], 15);
       }
       

@@ -1,19 +1,149 @@
+<?php
+include '../conn.php';  
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch all attendance logs with valid coordinates
+$sql = "SELECT * FROM dbl_attendance_logs 
+        WHERE lat_in IS NOT NULL AND lng_in IS NOT NULL 
+        ORDER BY date DESC, time_in_raw DESC";
+$result = $conn->query($sql);
+
+$rows = [];
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+}
+
+// Get current active employees (latest check-ins without check-outs)
+$activeEmployeesQuery = "SELECT al.*, 
+                               CASE 
+                                   WHEN al.time_out IS NULL OR al.time_out = '' THEN 'active'
+                                   ELSE 'inactive'
+                               END as current_status
+                        FROM dbl_attendance_logs al
+                        INNER JOIN (
+                            SELECT employee_id, MAX(date) as max_date, MAX(time_in_raw) as max_time
+                            FROM dbl_attendance_logs 
+                            WHERE lat_in IS NOT NULL AND lng_in IS NOT NULL
+                            GROUP BY employee_id
+                        ) latest ON al.employee_id = latest.employee_id 
+                                 AND al.date = latest.max_date 
+                                 AND al.time_in_raw = latest.max_time
+                        ORDER BY al.time_in_raw DESC";
+
+$activeResult = $conn->query($activeEmployeesQuery);
+$activeEmployees = [];
+if ($activeResult && $activeResult->num_rows > 0) {
+    while ($row = $activeResult->fetch_assoc()) {
+        $activeEmployees[] = $row;
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../public/css/main.css">
-  <link rel="stylesheet" href="../public/css/darkmode.css">
-  <link rel="icon" href="../public/img/DBL.png">
-  <link rel="stylesheet" href="../public/css/itinerary.css">
-  <link rel="stylesheet" href="../public/css/map.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-  <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
-  <title>DBL ISTS - Geo Map</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/css/main.css">
+    <link rel="stylesheet" href="../public/css/darkmode.css">
+    <link rel="icon" href="../public/img/DBL.png">
+    <link rel="stylesheet" href="../public/css/itinerary.css">
+    <link rel="stylesheet" href="../public/css/map.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
+    <title>DBL ISTS - Employee Location Map</title>
+    <style>
+        .map-container {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .map-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .employee-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .filter-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        #main-map {
+            height: 500px;
+            width: 100%;
+            border-radius: 8px;
+        }
+        .legend {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin: 10px 0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
-  <nav id="sidebar">
+    <!-- Your existing sidebar navigation here -->
+ <nav id="sidebar">
     <ul>
       <li>
         <span class="logo">DBL ISTS</span>
@@ -53,7 +183,7 @@
           <span>Reports</span>
         </a>
       </li>
-      <li class="active">
+      <li  class="active">
         <a href="map.php">
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 294q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
           <span>Map</span>
@@ -88,82 +218,369 @@
       </li>  
     </ul>
   </nav>
-  <main>
-  <h1>Demo Geofencing</h1>
-  <br>
-    <div id="map"></div>
-    <div id="status">Checking location...</div>
-  </main>
-<div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
-      <strong>Inactive for too long.</strong><br>
-      Logging out in <span id="countdown">10</span> seconds...
-  </div>
 
-  <div id="session-expired-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
-      <div style="background:#fff; padding:30px; border-radius:12px; text-align:center; max-width:400px; margin:auto; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-          <h2 style="margin-bottom:10px;">Session Expired</h2>
-          <p style="margin-bottom:20px;">You've been inactive for too long. Please log in again.</p>
-          <button id="logout-confirm-btn" style="padding:10px 20px; background-color:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">Okay</button>
-      </div>
-  </div>
-  
-<script src="../public/js/session.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <main>
+        <!-- Main map showing all locations -->
+        <div class="map-container">
+            <div class="map-header">
+                <h3>All Employee Locations</h3>
+            </div>
+            <div id="main-map"></div>
+        </div>
+
+        <!-- Current Active Employees -->
+        <h2>Current Active Employees</h2>
+        <?php if (empty($activeEmployees)): ?>
+            <p>No active employees currently checked in.</p>
+        <?php else: ?>
+            <?php foreach ($activeEmployees as $employee): ?>
+                <div class="map-container">
+                    <div class="map-header">
+                        <div class="employee-info">
+                            <div>
+                                <strong><?= htmlspecialchars($employee['username']) ?></strong>
+                                (ID: <?= htmlspecialchars($employee['employee_id']) ?>)
+                                <br>
+                                <small>
+                                    Date: <?= htmlspecialchars($employee['date']) ?> | 
+                                    Check-in: <?= htmlspecialchars($employee['time_in']) ?>
+                                    <?php if ($employee['time_out']): ?>
+                                        | Check-out: <?= htmlspecialchars($employee['time_out']) ?>
+                                    <?php endif; ?>
+                                </small>
+                            </div>
+                            <span class="status-badge <?= $employee['current_status'] === 'active' ? 'status-active' : 'status-inactive' ?>">
+                                <?= ucfirst($employee['current_status']) ?>
+                            </span>
+                        </div>
+                    </div>
+                    <div id="map_<?= $employee['id'] ?>" style="height: 350px;"></div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <!-- Historical Data -->
+        <h2>Recent Check-ins/Check-outs</h2>
+        <?php foreach (array_slice($rows, 0, 10) as $row): ?>
+            <div class="map-container">
+                <div class="map-header">
+                    <div class="employee-info">
+                        <div>
+                            <strong><?= htmlspecialchars($row['username']) ?></strong>
+                            (ID: <?= htmlspecialchars($row['employee_id']) ?>)
+                            <br>
+                            <small>
+                                Date: <?= htmlspecialchars($row['date']) ?> | 
+                                Status: <?= htmlspecialchars($row['status']) ?>
+                                <?php if ($row['hours_worked']): ?>
+                                    | Hours: <?= $row['hours_worked'] ?>
+                                <?php endif; ?>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div id="map_historical_<?= $row['id'] ?>" style="height: 300px;"></div>
+            </div>
+        <?php endforeach; ?>
+    </main>
+
+    <!-- Your existing modals and scripts -->
+    <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
+        <strong>Inactive for too long.</strong><br>
+        Logging out in <span id="countdown">10</span> seconds...
+    </div>
+
     <script>
+        // Define geofenced locations
         const locations = [
-          { id: "DBL ISTS", name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50 },
-          { id: "WL Headquarter", name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50 },
-          { id: "WL Bignay", name: "WL Bignay", lat: 14.747861, lng: 121.00390, radius: 50 },
-          { id: "Labella Villa Homes", name: "Labella Villa Homes", lat: 14.74117 , lng: 120.98624, radius: 50 },
-          { id: "Biglite Makati", name: "Biglite Makati", lat: 14.53984, lng: 121.01433, radius: 50 },
-          { id: "Demo Location", name: "Demo Location", lat: 14.73263, lng: 121.00270, radius: 50 },
-          { id: "Weshop Taft", name: "Weshop Taft", lat: 14.56245, lng: 120.99612, radius: 50 },
-          { id: "Kai Mall", name: "Kai Mall", lat: 14.75670, lng: 121.04391, radius: 50 },
-          { id: "Ellec Parada", name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 }
+            { id: "DBL ISTS", name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50 },
+            { id: "WL Headquarter", name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50 },
+            { id: "WL Bignay", name: "WL Bignay", lat: 14.747861, lng: 121.00390, radius: 50 },
+            { id: "Labella Villa Homes", name: "Labella Villa Homes", lat: 14.74117, lng: 120.98624, radius: 50 },
+            { id: "Biglite Makati", name: "Biglite Makati", lat: 14.53984, lng: 121.01433, radius: 50 },
+            { id: "Demo Location", name: "Demo Location", lat: 14.73263, lng: 121.00270, radius: 50 },
+            { id: "Weshop Taft", name: "Weshop Taft", lat: 14.56245, lng: 120.99612, radius: 50 },
+            { id: "Kai Mall", name: "Kai Mall", lat: 14.75670, lng: 121.04391, radius: 50 },
+            { id: "Ellec Parada", name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 }
         ];
-        const map = L.map('map').setView([locations[0].lat, locations[0].lng], 13);
+
+        // Initialize main map
+        let mainMap = L.map('main-map').setView([14.73990, 120.98754], 12);
+        let geofenceVisible = true;
+        let allMarkers = [];
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-        
-        locations.forEach(loc => {
-            L.circle([loc.lat, loc.lng], {
-                color: 'blue',
-                fillColor: '#99ccff',
-                fillOpacity: 0.3,
-                radius: loc.radius
-            }).addTo(map).bindPopup(loc.name);
-        });
-        
+        }).addTo(mainMap);
+
+        // Add geofences to main map
+        function addGeofences() {
+            locations.forEach(loc => {
+                L.circle([loc.lat, loc.lng], {
+                    color: 'blue',
+                    fillColor: '#99ccff',
+                    fillOpacity: 0.3,
+                    radius: loc.radius
+                }).addTo(mainMap).bindPopup(`<strong>${loc.name}</strong><br>Radius: ${loc.radius}m`);
+            });
+        }
+        addGeofences();
+
+        // Add all employee locations to main map
+        const employeeData = [
+            <?php foreach ($rows as $row): ?>
+            {
+                id: <?= $row['id'] ?>,
+                employee_id: '<?= htmlspecialchars($row['employee_id']) ?>',
+                username: '<?= htmlspecialchars($row['username']) ?>',
+                date: '<?= htmlspecialchars($row['date']) ?>',
+                lat_in: <?= $row['lat_in'] ?: 'null' ?>,
+                lng_in: <?= $row['lng_in'] ?: 'null' ?>,
+                lat_out: <?= $row['lat_out'] ?: 'null' ?>,
+                lng_out: <?= $row['lng_out'] ?: 'null' ?>,
+                time_in: '<?= htmlspecialchars($row['time_in']) ?>',
+                time_out: '<?= htmlspecialchars($row['time_out']) ?>',
+                location_in: '<?= htmlspecialchars($row['location_in']) ?>',
+                location_out: '<?= htmlspecialchars($row['location_out']) ?>',
+                status: '<?= htmlspecialchars($row['status']) ?>'
+            },
+            <?php endforeach; ?>
+        ];
+
+        // Add markers for all employees
+        function addEmployeeMarkers() {
+            employeeData.forEach(emp => {
+                if (emp.lat_in && emp.lng_in) {
+                    const checkInMarker = L.marker([emp.lat_in, emp.lng_in], {
+                        icon: L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                        })
+                    }).addTo(mainMap);
+                    
+                    checkInMarker.bindPopup(`
+                        <strong>${emp.username}</strong><br>
+                        ID: ${emp.employee_id}<br>
+                        Date: ${emp.date}<br>
+                        <strong>Check-in:</strong> ${emp.time_in}<br>
+                        Location: ${emp.location_in}<br>
+                        Status: ${emp.status}
+                    `);
+                    allMarkers.push(checkInMarker);
+                }
+
+                if (emp.lat_out && emp.lng_out) {
+                    const checkOutMarker = L.marker([emp.lat_out, emp.lng_out], {
+                        icon: L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                        })
+                    }).addTo(mainMap);
+                    
+                    checkOutMarker.bindPopup(`
+                        <strong>${emp.username}</strong><br>
+                        ID: ${emp.employee_id}<br>
+                        Date: ${emp.date}<br>
+                        <strong>Check-out:</strong> ${emp.time_out}<br>
+                        Location: ${emp.location_out}<br>
+                        Status: ${emp.status}
+                    `);
+                    allMarkers.push(checkOutMarker);
+
+                    // Draw line between check-in and check-out
+                    if (emp.lat_in && emp.lng_in) {
+                        L.polyline([[emp.lat_in, emp.lng_in], [emp.lat_out, emp.lng_out]], {
+                            color: 'purple',
+                            weight: 2,
+                            opacity: 0.7
+                        }).addTo(mainMap);
+                    }
+                }
+            });
+        }
+        addEmployeeMarkers();
+
+        // Individual maps for active employees
+        <?php foreach ($activeEmployees as $employee): ?>
+        (function() {
+            const mapId = "map_<?= $employee['id'] ?>";
+            const lat_in = <?= $employee['lat_in'] ?: 'null' ?>;
+            const lng_in = <?= $employee['lng_in'] ?: 'null' ?>;
+            const lat_out = <?= $employee['lat_out'] ?: 'null' ?>;
+            const lng_out = <?= $employee['lng_out'] ?: 'null' ?>;
+
+            if (!lat_in || !lng_in) return;
+
+            const map = L.map(mapId).setView([lat_in, lng_in], 16);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add check-in marker
+            const checkInMarker = L.marker([lat_in, lng_in], {
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                })
+            }).addTo(map);
+            
+            checkInMarker.bindPopup(`
+                <strong>Check-in</strong><br>
+                Time: <?= htmlspecialchars($employee['time_in']) ?><br>
+                Location: <?= htmlspecialchars($employee['location_in']) ?>
+            `).openPopup();
+
+            // Add check-out marker if exists
+            if (lat_out && lng_out) {
+                const checkOutMarker = L.marker([lat_out, lng_out], {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                    })
+                }).addTo(map);
+                
+                checkOutMarker.bindPopup(`
+                    <strong>Check-out</strong><br>
+                    Time: <?= htmlspecialchars($employee['time_out']) ?><br>
+                    Location: <?= htmlspecialchars($employee['location_out']) ?>
+                `);
+
+                // Draw line between check-in and check-out
+                L.polyline([[lat_in, lng_in], [lat_out, lng_out]], {
+                    color: 'blue',
+                    weight: 3,
+                    opacity: 0.8
+                }).addTo(map);
+
+                // Fit map to show both markers
+                map.fitBounds([[lat_in, lng_in], [lat_out, lng_out]], {padding: [20, 20]});
+            }
+
+            // Add relevant geofences
+            locations.forEach(loc => {
+                const distance = map.distance([lat_in, lng_in], [loc.lat, loc.lng]);
+                if (distance <= 200) { // Show geofences within 200m
+                    L.circle([loc.lat, loc.lng], {
+                        color: 'blue',
+                        fillColor: '#99ccff',
+                        fillOpacity: 0.2,
+                        radius: loc.radius
+                    }).addTo(map).bindPopup(loc.name);
+                }
+            });
+        })();
+        <?php endforeach; ?>
+
+        // Historical maps
+        <?php foreach (array_slice($rows, 0, 10) as $row): ?>
+        (function() {
+            const mapId = "map_historical_<?= $row['id'] ?>";
+            const lat_in = <?= $row['lat_in'] ?: 'null' ?>;
+            const lng_in = <?= $row['lng_in'] ?: 'null' ?>;
+            const lat_out = <?= $row['lat_out'] ?: 'null' ?>;
+            const lng_out = <?= $row['lng_out'] ?: 'null' ?>;
+
+            if (!lat_in || !lng_in) return;
+
+            const map = L.map(mapId).setView([lat_in, lng_in], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add check-in marker
+            L.marker([lat_in, lng_in], {
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                })
+            }).addTo(map)
+            .bindPopup(`<strong>Check-in:</strong><br><?= addslashes($row['location_in']) ?><br><?= addslashes($row['time_in']) ?>`)
+            .openPopup();
+
+            // Add check-out marker if exists
+            if (lat_out && lng_out) {
+                L.marker([lat_out, lng_out], {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                    })
+                }).addTo(map)
+                .bindPopup(`<strong>Check-out:</strong><br><?= addslashes($row['location_out']) ?><br><?= addslashes($row['time_out']) ?>`);
+
+                // Draw line between check-in and check-out
+                L.polyline([[lat_in, lng_in], [lat_out, lng_out]], {
+                    color: 'blue',
+                    weight: 2,
+                    opacity: 0.7
+                }).addTo(map);
+
+                // Fit map to show both markers
+                map.fitBounds([[lat_in, lng_in], [lat_out, lng_out]], {padding: [20, 20]});
+            }
+        })();
+        <?php endforeach; ?>
+
+        // Control functions
+        function showAllEmployees() {
+            // This function could filter to show all employees
+            console.log('Showing all employees');
+        }
+
+        function showActiveOnly() {
+            // This function could filter to show only active employees
+            console.log('Showing active employees only');
+        }
+
+        function showGeofences() {
+            // Toggle geofence visibility
+            geofenceVisible = !geofenceVisible;
+            console.log('Toggling geofences:', geofenceVisible);
+        }
+
+        function filterByDate() {
+            const selectedDate = document.getElementById('dateFilter').value;
+            console.log('Filtering by date:', selectedDate);
+            // Implement date filtering logic here
+        }
+
+        // Add user's current location if available
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(position => {
                 const userLat = position.coords.latitude;
                 const userLng = position.coords.longitude;
-                const userMarker = L.marker([userLat, userLng]).addTo(map);
-                userMarker.bindPopup("You are here").openPopup();
-                map.setView([userLat, userLng], 13);
-                const statusDiv = document.getElementById('status');
                 
-                const insideGeofence = locations.some(loc => {
-                    const distance = map.distance([userLat, userLng], [loc.lat, loc.lng]);
-                    return distance <= loc.radius;
-                });
-                
-                if (insideGeofence) {
-                    statusDiv.textContent = "You are inside a geofenced area.";
-                    statusDiv.classList.add('success');
-                } else {
-                    statusDiv.textContent = "You are outside all geofenced areas.";
-                    statusDiv.classList.add('error');
-                }
-            }, error => {
-                document.getElementById('status').textContent = "Error getting location: " + error.message;
+                L.marker([userLat, userLng], {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                    })
+                }).addTo(mainMap)
+                .bindPopup("Your current location")
+                .openPopup();
             });
-        } else {
-            document.getElementById('status').textContent = "Geolocation is not supported by this browser.";
         }
     </script>
-<script src="../public/js/session.js"></script>
-<script src="../public/js/main.js"></script>
+
+    <script src="../public/js/session.js"></script>
+    <script src="../public/js/main.js"></script>
+</body>
 </html>
