@@ -2,7 +2,7 @@
 session_start();
 include '../conn.php';
 
-date_default_timezone_set('Asia/Manila');   
+date_default_timezone_set('Asia/Manila');
 
 if (!isset($_SESSION['username'])) {
     echo json_encode(['error' => 'Session expired. Please log in again.']);
@@ -26,43 +26,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        if ($row['time_out'] === NULL) {
-            $timeOut = date('l - n/j/Y - h:i A'); 
-            
-            $timeInRaw = DateTime::createFromFormat('l - n/j/Y - h:i A', $row['time_in']);
-            $timeOutRaw = DateTime::createFromFormat('l - n/j/Y - h:i A', $timeOut);
 
-            if ($timeInRaw && $timeOutRaw) {
-                $hoursWorked = round(($timeOutRaw->getTimestamp() - $timeInRaw->getTimestamp()) / 3600, 2);
+        if ($row['time_out_raw'] === NULL) {
+            // Clocking out
+            $timeOutDisplay = date('l - h:i A');         
+            $timeOutRaw = date('Y-m-d H:i:s');             
 
-                if ($hoursWorked < 8) {
-                    $status = 'Under Hours';
-                } elseif ($hoursWorked == 8) {
-                    $status = 'Complete Hours';
-                } else {
-                    $status = 'Overtime';
-                }
+            $timeInRaw = new DateTime($row['time_in_raw']);
+            $timeOutObj = new DateTime($timeOutRaw);
 
-                $update = $conn->prepare("UPDATE dbl_attendance_logs SET time_out = ?, location_out = ?, lat_out = ?, lng_out = ?, status = ?, hours_worked = ? WHERE id = ?");
-                $update->bind_param("ssddsdi", $timeOut, $location, $latitude, $longitude, $status, $hoursWorked, $row['id']);
+            $hoursWorked = round(($timeOutObj->getTimestamp() - $timeInRaw->getTimestamp()) / 3600, 2);
 
-                if ($update->execute()) {
-                    echo "Clocked Out successfully! Hours Worked: $hoursWorked hrs - $status";
-                } else {
-                    echo "Error: " . $update->error;
-                }
+            if ($hoursWorked < 8) {
+                $status = 'Under Hours';
+            } elseif ($hoursWorked == 8) {
+                $status = 'Complete Hours';
             } else {
-                echo "Invalid time format.";
+                $status = 'Overtime';
+            }
+
+            $update = $conn->prepare("UPDATE dbl_attendance_logs 
+                SET time_out = ?, time_out_raw = ?, location_out = ?, lat_out = ?, lng_out = ?, status = ?, hours_worked = ? 
+                WHERE id = ?");
+
+            $update->bind_param("sssdsdsi", $timeOutDisplay, $timeOutRaw, $location, $latitude, $longitude, $status, $hoursWorked, $row['id']);
+
+            if ($update->execute()) {
+                echo "Clocked Out successfully! Hours Worked: $hoursWorked hrs - $status";
+            } else {
+                echo "Error: " . $update->error;
             }
 
         } else {
             echo "You have already clocked out today.";
         }
     } else {
-        $timeIn = date('l - n/j/Y - h:i A'); 
+        // Clocking in
+        $timeInDisplay = date('l - h:i A');             
+        $timeInRaw = date('Y-m-d H:i:s');                
 
-        $insert = $conn->prepare("INSERT INTO dbl_attendance_logs (employee_id, username, date, time_in, location_in, lat_in, lng_in) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $insert->bind_param("ssssddd", $employeeid, $username, $date, $timeIn, $location, $latitude, $longitude);
+        $insert = $conn->prepare("INSERT INTO dbl_attendance_logs 
+            (employee_id, username, date, time_in, time_in_raw, location_in, lat_in, lng_in) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+        $insert->bind_param("ssssssdd", $employeeid, $username, $date, $timeInDisplay, $timeInRaw, $location, $latitude, $longitude);
 
         if ($insert->execute()) {
             echo "Clocked In successfully!";

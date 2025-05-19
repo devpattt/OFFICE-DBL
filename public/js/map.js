@@ -1,4 +1,4 @@
-const locations = [
+const locations = [ 
   { id: "DBL ISTS", name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50 },
   { id: "WL Headquarter", name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50 },
   { id: "WL Bignay", name: "WL Bignay", lat: 14.747861, lng: 121.00390, radius: 50 },
@@ -9,7 +9,6 @@ const locations = [
   { id: "Kai Mall", name: "Kai Mall", lat: 14.75670, lng: 121.04391, radius: 50 },
   { id: "Ellec Parada", name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 },
   { id: "Demo Location", name: "Demo Location", lat: 14.73254, lng: 121.00566, radius: 50 }
-
 ];
 
 const map = L.map('map').setView([locations[0].lat, locations[0].lng], 13);
@@ -37,6 +36,7 @@ let isInsideGeofence = false;
 let currentLocationName = "";
 let userMarker = null;
 
+// Function to check geofence (if inside designated location)
 function checkGeofence(userLat, userLng) {
   let inside = false;
   let locationName = "";
@@ -91,11 +91,11 @@ function handleAttendance(action) {
     showMessage(result, result.includes('Error') ? 'error' : 'success');
     
     if (action === 'in' && !result.includes('Error')) {
-      clockInBtn.disabled = true;
-      clockOutBtn.disabled = false;
+      clockInBtn.disabled = true;  // Disable the Clock In button after success
+      clockOutBtn.disabled = false;  // Enable the Clock Out button after success
     } else if (action === 'out' && !result.includes('Error')) {
-      clockInBtn.disabled = false;
-      clockOutBtn.disabled = true;
+      clockInBtn.disabled = false;  // Enable the Clock In button after success
+      clockOutBtn.disabled = true;  // Disable the Clock Out button after success
     } else {
       updateButtonStates();
     }
@@ -112,9 +112,9 @@ function updateButtonStates() {
   .then(data => {
     if (data.status === 'clocked-in') {
       clockInBtn.disabled = true;
-      clockOutBtn.disabled = !isInsideGeofence;
+      clockOutBtn.disabled = false;  // Enable the Clock Out button if the user is clocked in
     } else {
-      clockInBtn.disabled = !isInsideGeofence;
+      clockInBtn.disabled = false;  // Enable the Clock In button if the user is not clocked in
       clockOutBtn.disabled = true;
     }
   })
@@ -177,5 +177,4 @@ clockInBtn.addEventListener('click', () => handleAttendance('in'));
 clockOutBtn.addEventListener('click', () => handleAttendance('out'));
 
 updateLocation();
-
-setInterval(updateLocation, 30000);
+setInterval(updateLocation, 30000);  
