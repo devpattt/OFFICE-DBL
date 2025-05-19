@@ -64,28 +64,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $attendance_id = $row['id'];
         $time_in_raw = new DateTime($row['time_in_raw']);
         $time_out_raw = new DateTime($current_time_raw);
-        $hours_worked = round(($time_out_raw->getTimestamp() - $time_in_raw->getTimestamp()) / 3600, 2);
 
-        $status = ($hours_worked < 8) ? 'Under Hours' : (($hours_worked == 8) ? 'Complete Hours' : 'Overtime');
+            $hours_worked = ($time_out_raw->getTimestamp() - $time_in_raw->getTimestamp()) / 3600;
 
-        $stmt = $conn->prepare("UPDATE dbl_attendance_logs 
-            SET time_out = ?, time_out_raw = ?, location_out = ?, lat_out = ?, lng_out = ?, 
-                hours_worked = ?, status = ? 
-            WHERE id = ?");
-        $stmt->bind_param("sssddsdi", 
-            $current_time_display, $current_time_raw, $location, $latitude, $longitude, 
-            $hours_worked, $status, $attendance_id);
+            if ($hours_worked < 7.99) {
+                $status = 'Under Hours';
+            } elseif ($hours_worked >= 7.99 && $hours_worked <= 8.01) {
+                $status = 'Complete Hours';
+            } else {
+                $status = 'Overtime';
+            }
 
-        if ($stmt->execute()) {
-            echo json_encode([
-                "status" => "success",
-                "message" => "Clocked out at $current_time_display from $location",
-                "hours_worked" => $hours_worked,
-                "status_detail" => $status
-            ]);
-        } else {
-            echo json_encode(["status" => "error", "message" => $stmt->error]);
-        }
+            $hours_worked = round($hours_worked, 2); 
+
+
+                $update_stmt = $conn->prepare("UPDATE dbl_attendance_logs 
+                    SET time_out = ?, time_out_raw = ?, location_out = ?, lat_out = ?, lng_out = ?, 
+                        hours_worked = ?, status = ? 
+                    WHERE id = ?");
+
+                if (!$update_stmt) {
+                    echo json_encode(["status" => "error", "message" => "Prepare failed: " . $conn->error]);
+                    exit;
+                }
+
+                $update_stmt->bind_param("sssddssi", 
+                    $current_time_display, $current_time_raw, $location, $latitude, $longitude, 
+                    $hours_worked, $status, $attendance_id);
+
+                if ($update_stmt->execute()) {
+                    echo json_encode([
+                        "status" => "success",
+                        "message" => "Clocked out at $current_time_display from $location",
+                        "hours_worked" => $hours_worked,
+                        "status_detail" => $status
+                    ]);
+                } else {
+                    echo json_encode(["status" => "error", "message" => $update_stmt->error]);
+                }
 
     } else {
         // Clock-in
