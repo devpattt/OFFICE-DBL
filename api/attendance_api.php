@@ -6,6 +6,7 @@ header("Access-Control-Allow-Headers: Content-Type");
 
 session_start();
 date_default_timezone_set('Asia/Manila');
+
 $db_host = "localhost";
 $db_user = "root";
 $db_pass = "";
@@ -16,11 +17,10 @@ $response = [];
 $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
 
 if ($conn->connect_error) {
-    $response = [
+    echo json_encode([
         "status" => "error",
         "message" => "Database connection failed: " . $conn->connect_error
-    ];
-    echo json_encode($response);
+    ]);
     exit;
 }
 
@@ -30,16 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $json_data = file_get_contents('php://input');
-    $data = json_decode($json_data, true);
-    
+    $data = json_decode(file_get_contents('php://input'), true);
+
     if (!isset($data['location']) || !isset($data['latitude']) || !isset($data['longitude'])) {
-        echo "Error: Missing required data";
+        echo json_encode(["status" => "error", "message" => "Missing required data"]);
         exit;
     }
 
     if (!isset($_SESSION['employee_id']) || !isset($_SESSION['username'])) {
-        echo "Error: User not logged in";
+        echo json_encode(["status" => "error", "message" => "User not logged in"]);
         exit;
     }
 
@@ -48,14 +47,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $location = $conn->real_escape_string($data['location']);
     $latitude = floatval($data['latitude']);
     $longitude = floatval($data['longitude']);
-    $current_date = date('Y-m-d'); 
-    $current_time = date('H:i:s');
 
-    // Check if user is already clocked in today
-    $sql = "SELECT * FROM dbl_attendance_logs 
-            WHERE employee_id = ? AND date = ? AND time_out IS NULL 
-            ORDER BY id DESC LIMIT 1";
-    $stmt = $conn->prepare($sql);
+    $current_date = date('Y-m-d');
+    $current_time_display = date('l - h:i A');     
+    $current_time_raw = date('Y-m-d H:i:s');    
+
+    // Check if already clocked in
+    $stmt = $conn->prepare("SELECT * FROM dbl_attendance_logs 
+                            WHERE employee_id = ? AND date = ? AND time_out IS NULL 
+                            ORDER BY id DESC LIMIT 1");
     $stmt->bind_param("ss", $employee_id, $current_date);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -65,32 +65,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $row = $result->fetch_assoc();
         $attendance_id = $row['id'];
 
-        $sql = "UPDATE dbl_attendance_logs 
-                SET time_out = ?, location_out = ?, lat_out = ?, lng_out = ? 
-                WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssddi", $current_time, $location, $latitude, $longitude, $attendance_id);
+        // Calculate hours worked
+        $time_in_raw = new DateTime($row['time_in_raw']);
+        $time_out_raw = new DateTime($current_time_raw);
+        $hours_worked = round(($time_out_raw->getTimestamp() - $time_in_raw->getTimestamp()) / 3600, 2);
+
+        $status = ($hours_worked < 8) ? 'Under Hours' : (($hours_worked == 8) ? 'Complete Hours' : 'Overtime');
+
+        $stmt = $conn->prepare("UPDATE dbl_attendance_logs 
+            SET time_out = ?, time_out_raw = ?, location_out = ?, lat_out = ?, lng_out = ?, 
+                hours_worked = ?, status = ? 
+            WHERE id = ?");
+        $stmt->bind_param("sssddsdi", 
+            $current_time_display, $current_time_raw, $location, $latitude, $longitude, 
+            $hours_worked, $status, $attendance_id);
 
         if ($stmt->execute()) {
-            $_SESSION['clocked_in'] = false;
-            echo "Successfully clocked out at " . date('h:i A') . " from " . $location;
+            echo json_encode([
+                "status" => "success",
+                "message" => "Clocked out at $current_time_display from $location",
+                "hours_worked" => $hours_worked,
+                "status_detail" => $status
+            ]);
         } else {
-            echo "Error: " . $stmt->error;
+            echo json_encode(["status" => "error", "message" => $stmt->error]);
         }
 
     } else {
         // Clock-in
-        $sql = "INSERT INTO dbl_attendance_logs 
-                (employee_id, username, date, time_in, location_in, lat_in, lng_in) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssdd", $employee_id, $username, $current_date, $current_time, $location, $latitude, $longitude);
+        $stmt = $conn->prepare("INSERT INTO dbl_attendance_logs 
+            (employee_id, username, date, time_in, time_in_raw, location_in, lat_in, lng_in) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssdd", 
+            $employee_id, $username, $current_date, 
+            $current_time_display, $current_time_raw, 
+            $location, $latitude, $longitude);
 
         if ($stmt->execute()) {
-            $_SESSION['clocked_in'] = true;
-            echo "Successfully clocked in at " . date('h:i A') . " at " . $location;
+            echo json_encode([
+                "status" => "success",
+                "message" => "Clocked in at $current_time_display at $location"
+            ]);
         } else {
-            echo "Error: " . $stmt->error;
+            echo json_encode(["status" => "error", "message" => $stmt->error]);
         }
     }
 
@@ -100,4 +117,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 http_response_code(405);
-echo "Error: Invalid request method";
+echo json_encode(["status" => "error", "message" => "Invalid request method"]);
+?>
