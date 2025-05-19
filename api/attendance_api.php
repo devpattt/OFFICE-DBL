@@ -47,12 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $location = $conn->real_escape_string($data['location']);
     $latitude = floatval($data['latitude']);
     $longitude = floatval($data['longitude']);
-
+    
     $current_date = date('Y-m-d');
     $current_time_display = date('l - h:i A');     
     $current_time_raw = date('Y-m-d H:i:s');    
-
-    // Check if already clocked in
     $stmt = $conn->prepare("SELECT * FROM dbl_attendance_logs 
                             WHERE employee_id = ? AND date = ? AND time_out IS NULL 
                             ORDER BY id DESC LIMIT 1");
@@ -64,8 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Clock-out
         $row = $result->fetch_assoc();
         $attendance_id = $row['id'];
-
-        // Calculate hours worked
         $time_in_raw = new DateTime($row['time_in_raw']);
         $time_out_raw = new DateTime($current_time_raw);
         $hours_worked = round(($time_out_raw->getTimestamp() - $time_in_raw->getTimestamp()) / 3600, 2);
