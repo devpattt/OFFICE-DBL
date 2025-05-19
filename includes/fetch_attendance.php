@@ -31,20 +31,13 @@ $result = $query->get_result();
 $logs = [];
 
 while ($row = $result->fetch_assoc()) {
-    // Format date
     $formatted_date = strtotime($row['date']) ? date('F j, Y', strtotime($row['date'])) : 'N/A';
-
-    // Format time_in
     $formatted_time_in = !empty($row['time_in']) 
         ? $row['time_in'] 
         : (!empty($row['time_in_raw']) ? date('l - h:i A', strtotime($row['time_in_raw'])) : 'N/A');
-
-    // Format time_out
     $formatted_time_out = !empty($row['time_out']) 
         ? $row['time_out'] 
         : (!empty($row['time_out_raw']) ? date('l - h:i A', strtotime($row['time_out_raw'])) : 'N/A');
-
-    // Ensure status is meaningful
     $status = (!empty($row['status']) && !preg_match('/^\d{4}-\d{2}-\d{2}/', $row['status']))
         ? $row['status']
         : 'Pending';

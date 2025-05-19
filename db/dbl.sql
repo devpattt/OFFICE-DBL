@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 14, 2025 at 04:11 AM
+-- Generation Time: May 19, 2025 at 07:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -54,10 +54,12 @@ CREATE TABLE `dbl_attendance_logs` (
   `username` varchar(255) NOT NULL,
   `date` date DEFAULT NULL,
   `time_in` varchar(50) DEFAULT NULL,
+  `time_in_raw` datetime DEFAULT NULL,
   `location_in` varchar(255) DEFAULT NULL,
   `lat_in` double DEFAULT NULL,
   `lng_in` double DEFAULT NULL,
   `time_out` varchar(50) DEFAULT NULL,
+  `time_out_raw` datetime DEFAULT NULL,
   `location_out` varchar(255) DEFAULT NULL,
   `lat_out` double DEFAULT NULL,
   `lng_out` double DEFAULT NULL,
@@ -70,8 +72,8 @@ CREATE TABLE `dbl_attendance_logs` (
 -- Dumping data for table `dbl_attendance_logs`
 --
 
-INSERT INTO `dbl_attendance_logs` (`id`, `employee_id`, `username`, `date`, `time_in`, `location_in`, `lat_in`, `lng_in`, `time_out`, `location_out`, `lat_out`, `lng_out`, `status`, `created_at`, `hours_worked`) VALUES
-(28, 'EMP001', 'devpat', '2025-05-13', 'Tuesday - 5/13/2025 - 10:16 AM', '76', 14.7399, 120.98754, NULL, NULL, NULL, NULL, 'Pending', '2025-05-13 02:16:20', 0.00);
+INSERT INTO `dbl_attendance_logs` (`id`, `employee_id`, `username`, `date`, `time_in`, `time_in_raw`, `location_in`, `lat_in`, `lng_in`, `time_out`, `time_out_raw`, `location_out`, `lat_out`, `lng_out`, `status`, `created_at`, `hours_worked`) VALUES
+(5, 'EMP001', 'devpat', '2025-05-19', 'Monday - 01:36 PM', '2025-05-19 13:36:26', 'DBL ISTS', 14.73998, 120.9874, 'Monday - 01:38 PM', '2025-05-19 13:38:42', 'DBL ISTS', 14.73998, 120.9874, 'Under Hours', '2025-05-19 05:36:26', 0.04);
 
 -- --------------------------------------------------------
 
@@ -314,7 +316,7 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `dbl_attendance_logs`
 --
 ALTER TABLE `dbl_attendance_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `dbl_client_locations`
