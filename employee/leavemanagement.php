@@ -131,8 +131,22 @@
 
     <button type="submit">Submit Leave Request</button>
 </form>
-
     </main>
+
+          <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
+          <strong>Inactive for too long.</strong><br>
+          Logging out in <span id="countdown">10</span> seconds...
+      </div>
+
+      <div id="session-expired-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
+          <div style="background:#fff; padding:30px; border-radius:12px; text-align:center; max-width:400px; margin:auto; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+              <h2 style="margin-bottom:10px;">Session Expired</h2>
+              <p style="margin-bottom:20px;">You've been inactive for too long. Please log in again.</p>
+              <button id="logout-confirm-btn" style="padding:10px 20px; background-color:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">Okay</button>
+          </div>
+      </div>
+      
+    <script src="../public/js/session.js"></script>
 
 <script>
 function fetchEmployees(department) {

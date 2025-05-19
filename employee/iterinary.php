@@ -198,6 +198,5 @@ $result = $conn->query($sql);
   </div>
   
 <script src="../public/js/session.js"></script>
-<script src="../public/js/session.js"></script>
 </body>
 </html>
