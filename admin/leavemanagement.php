@@ -1,3 +1,34 @@
+<?php
+// Handle status update before any HTML is sent
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['status'])) {
+    $host = '127.0.0.1';
+    $db   = 'dbl';
+    $user = 'root';
+    $pass = '';
+    $charset = 'utf8mb4';
+
+    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    $options = [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ];
+
+    try {
+        $pdo = new PDO($dsn, $user, $pass, $options);
+        $id = $_POST['id'];
+        $newStatus = $_POST['status'];
+
+        $updateStmt = $pdo->prepare("UPDATE dbl_leave_requests SET status = ?, updated_at = NOW() WHERE id = ?");
+        $updateStmt->execute([$newStatus, $id]);
+
+        // Redirect before any output
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    } catch (PDOException $e) {
+        die("Database error: " . $e->getMessage());
+    }
+}
+?>
 <?php 
 include '../includes/isset.php';
 ?>
@@ -9,6 +40,7 @@ include '../includes/isset.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
+    <link rel="stylesheet" href="../public/css/leave.css">
     <link rel="icon" href="../public/img/DBL.png">
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
@@ -22,7 +54,7 @@ include '../includes/isset.php';
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
         </button>
       <li>
-        <li class="active">
+        <li>
           <a href="home.php">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M520-640v-160q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v160q0 17-11.5 28.5T800-600H560q-17 0-28.5-11.5T520-640ZM120-480v-320q0-17 11.5-28.5T160-840h240q17 0 28.5 11.5T440-800v320q0 17-11.5 28.5T400-440H160q-17 0-28.5-11.5T120-480Zm400 320v-320q0-17 11.5-28.5T560-520h240q17 0 28.5 11.5T840-480v320q0 17-11.5 28.5T800-120H560q-17 0-28.5-11.5T520-160Zm-400 0v-160q0-17 11.5-28.5T160-360h240q17 0 28.5 11.5T440-320v160q0 17-11.5 28.5T400-120H160q-17 0-28.5-11.5T120-160Zm80-360h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/></svg>
             <span>Dashboard</span>
@@ -88,8 +120,86 @@ include '../includes/isset.php';
       </li>  
     </ul>
   </nav>
-  <main>
-  </main>
+<main>
+  <h2>Employee Leave Requests</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Employee ID</th>
+        <th>Department</th>
+        <th>Leave Type</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php
+        $host = '127.0.0.1';
+        $db   = 'dbl';
+        $user = 'root';
+        $pass = '';
+        $charset = 'utf8mb4';
+
+        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+        $options = [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ];
+
+        try {
+            $pdo = new PDO($dsn, $user, $pass, $options);
+
+            // Handle status update
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['status'])) {
+                $id = $_POST['id'];
+                $newStatus = $_POST['status'];
+
+                $updateStmt = $pdo->prepare("UPDATE dbl_leave_requests SET status = ?, updated_at = NOW() WHERE id = ?");
+                $updateStmt->execute([$newStatus, $id]);
+
+                // Refresh the page to show updated status
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit;
+            }
+
+            // Fetch leave requests
+            $stmt = $pdo->query("SELECT * FROM dbl_leave_requests");
+
+            while ($row = $stmt->fetch()) {
+                echo "<tr>";
+                echo "<td>{$row['id']}</td>";
+                echo "<td>{$row['employee_id']}</td>";
+                echo "<td>{$row['department_id']}</td>";
+                echo "<td>{$row['leave_type']}</td>";
+                echo "<td>{$row['start_date']}</td>";
+                echo "<td>{$row['end_date']}</td>";
+                echo "<td>{$row['reason']}</td>";
+                echo "<td class='status-{$row['status']}'>{$row['status']}</td>";
+                echo "<td>
+                        <form method='post' style='display:inline;'>
+                            <input type='hidden' name='id' value='{$row['id']}'>
+                            <button type='submit' name='status' value='Approved' style='color:green;'>Approve</button>
+                        </form>
+                        <form method='post' style='display:inline; margin-left:5px;'>
+                            <input type='hidden' name='id' value='{$row['id']}'>
+                            <button type='submit' name='status' value='Rejected' style='color:red;'>Reject</button>
+                        </form>
+                      </td>";
+                echo "</tr>";
+            }
+
+        } catch (PDOException $e) {
+            echo "<tr><td colspan='10'>Database error: " . $e->getMessage() . "</td></tr>";
+        }
+      ?>
+    </tbody>
+  </table>
+</main>
+
 </body>
 <script src="../public/js/main.js"></script>
 </html>

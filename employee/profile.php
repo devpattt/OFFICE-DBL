@@ -1,3 +1,84 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['employee_id'])) {
+    $_SESSION['employee_id'] = 'EMP123'; // Dummy fallback
+}
+
+$host = '127.0.0.1';
+$db   = 'dbl';
+$user = 'root';
+$pass = '';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+];
+
+$employee = [];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+    $employee_id = $_SESSION['employee_id'];
+
+    // Handle profile update
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $full_name = $_POST['full_name'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : null;
+
+        // Upload profile picture
+        $profile_pic = null;
+        if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
+            $fileTmp = $_FILES['profile_pic']['tmp_name'];
+            $fileName = basename($_FILES['profile_pic']['name']);
+            $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            $allowed = ['jpg', 'jpeg', 'png', 'gif', 'jfif'];
+
+            if (in_array($fileExt, $allowed)) {
+                $newFileName = uniqid('profile_', true) . '.' . $fileExt;
+                $uploadDir = '../uploads/';
+                move_uploaded_file($fileTmp, $uploadDir . $newFileName);
+                $profile_pic = $newFileName;
+            }
+        }
+
+        // Update query with dynamic password and picture handling
+        $updateFields = "full_name = ?, email = ?";
+        $params = [$full_name, $email];
+
+        if ($profile_pic) {
+            $updateFields .= ", profile_pic = ?";
+            $params[] = $profile_pic;
+        }
+
+        if ($password) {
+            $updateFields .= ", password = ?";
+            $params[] = $password;
+        }
+
+        $params[] = $employee_id;
+
+        $query = "UPDATE dbl_employees_acc SET $updateFields WHERE employee_id = ?";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute($params);
+
+        header("Location: profile.php?success=1");
+        exit;
+    }
+
+    // Load profile data
+    $stmt = $pdo->prepare("SELECT * FROM dbl_employees_acc WHERE employee_id = ?");
+    $stmt->execute([$employee_id]);
+    $employee = $stmt->fetch();
+
+} catch (PDOException $e) {
+    die("Database error: " . $e->getMessage());
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,6 +89,85 @@
     <link rel="icon" href="../public/img/DBL.png">
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
+    <style>
+       .profile-container {
+    background: #ffffff;
+    padding: 40px;
+    max-width: 600px;
+    margin: 20px auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
+  }
+
+  .profile-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #1a1a1a;
+    font-size: 24px;
+  }
+
+  label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  }
+
+  input.readonly {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+  }
+
+
+
+  button:hover {
+    background: #4338ca;
+  }
+
+  .success {
+    color: #16a34a;
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+    padding: 10px;
+    text-align: center;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  .profile-pic-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profile-pic-wrapper img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #4f46e5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+    </style>
   </head>
 <body>
 <nav id="sidebar">
@@ -85,6 +245,52 @@
     </ul>
   </nav>
   <main>
+     <div class="profile-container">
+    <h2>My Profile</h2>
+    <?php if (!empty($employee['profile_pic'])): ?>
+    <div class="profile-pic-wrapper">
+      <img src="../uploads/<?= htmlspecialchars($employee['profile_pic']) ?>">
+    </div>
+  <?php endif; ?>
+
+    <?php if (isset($_GET['success'])): ?>
+      <p class="success">Profile updated successfully!</p>
+    <?php endif; ?>
+
+    <form method="POST" enctype="multipart/form-data">
+       <label>Profile Picture</label>
+      <input type="file" name="profile_pic" accept="image/*">
+      
+      <label>Employee ID</label>
+      <input type="text" value="<?= htmlspecialchars($employee['employee_id']) ?>" readonly class="readonly">
+
+      <label>Username</label>
+      <input type="text" value="<?= htmlspecialchars($employee['username']) ?>" readonly class="readonly">
+
+      <label>Full Name</label>
+      <input type="text" name="full_name" value="<?= htmlspecialchars($employee['full_name']) ?>">
+
+      <label>Email</label>
+      <input type="email" name="email" value="<?= htmlspecialchars($employee['email']) ?>">
+
+      <label>New Password (leave blank to keep current)</label>
+      <input type="password" name="password">
+
+      <label>Department</label>
+      <input type="text" value="<?= htmlspecialchars($employee['department']) ?>" readonly class="readonly">
+
+      <label>Status</label>
+      <input type="text" value="<?= htmlspecialchars($employee['status']) ?>" readonly class="readonly">
+
+      <label>Role</label>
+      <input type="text" value="<?= htmlspecialchars($employee['role']) ?>" readonly class="readonly">
+
+      <label>Created At</label>
+      <input type="text" value="<?= htmlspecialchars($employee['created_at']) ?>" readonly class="readonly">
+
+      <button type="submit">Update Profile</button>
+    </form>
+  </div>
   </main>
 </body>
 <script src="../public/js/main.js"></script>
