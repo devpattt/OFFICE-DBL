@@ -114,6 +114,14 @@ while ($row = $dept_result->fetch_assoc()) {
       });
     </script>
     <?php endif; ?>  
+    <?php if (isset($_GET['status']) && $_GET['status'] == 'edited'): ?>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    showToast('Employee updated successfully!');
+  });
+</script>
+<?php endif; ?>
+
     <br>
     <button id="openModalBtn" class="add-btn">Add Employee</button>
       <table>
@@ -213,6 +221,38 @@ while ($row = $dept_result->fetch_assoc()) {
   </div>
 </div>
 
+<!-- Edit Employee Modal -->
+<div id="editModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditModal()">&times;</span>
+    <h2>Edit Employee</h2>
+    <form id="editEmployeeForm" method="POST" action="../includes/edit_employee.php">
+      <input type="hidden" name="id" id="edit-id">
+
+      <label for="edit-employee-id">Employee ID:</label>
+      <input type="text" name="employee_id" id="edit-employee-id" required>
+
+      <label for="edit-username">Username:</label>
+      <input type="text" name="username" id="edit-username" required>
+
+      <label for="edit-email">Email:</label>
+      <input type="email" name="email" id="edit-email" required>
+
+      <label for="edit-full-name">Full Name:</label>
+      <input type="text" name="full_name" id="edit-full-name" required>
+
+      <label for="edit-department">Department:</label>
+      <select name="department" required>
+        <option value="">Select department</option>
+        <?php foreach ($departments as $dept): ?>
+          <option value="<?= $dept ?>"><?= $dept ?></option>
+        <?php endforeach; ?>
+      </select>
+
+      <button type="submit" class="btn-save">Save Changes</button>
+    </form>
+  </div>
+</div>
 
 <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
       <strong>Inactive for too long.</strong><br>
@@ -288,5 +328,35 @@ while ($row = $dept_result->fetch_assoc()) {
     }
   }
 </script>
+<script>
+function editEmployee(id) {
+  const row = document.querySelector(`button.btn-edit[onclick="editEmployee(${id})"]`).closest('tr');
+
+
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-employee-id').value = row.querySelector('td[data-label="Employee ID"]').textContent.trim();
+  document.getElementById('edit-username').value = row.querySelector('td[data-label="Username"]').textContent.trim();
+  document.getElementById('edit-email').value = row.querySelector('td[data-label="Email"]').textContent.trim();
+  document.getElementById('edit-full-name').value = row.querySelector('td[data-label="Full Name"]').textContent.trim();
+document.getElementById('edit-department').value = row.querySelector('td[data-label="Department"]').textContent.trim();
+
+
+ 
+  document.getElementById('editModal').style.display = 'block';
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+}
+
+
+window.addEventListener('click', function(e) {
+  const modal = document.getElementById('editModal');
+  if (e.target == modal) {
+    modal.style.display = 'none';
+  }
+});
+</script>
+
 <script src="../public/js/main.js"></script>
 </html>
