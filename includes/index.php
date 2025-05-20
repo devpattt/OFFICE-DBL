@@ -2,6 +2,8 @@
 session_start();
 include __DIR__ . '/../conn.php';
 
+$errors = [];
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -13,37 +15,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        
+
         if ($row['status'] == 'inactive') {
-            $error = "Your account has been deactivated. Please contact support.";
+            $errors[] = "Your account has been deactivated. Please contact support.";
         } else {
             if (password_verify($password, $row['password'])) {
+                // Set session and redirect
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['role'] = $row['role'];
                 $_SESSION['employee_id'] = $row['employee_id'];
-                $_SESSION['department'] = $row['department'];  
+                $_SESSION['department'] = $row['department'];
 
-                // RBAC based on role and department
                 if ($row['role'] === 'Admin') {
                     header("Location: ../admin/home.php");
-                } elseif (in_array($row['department'], ['System Integration', 'Information Technology', 'Sales', 'Intern'])) {
-                    header("Location: ../employee/home.php");
                 } else {
                     header("Location: ../employee/home.php");
                 }
                 exit();
             } else {
-                $error = "Invalid password.";
+                $errors[] = "Invalid password.";
             }
         }
     } else {
-        $error = "Username not found.";
+        $errors[] = "Username not found.";
     }
 
-    $stmt->close();
+    $_SESSION['login_errors'] = $errors;
+    header("Location: ../index.php");  
+    exit();
 }
-?>
-
-<?php if (isset($error)): ?>
-    <p style="color: red;"><?php echo $error; ?></p>
-<?php endif; ?>

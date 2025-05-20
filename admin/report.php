@@ -1,4 +1,5 @@
 <?php
+include '../includes/isset.php';
 include '../conn.php';
 
 $reportsPerPage = 10;

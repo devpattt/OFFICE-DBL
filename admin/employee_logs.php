@@ -1,5 +1,6 @@
 <?php
-  include '../includes/tasklogs.php';
+
+include '../includes/tasklogs.php';
 ?>
 
 <!DOCTYPE html>

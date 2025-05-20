@@ -1,11 +1,11 @@
 <?php
+include '../includes/isset.php';
 include '../conn.php';  
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch all attendance logs with valid coordinates
 $sql = "SELECT * FROM dbl_attendance_logs 
         WHERE lat_in IS NOT NULL AND lng_in IS NOT NULL 
         ORDER BY date DESC, time_in_raw DESC";

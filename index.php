@@ -1,3 +1,12 @@
+<?php
+session_start();
+$errors = [];
+
+if (isset($_SESSION['login_errors'])) {
+    $errors = $_SESSION['login_errors'];
+    unset($_SESSION['login_errors']); 
+}
+?>
 
 
 <!DOCTYPE html>
@@ -84,6 +93,19 @@
             filter: blur(5px); 
             z-index: -1; 
         }
+
+        .error-message ul {
+            list-style-type: none; 
+            color: red;
+            font-size: px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .error-message li {
+            margin: 20px;
+        } 
+
     </style>
 </head>
 <body>  
@@ -92,6 +114,15 @@
     </div>
     <div class="login-container">
         <h2>Log Into Your Account</h2>
+                <?php if (!empty($errors)): ?>
+                            <div class="error-message" style="color: red;">
+                                <ul>
+                                    <?php foreach ($errors as $error): ?>
+                                        <li><?= htmlspecialchars($error) ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
         <form id="loginForm" action="includes/index.php" method="post">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" required aria-label="Account ID">
@@ -106,9 +137,6 @@
             <button type="submit">LOGIN</button>
         </form>
     </div>
-
-    <script src="js/script.js"></script>
-
     <script>
         window.onload = function () {
         };
@@ -137,6 +165,7 @@
         function redirectToLogin() {
             window.location.href = "employee/index.php"; 
         }
+
     </script>
 </body>
 </html>
