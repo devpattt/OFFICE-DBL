@@ -1,46 +1,25 @@
 <?php
-include '../includes/isset.php';
-include "../conn.php";
 
-$totalEmployees = 0;
-$presentToday = 0;
-$absentToday = 0;
-
-$sqlTotal = "SELECT COUNT(*) as total FROM dbl_employees_acc";
-$resultTotal = $conn->query($sqlTotal);
-if ($resultTotal && $row = $resultTotal->fetch_assoc()) {
-    $totalEmployees = (int)$row['total'];
-}
-
-$sqlPresent = "SELECT COUNT(*) as present FROM dbl_attendance_logs WHERE date = CURDATE() AND (status = 'Pending')";
-$resultPresent = $conn->query($sqlPresent);
-if ($resultPresent && $row = $resultPresent->fetch_assoc()) {
-    $presentToday = (int)$row['present'];
-}
-
-$absentToday = $totalEmployees - $presentToday;
-
-$conn->close();
+include '../includes/tasklogs.php';
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../public/css/dashboard.css">
-  <link rel="stylesheet" href="../public/css/main.css">
-  <link rel="stylesheet" href="../public/css/darkmode.css">
-  <link rel="icon" href="../public/img/DBL.png">
-  <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <title>DBL ISTS</title>
-</head>
+  <head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/css/main.css">
+    <link rel="stylesheet" href="../public/css/darkmode.css">
+    <link rel="icon" href="../public/img/DBL.png">
+    <link rel="stylesheet" href="../public/css/task.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
+    <title>DBL ISTS</title>
+  </head>
 <body>
 
- <nav id="sidebar">
+<nav id="sidebar">
     <ul>
       <li>
         <span class="logo">DBL ISTS</span>
@@ -48,7 +27,7 @@ $conn->close();
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
         </button>
       <li>
-        <li class="active">
+        <li>
           <a href="home.php">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M520-640v-160q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v160q0 17-11.5 28.5T800-600H560q-17 0-28.5-11.5T520-640ZM120-480v-320q0-17 11.5-28.5T160-840h240q17 0 28.5 11.5T440-800v320q0 17-11.5 28.5T400-440H160q-17 0-28.5-11.5T120-480Zm400 320v-320q0-17 11.5-28.5T560-520h240q17 0 28.5 11.5T840-480v320q0 17-11.5 28.5T800-120H560q-17 0-28.5-11.5T520-160Zm-400 0v-160q0-17 11.5-28.5T160-360h240q17 0 28.5 11.5T440-320v160q0 17-11.5 28.5T400-120H160q-17 0-28.5-11.5T120-160Zm80-360h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/></svg>
             <span>Dashboard</span>
@@ -60,9 +39,9 @@ $conn->close();
           <span>Attendance Map</span>
         </a>
       </li>
-    <li>
+    <li class="active">
         <a href="attendance_logs.php">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m576-160-56-56 104-104-104-104 56-56 104 104 104-104 56 56-104 104 104 104-56 56-104-104-104 104Zm79-360L513-662l56-56 85 85 170-170 56 57-225 226ZM80-280v-80h360v80H80Zm0-320v-80h360v80H80Z"/></svg>
+       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m576-160-56-56 104-104-104-104 56-56 104 104 104-104 56 56-104 104 104 104-56 56-104-104-104 104Zm79-360L513-662l56-56 85 85 170-170 56 57-225 226ZM80-280v-80h360v80H80Zm0-320v-80h360v80H80Z"/></svg>
           <span>Attendance Logs</span>
         </a>
       </li>
@@ -120,70 +99,56 @@ $conn->close();
       </li>  
     </ul>
   </nav>
-
+  
   <main>
-    <div class="dashboard-container">
-      <div class="info-cards">
+  <h2>Itinerary Logs</h2>
+  <br>
+        <form method="GET" id="filterForm">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" value="<?php echo htmlspecialchars($selected_date); ?>" onchange="document.getElementById('filterForm').submit();">
 
-        <div class="info-card purple">
-          <i class="fas fa-users"></i>
-          <div>
-            <small>Total Employees</small>
-            <h4 id="total-employees"><?php echo $totalEmployees; ?></h4>
-          </div>
-        </div>
+            <label for="employee">Select Employee:</label>
+            <select id="employee" name="employee" onchange="document.getElementById('filterForm').submit();">
+                <option value="">All Employees</option>
+                <?php
+                if ($employeeResult->num_rows > 0) {
+                    while ($emp = $employeeResult->fetch_assoc()) {
+                        $selected = ($selected_employee == $emp['employee_id']) ? 'selected' : '';
+                        echo "<option value='" . htmlspecialchars($emp['employee_id']) . "' $selected>" . htmlspecialchars($emp['full_name']) . "</option>";
+                    }
+                }
+                ?>
+            </select>
+        </form>
 
-        <div class="info-card teal">
-          <i class="fas fa-user-check"></i>
-          <div>
-            <small>Present Today</small>
-            <h4 id="present-today"><?php echo $presentToday; ?></h4>
-          </div>
-        </div>
+        <?php
+        if ($result->num_rows > 0) {
+            echo "<table>";
+            echo "<tr><th>Employee Name</th><th>Location</th><th>Start Time</th><th>Updated Time</th><th>Description</th><th>Status</th></tr>";
+            while($row = $result->fetch_assoc()) {
+                $status_class = strtolower($row["status"]); 
+                
+                $completion_time = ($row["updated_at"] != NULL) ? date("H:i:s", strtotime($row["updated_at"])) : "N/A";
+                $start_time = date("H:i:s", strtotime($row["start_time"]));
 
-        <div class="info-card orange">
-            <i class="fas fa-user-times"></i>
-            <div>
-              <small>Absent Today</small>
-              <h4 id="absent-today"><?php echo $absentToday; ?></h4>
-            </div>
-          </div>
-      </div>
-    </div>
-    
-    <div class="box">
-          <h3>Upcoming Holidays</h3>
-          <table class="event-table">
-            <thead>
-              <tr>
-                <th>Holiday</th>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="holidayTableBody">
-            </tbody>
-          </table>
-        </div>
-
-
- <!--
-  <div class="box">
-    <h3>Task Status</h3>
-    <div class="chart-container">
-      <canvas id="itineraryChart"></canvas>
-    </div>
-    <div class="task-legend">
-      <span><span class="dot gold"></span> Active</span>
-      <span><span class="dot green"></span> Completed</span>
-      <span><span class="dot red"></span> Ended</span>
-    </div>
-  </div>
--->
-
-</div>
+                echo "<tr class='" . htmlspecialchars($status_class) . "'>";
+                echo "<td>" . htmlspecialchars($row["employee_name"]) . "</td>";
+                echo "<td>" . htmlspecialchars($row["location"]) . "</td>";
+                echo "<td>" . $start_time . "</td>";
+                echo "<td>" . $completion_time . "</td>";
+                echo "<td>" . htmlspecialchars($row["description"]) . "</td>";
+                echo "<td>" . htmlspecialchars($row["status"]) . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+        } else {
+            echo "<p>No tasks found for this filter.</p>";
+        }
+        $conn->close();
+        ?>
   </main>
+
+
   <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
       <strong>Inactive for too long.</strong><br>
       Logging out in <span id="countdown">10</span> seconds...
@@ -199,214 +164,6 @@ $conn->close();
   
 <script src="../public/js/session.js"></script>
 </body>
-<script>
-// This could be expanded with a complete dataset or API
-function getPhilippinesHolidays(year) {
-  return [
-    { name: "New Year's Day", date: `January 1, ${year}`, type: "regular" },
-    { name: "Araw ng Kagitingan", date: `April 9, ${year}`, type: "regular" },
-    { name: "Maundy Thursday", date: "April 6, 2025", type: "regular" },
-    { name: "Good Friday", date: "April 7, 2025", type: "regular" },
-    { name: "Labor Day", date: `May 1, ${year}`, type: "regular" },
-    { name: "Independence Day", date: `June 12, ${year}`, type: "regular" },
-    { name: "National Heroes Day", date: `August 30, ${year}`, type: "regular" },
-    { name: "Bonifacio Day", date: `November 30, ${year}`, type: "regular" },
-    { name: "Christmas Day", date: `December 25, ${year}`, type: "regular" },
-    { name: "Rizal Day", date: `December 30, ${year}`, type: "regular" },
-    { name: "Chinese New Year", date: "February 10, 2025", type: "special" },
-    { name: "EDSA Revolution", date: `February 25, ${year}`, type: "special" },
-    { name: "All Saints' Day", date: `November 1, ${year}`, type: "special" },
-    { name: "All Souls' Day", date: `November 2, ${year}`, type: "special" },
-    { name: "Feast of the Immaculate Conception", date: `December 8, ${year}`, type: "special" },
-  ];
-}
 
-function getNextHolidays(count = 5) {
-  const currentYear = new Date().getFullYear();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const allHolidays = [
-    ...getPhilippinesHolidays(currentYear),
-    ...getPhilippinesHolidays(currentYear + 1)
-  ];
-  
-  const upcomingHolidays = allHolidays.filter(holiday => {
-    const holidayDate = new Date(holiday.date);
-    return holidayDate >= today;
-  });
-  
-  upcomingHolidays.sort((a, b) => new Date(a.date) - new Date(b.date));
-  
-  return upcomingHolidays.slice(0, count);
-}
-
-function updateHolidayTable() {
-  const tableBody = document.getElementById("holidayTableBody");
-  const nextHolidays = getNextHolidays(5);
-  
-  tableBody.innerHTML = "";
-
-  nextHolidays.forEach(holiday => {
-    const holidayDate = new Date(holiday.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const status = holidayDate.getTime() === today.getTime() ? "active" : "upcoming";
-    
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${holiday.name}</td>
-      <td>${holiday.date}</td>
-      <td><span class="status ${holiday.type}">${capitalize(holiday.type)}</span></td>
-      <td><span class="status ${status}">${capitalize(status)}</span></td>
-    `;
-    
-    tableBody.appendChild(row);
-  });
-}
-
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-document.addEventListener("DOMContentLoaded", updateHolidayTable);
-
-setInterval(() => {
-  updateHolidayTable();
-}, 86400000); 
-</script>
-
-<script>
-const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
-const attendanceChart = new Chart(attendanceCtx, {
-  type: 'line',
-  data: {
-    labels: ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [
-      {
-        label: 'Last 6 Months',
-        data: [25, 38, 28, 35, 50, 28, 32],
-        borderColor: '#007bff',
-        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-        borderWidth: 3,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 3,
-        pointHoverRadius: 5
-      },
-      {
-        label: 'Previous',
-        data: [20, 25, 18, 30, 20, 28, 38],
-        borderColor: '#26a69a',
-        backgroundColor: 'rgba(38, 166, 154, 0.1)',
-        borderWidth: 3,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 3,
-        pointHoverRadius: 5
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top',
-        labels: {
-          usePointStyle: true,
-          boxWidth: 6
-        }
-      },
-      tooltip: {
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        titleColor: '#1c1f2b',
-        bodyColor: '#1c1f2b',
-        borderColor: '#e0e0e0',
-        borderWidth: 1,
-        padding: 10,
-        cornerRadius: 6,
-        displayColors: false
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 100,
-        ticks: {
-          stepSize: 25
-        },
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
-        }
-      },
-      x: {
-        grid: {
-          display: false
-        }
-      }
-    }
-  }
-});
-
-document.getElementById('attendanceChart').style.marginLeft = '20px'; 
-
-  const itineraryCtx = document.getElementById('itineraryChart').getContext('2d');
-  const centerTextPlugin = {
-  id: 'centerText',
-  beforeDraw(chart) {
-    const { width, height } = chart;
-    const ctx = chart.ctx;
-    ctx.restore();
-
-    const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-    const percent = Math.round((chart.data.datasets[0].data[1] / total) * 100);
-    const text = percent + "%";
-    
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.font = 'bold 3rem poppins';
-    
-    ctx.fillStyle = "#00c853";  
-    ctx.fillText(text, width / 2, height / 2);
-    ctx.save();
-  }
-};
-new Chart(itineraryCtx, {
-  type: 'doughnut',
-  data: {
-    datasets: [{
-      data: [20, 60, 20],
-      backgroundColor: ['#ffc107', '#00c853', '#dc3545'],  
-      borderWidth: 0,
-      borderRadius: 0  
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '92%', 
-    plugins: {
-      legend: {
-        display: true,
-        position: 'bottom',
-        labels: {
-          usePointStyle: true,
-          pointStyle: 'circle',
-          padding: 20,
-          font: {
-            size: 12
-          }
-        }
-      }
-    }
-  },
-  plugins: [centerTextPlugin]
-});
-
-</script>
 <script src="../public/js/main.js"></script>
-<script src="../public/js/dashboard.js"></script>
 </html>
