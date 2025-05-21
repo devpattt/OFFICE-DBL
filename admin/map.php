@@ -18,22 +18,30 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Get current active employees (latest check-ins without check-outs)
-$activeEmployeesQuery = "SELECT al.*, 
-                               CASE 
-                                   WHEN al.time_out IS NULL OR al.time_out = '' THEN 'active'
-                                   ELSE 'inactive'
-                               END as current_status
-                        FROM dbl_attendance_logs al
-                        INNER JOIN (
-                            SELECT employee_id, MAX(date) as max_date, MAX(time_in_raw) as max_time
-                            FROM dbl_attendance_logs 
-                            WHERE lat_in IS NOT NULL AND lng_in IS NOT NULL
-                            GROUP BY employee_id
-                        ) latest ON al.employee_id = latest.employee_id 
-                                 AND al.date = latest.max_date 
-                                 AND al.time_in_raw = latest.max_time
-                        ORDER BY al.time_in_raw DESC";
+$activeEmployeesQuery = "
+SELECT al.*, 
+       ea.username,
+       ea.full_name AS employee_name,
+       ea.profile_pic,    -- dito idadagdag
+       CASE 
+           WHEN al.time_out IS NULL OR al.time_out = '' THEN 'active'
+           ELSE 'inactive'
+       END as current_status
+FROM dbl_attendance_logs al
+INNER JOIN (
+    SELECT employee_id, MAX(date) as max_date, MAX(time_in_raw) as max_time
+    FROM dbl_attendance_logs 
+    WHERE lat_in IS NOT NULL AND lng_in IS NOT NULL
+    GROUP BY employee_id
+) latest ON al.employee_id = latest.employee_id 
+         AND al.date = latest.max_date 
+         AND al.time_in_raw = latest.max_time
+LEFT JOIN dbl_employees_acc ea ON al.employee_id = ea.employee_id
+ORDER BY al.time_in_raw DESC
+
+";
+
+
 
 $activeResult = $conn->query($activeEmployeesQuery);
 $activeEmployees = [];
@@ -142,8 +150,7 @@ if ($activeResult && $activeResult->num_rows > 0) {
     </style>
 </head>
 <body>
-    <!-- Your existing sidebar navigation here -->
- <nav id="sidebar">
+<nav id="sidebar">
     <ul>
       <li>
         <span class="logo">DBL ISTS</span>
@@ -157,7 +164,12 @@ if ($activeResult && $activeResult->num_rows > 0) {
             <span>Dashboard</span>
           </a>
       </li>
-    </li>
+      <li class="active">
+        <a href="map.php">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 294q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+          <span>Attendance Map</span>
+        </a>
+      </li>
     <li>
     <a href="itinerary.php">
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-280h160v-160H280v160Zm240 0h160v-160H520v160ZM280-520h160v-160H280v160Zm240 0h160v-160H520v160ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
@@ -165,16 +177,10 @@ if ($activeResult && $activeResult->num_rows > 0) {
       </a>
       </li>
       <li>
-        <a href="employees.php">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M0-240v-63q0-43 44-70t116-27q13 0 25 .5t23 2.5q-14 21-21 44t-7 48v65H0Zm240 0v-65q0-32 17.5-58.5T307-410q32-20 76.5-30t96.5-10q53 0 97.5 10t76.5 30q32 20 49 46.5t17 58.5v65H240Zm540 0v-65q0-26-6.5-49T754-397q11-2 22.5-2.5t23.5-.5q72 0 116 26.5t44 70.5v63H780Zm-455-80h311q-10-20-55.5-35T480-370q-55 0-100.5 15T325-320ZM160-440q-33 0-56.5-23.5T80-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T160-440Zm640 0q-33 0-56.5-23.5T720-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T800-440Zm-320-40q-50 0-85-35t-35-85q0-51 35-85.5t85-34.5q51 0 85.5 34.5T600-600q0 50-34.5 85T480-480Zm0-80q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Zm1 240Zm-1-280Z"/></svg>
-          <span>Active Users</span>
-        </a>
-      </li>
-      <li>
       <li>
         <a href="employee_logs.php">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
-          <span>Logs</span>
+          <span>Itinerary Logs</span>
         </a>
       </li>
       <li>
@@ -183,18 +189,18 @@ if ($activeResult && $activeResult->num_rows > 0) {
           <span>Reports</span>
         </a>
       </li>
-      <li  class="active">
-        <a href="map.php">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 294q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
-          <span>Map</span>
-        </a>
-      </li>
       <li>
           <a href="leavemanagement.php">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M440-280h320v-22q0-45-44-71.5T600-400q-72 0-116 26.5T440-302v22Zm160-160q33 0 56.5-23.5T680-520q0-33-23.5-56.5T600-600q-33 0-56.5 23.5T520-520q0 33 23.5 56.5T600-440ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z"/></svg>
                 <span>Leave Management</span>
               </a>
         </li>
+             <li>
+        <a href="employees.php">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M0-240v-63q0-43 44-70t116-27q13 0 25 .5t23 2.5q-14 21-21 44t-7 48v65H0Zm240 0v-65q0-32 17.5-58.5T307-410q32-20 76.5-30t96.5-10q53 0 97.5 10t76.5 30q32 20 49 46.5t17 58.5v65H240Zm540 0v-65q0-26-6.5-49T754-397q11-2 22.5-2.5t23.5-.5q72 0 116 26.5t44 70.5v63H780Zm-455-80h311q-10-20-55.5-35T480-370q-55 0-100.5 15T325-320ZM160-440q-33 0-56.5-23.5T80-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T160-440Zm640 0q-33 0-56.5-23.5T720-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T800-440Zm-320-40q-50 0-85-35t-35-85q0-51 35-85.5t85-34.5q51 0 85.5 34.5T600-600q0 50-34.5 85T480-480Zm0-80q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Zm1 240Zm-1-280Z"/></svg>
+          <span>Active Users</span>
+        </a>
+      </li>
       <li>
         <a href="../logout.php">
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M440-440q17 0 28.5-11.5T480-480q0-17-11.5-28.5T440-520q-17 0-28.5 11.5T400-480q0 17 11.5 28.5T440-440ZM280-120v-80l240-40v-445q0-15-9-27t-23-14l-208-34v-80l220 36q44 8 72 41t28 77v512l-320 54Zm-160 0v-80h80v-560q0-34 23.5-57t56.5-23h400q34 0 57 23t23 57v560h80v80H120Zm160-80h400v-560H280v560Z"/></svg>
@@ -220,7 +226,6 @@ if ($activeResult && $activeResult->num_rows > 0) {
   </nav>
 
     <main>
-        <!-- Main map showing all locations -->
         <div class="map-container">
             <div class="map-header">
                 <h3>All Employee Locations</h3>
@@ -228,61 +233,65 @@ if ($activeResult && $activeResult->num_rows > 0) {
             <div id="main-map"></div>
         </div>
 
-        <!-- Current Active Employees -->
+<!-- Make sure this code appears near your active employees table -->
+<div class="map-container">
+    <div class="map-header">
         <h2>Current Active Employees</h2>
-        <?php if (empty($activeEmployees)): ?>
-            <p>No active employees currently checked in.</p>
-        <?php else: ?>
-            <?php foreach ($activeEmployees as $employee): ?>
-                <div class="map-container">
-                    <div class="map-header">
-                        <div class="employee-info">
-                            <div>
-                                <strong><?= htmlspecialchars($employee['username']) ?></strong>
-                                (ID: <?= htmlspecialchars($employee['employee_id']) ?>)
-                                <br>
-                                <small>
-                                    Date: <?= htmlspecialchars($employee['date']) ?> | 
-                                    Check-in: <?= htmlspecialchars($employee['time_in']) ?>
-                                    <?php if ($employee['time_out']): ?>
-                                        | Check-out: <?= htmlspecialchars($employee['time_out']) ?>
+    </div>
+    <div class="table-responsive" style="padding: 15px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead style="background-color: #f2f2f2;">
+                <tr>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Employee ID</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Employee Name</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Time In</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Time Out</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Location</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($activeEmployees as $employee): ?>
+                    <tr data-employee-id="<?= htmlspecialchars($employee['employee_id']) ?>"
+                        data-lat="<?= htmlspecialchars($employee['lat_in']) ?>"
+                        data-lng="<?= htmlspecialchars($employee['lng_in']) ?>"
+                        class="employee-row <?= $employee['current_status'] === 'active' ? 'active-row' : '' ?>">
+                        
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                            <?= htmlspecialchars($employee['employee_id']) ?>
+                        </td>
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                            <!-- Add the profile picture in a small circle -->
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; margin-right: 10px; background-color: #eee;">
+                                    <?php if(!empty($employee['profile_pic'])): ?>
+                                        <img src="../<?= htmlspecialchars($employee['profile_pic']) ?>" 
+                                             style="width: 100%; height: 100%; object-fit: cover;"
+                                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=<?= urlencode($employee['employee_name']) ?>&size=30';">
+                                    <?php else: ?>
+                                        <img src="https://ui-avatars.com/api/?name=<?= urlencode($employee['employee_name']) ?>&size=30"
+                                             style="width: 100%; height: 100%; object-fit: cover;">
                                     <?php endif; ?>
-                                </small>
+                                </div>
+                                <?= htmlspecialchars($employee['employee_name']) ?>
                             </div>
+                        </td>
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;"><?= htmlspecialchars($employee['time_in']) ?></td>
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;"><?= htmlspecialchars($employee['time_out'] ?: '—') ?></td>
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                            <?= 'Lat: ' . htmlspecialchars($employee['lat_in']) . ', Lng: ' . htmlspecialchars($employee['lng_in']) ?>
+                        </td>
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
                             <span class="status-badge <?= $employee['current_status'] === 'active' ? 'status-active' : 'status-inactive' ?>">
                                 <?= ucfirst($employee['current_status']) ?>
                             </span>
-                        </div>
-                    </div>
-                    <div id="map_<?= $employee['id'] ?>" style="height: 350px;"></div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-
-        <!-- Historical Data -->
-        <h2>Recent Check-ins/Check-outs</h2>
-        <?php foreach (array_slice($rows, 0, 10) as $row): ?>
-            <div class="map-container">
-                <div class="map-header">
-                    <div class="employee-info">
-                        <div>
-                            <strong><?= htmlspecialchars($row['username']) ?></strong>
-                            (ID: <?= htmlspecialchars($row['employee_id']) ?>)
-                            <br>
-                            <small>
-                                Date: <?= htmlspecialchars($row['date']) ?> | 
-                                Status: <?= htmlspecialchars($row['status']) ?>
-                                <?php if ($row['hours_worked']): ?>
-                                    | Hours: <?= $row['hours_worked'] ?>
-                                <?php endif; ?>
-                            </small>
-                        </div>
-                    </div>
-                </div>
-                <div id="map_historical_<?= $row['id'] ?>" style="height: 300px;"></div>
-            </div>
-        <?php endforeach; ?>
-    </main>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 
     <!-- Your existing modals and scripts -->
     <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
@@ -328,256 +337,243 @@ if ($activeResult && $activeResult->num_rows > 0) {
         addGeofences();
 
         // Add all employee locations to main map
-        const employeeData = [
-            <?php foreach ($rows as $row): ?>
-            {
-                id: <?= $row['id'] ?>,
-                employee_id: '<?= htmlspecialchars($row['employee_id']) ?>',
-                username: '<?= htmlspecialchars($row['username']) ?>',
-                date: '<?= htmlspecialchars($row['date']) ?>',
-                lat_in: <?= $row['lat_in'] ?: 'null' ?>,
-                lng_in: <?= $row['lng_in'] ?: 'null' ?>,
-                lat_out: <?= $row['lat_out'] ?: 'null' ?>,
-                lng_out: <?= $row['lng_out'] ?: 'null' ?>,
-                time_in: '<?= htmlspecialchars($row['time_in']) ?>',
-                time_out: '<?= htmlspecialchars($row['time_out']) ?>',
-                location_in: '<?= htmlspecialchars($row['location_in']) ?>',
-                location_out: '<?= htmlspecialchars($row['location_out']) ?>',
-                status: '<?= htmlspecialchars($row['status']) ?>'
-            },
-            <?php endforeach; ?>
-        ];
+// Add all employee locations to main map
 
-        // Add markers for all employees
-        function addEmployeeMarkers() {
-            employeeData.forEach(emp => {
-                if (emp.lat_in && emp.lng_in) {
-                    const checkInMarker = L.marker([emp.lat_in, emp.lng_in], {
-                        icon: L.icon({
-                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-                            iconSize: [25, 41],
-                            iconAnchor: [12, 41],
-                            popupAnchor: [1, -34],
-                        })
-                    }).addTo(mainMap);
-                    
-                    checkInMarker.bindPopup(`
-                        <strong>${emp.username}</strong><br>
-                        ID: ${emp.employee_id}<br>
-                        Date: ${emp.date}<br>
-                        <strong>Check-in:</strong> ${emp.time_in}<br>
-                        Location: ${emp.location_in}<br>
-                        Status: ${emp.status}
-                    `);
-                    allMarkers.push(checkInMarker);
-                }
+// Add all employee locations to main map
+const employeeData = [
+    <?php foreach ($rows as $row): ?>
+    ,{
+        id: <?= $row['id'] ?>,
+        employee_id: '<?= htmlspecialchars($row['employee_id']) ?>',
+        username: '<?= isset($row['username']) ? htmlspecialchars($row['username']) : '' ?>',
+        date: '<?= htmlspecialchars($row['date']) ?>',
+        lat_in: <?= $row['lat_in'] ?: 'null' ?>,
+        lng_in: <?= $row['lng_in'] ?: 'null' ?>,
+        lat_out: <?= $row['lat_out'] ?: 'null' ?>,
+        lng_out: <?= $row['lng_out'] ?: 'null' ?>,
+        time_in: '<?= htmlspecialchars($row['time_in']) ?>',
+        time_out: '<?= htmlspecialchars($row['time_out'] ?? '') ?>',
+        location_in: '<?= htmlspecialchars($row['location_in']) ?>',
+        location_out: '<?= htmlspecialchars($row['location_out'] ?? '') ?>',
+        status: '<?= htmlspecialchars($row['status']) ?>',
+        // Try to access the employee name and profile pic from data
+        profile_pic: null, // This will be populated if available
+        employee_name: '<?= isset($row['username']) ? htmlspecialchars($row['username']) : "Employee" ?>'
+    },
+    <?php endforeach; ?>
+];
+// Map employee data with profile information from activeEmployees array
+<?php foreach ($activeEmployees as $employee): ?>
+employeeData.forEach(emp => {
+    if (emp.employee_id === '<?= htmlspecialchars($employee['employee_id']) ?>') {
+        emp.profile_pic = '<?= !empty($employee['profile_pic']) ? "../" . htmlspecialchars($employee['profile_pic']) : "" ?>';
+        emp.employee_name = '<?= htmlspecialchars($employee['employee_name'] ?? $employee['username'] ?? "Employee") ?>';
+    }
+});
+<?php endforeach; ?>
 
-                if (emp.lat_out && emp.lng_out) {
-                    const checkOutMarker = L.marker([emp.lat_out, emp.lng_out], {
-                        icon: L.icon({
-                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-                            iconSize: [25, 41],
-                            iconAnchor: [12, 41],
-                            popupAnchor: [1, -34],
-                        })
-                    }).addTo(mainMap);
-                    
-                    checkOutMarker.bindPopup(`
-                        <strong>${emp.username}</strong><br>
-                        ID: ${emp.employee_id}<br>
-                        Date: ${emp.date}<br>
-                        <strong>Check-out:</strong> ${emp.time_out}<br>
-                        Location: ${emp.location_out}<br>
-                        Status: ${emp.status}
-                    `);
-                    allMarkers.push(checkOutMarker);
-
-                    // Draw line between check-in and check-out
-                    if (emp.lat_in && emp.lng_in) {
-                        L.polyline([[emp.lat_in, emp.lng_in], [emp.lat_out, emp.lng_out]], {
-                            color: 'purple',
-                            weight: 2,
-                            opacity: 0.7
-                        }).addTo(mainMap);
+            // Function to add employee markers to the map
+            function addEmployeeMarkers() {
+                employeeData.forEach(emp => {
+                    // Function to create a circular marker with profile
+                    function createCircleMarker(lat, lng, isCheckIn, popupContent) {
+                        // Create a custom divIcon for circular profile markers
+                        const markerColor = isCheckIn ? '#27ae60' : '#e74c3c'; // Green for check-in, Red for check-out
+                        
+                        // Use the employee's profile picture from the database if available
+                        // Or fall back to a generated avatar if no profile picture exists
+                        let profileImg;
+                        const employeeName = emp.employee_name || emp.username || "Employee"; 
+                        
+                        // Check if the employee has a profile_pic in the data
+                        if (emp.profile_pic && emp.profile_pic !== 'NULL' && emp.profile_pic !== '') {
+                            // Use the actual profile picture path
+                            profileImg = emp.profile_pic;
+                        } else {
+                            // Generate a placeholder avatar based on username
+                            profileImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(employeeName)}&background=${isCheckIn ? '27ae60' : 'e74c3c'}&color=fff&size=40`;
+                        }
+                        
+                        const customIcon = L.divIcon({
+                            className: 'custom-marker',
+                            html: `
+                                <div style="
+                                    width: 40px;
+                                    height: 40px;
+                                    border-radius: 50%;
+                                    border: 3px solid ${markerColor};
+                                    overflow: hidden;
+                                    background: ${markerColor};
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <img src="${profileImg}" style="width: 100%; height: 100%; object-fit: cover;"
+                                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(employeeName)}&background=${isCheckIn ? '27ae60' : 'e74c3c'}&color=fff&size=40';">
+                                </div>
+                            `,
+                            iconSize: [40, 40],
+                            iconAnchor: [20, 20],
+                            popupAnchor: [0, -20]
+                        });
+                        
+                        const marker = L.marker([lat, lng], { icon: customIcon }).addTo(mainMap);
+                        marker.bindPopup(popupContent);
+                        allMarkers.push(marker);
+                        
+                        return marker;
                     }
-                }
-            });
+                    
+                    // Create check-in marker if coordinates exist
+                    if (emp.lat_in && emp.lng_in) {
+                        const checkInPopup = `
+                            <strong>${emp.employee_name || emp.username}</strong><br>
+                            ID: ${emp.employee_id}<br>
+                            Date: ${emp.date}<br>
+                            <strong>Check-in:</strong> ${emp.time_in}<br>
+                            Location: ${emp.location_in || 'Unknown'}<br>
+                            Status: ${emp.status}
+                        `;
+                        
+                        createCircleMarker(emp.lat_in, emp.lng_in, true, checkInPopup);
+                    }
+
+                    // Create check-out marker if coordinates exist
+                    if (emp.lat_out && emp.lng_out) {
+                        const checkOutPopup = `
+                            <strong>${emp.employee_name || emp.username}</strong><br>
+                            ID: ${emp.employee_id}<br>
+                            Date: ${emp.date}<br>
+                            <strong>Check-out:</strong> ${emp.time_out}<br>
+                            Location: ${emp.location_out || 'Unknown'}<br>
+                            Status: ${emp.status}
+                        `;
+                        
+                        createCircleMarker(emp.lat_out, emp.lng_out, false, checkOutPopup);
+                    }
+                });
+            }
+
+
+
+
+// Add CSS to make sure markers display properly
+document.head.insertAdjacentHTML('beforeend', `
+<style>
+    .custom-marker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Optional shadow effect for the markers */
+    .custom-marker > div {
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    /* Pulse animation for active employees (optional) */
+    .custom-marker.active > div::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        box-shadow: 0 0 0 rgba(39, 174, 96, 0.4);
+        animation: pulse 2s infinite;
+        z-index: -1;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
         }
-        addEmployeeMarkers();
+        70% {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 0;
+        }
+    }
+</style>
+`);
 
-        // Individual maps for active employees
-        <?php foreach ($activeEmployees as $employee): ?>
-        (function() {
-            const mapId = "map_<?= $employee['id'] ?>";
-            const lat_in = <?= $employee['lat_in'] ?: 'null' ?>;
-            const lng_in = <?= $employee['lng_in'] ?: 'null' ?>;
-            const lat_out = <?= $employee['lat_out'] ?: 'null' ?>;
-            const lng_out = <?= $employee['lng_out'] ?: 'null' ?>;
+// Add legend to explain marker colors
+function addLegend() {
+    const legend = L.control({position: 'bottomright'});
+    
+    legend.onAdd = function(map) {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.backgroundColor = 'white';
+        div.style.padding = '10px';
+        div.style.borderRadius = '5px';
+        div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
+        
+        div.innerHTML = `
+            <div style="margin-bottom: 5px;"><strong>Employee Status</strong></div>
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #27ae60; margin-right: 5px;"></div>
+                Check-in Location
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #e74c3c; margin-right: 5px;"></div>
+                Check-out Location
+            </div>
+        `;
+        
+        return div;
+    };
+    
+    legend.addTo(mainMap);
+}
 
-            if (!lat_in || !lng_in) return;
-
-            const map = L.map(mapId).setView([lat_in, lng_in], 16);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
-
-            // Add check-in marker
-            const checkInMarker = L.marker([lat_in, lng_in], {
-                icon: L.icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                })
-            }).addTo(map);
+// Initialize the map with all components
+document.addEventListener('DOMContentLoaded', function() {
+    // Add geofences (already called earlier)
+    // addGeofences(); 
+    
+    // Add employee markers 
+    addEmployeeMarkers();
+    
+    // Add legend
+    addLegend();
+    
+    // Add click functionality to employee rows
+    const employeeRows = document.querySelectorAll('.employee-row');
+    
+    employeeRows.forEach(row => {
+        row.addEventListener('click', function() {
+            const employeeId = this.getAttribute('data-employee-id');
+            const lat = parseFloat(this.getAttribute('data-lat'));
+            const lng = parseFloat(this.getAttribute('data-lng'));
             
-            checkInMarker.bindPopup(`
-                <strong>Check-in</strong><br>
-                Time: <?= htmlspecialchars($employee['time_in']) ?><br>
-                Location: <?= htmlspecialchars($employee['location_in']) ?>
-            `).openPopup();
-
-            // Add check-out marker if exists
-            if (lat_out && lng_out) {
-                const checkOutMarker = L.marker([lat_out, lng_out], {
-                    icon: L.icon({
-                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-                        iconSize: [25, 41],
-                        iconAnchor: [12, 41],
-                        popupAnchor: [1, -34],
-                    })
-                }).addTo(map);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                // Center the map on this employee's location
+                mainMap.setView([lat, lng], 16);
                 
-                checkOutMarker.bindPopup(`
-                    <strong>Check-out</strong><br>
-                    Time: <?= htmlspecialchars($employee['time_out']) ?><br>
-                    Location: <?= htmlspecialchars($employee['location_out']) ?>
-                `);
-
-                // Draw line between check-in and check-out
-                L.polyline([[lat_in, lng_in], [lat_out, lng_out]], {
-                    color: 'blue',
-                    weight: 3,
-                    opacity: 0.8
-                }).addTo(map);
-
-                // Fit map to show both markers
-                map.fitBounds([[lat_in, lng_in], [lat_out, lng_out]], {padding: [20, 20]});
+                // Find and open the popup for this employee
+                allMarkers.forEach(marker => {
+                    const position = marker.getLatLng();
+                    if (position.lat === lat && position.lng === lng) {
+                        marker.openPopup();
+                    }
+                });
             }
-
-            // Add relevant geofences
-            locations.forEach(loc => {
-                const distance = map.distance([lat_in, lng_in], [loc.lat, loc.lng]);
-                if (distance <= 200) { // Show geofences within 200m
-                    L.circle([loc.lat, loc.lng], {
-                        color: 'blue',
-                        fillColor: '#99ccff',
-                        fillOpacity: 0.2,
-                        radius: loc.radius
-                    }).addTo(map).bindPopup(loc.name);
-                }
-            });
-        })();
-        <?php endforeach; ?>
-
-        // Historical maps
-        <?php foreach (array_slice($rows, 0, 10) as $row): ?>
-        (function() {
-            const mapId = "map_historical_<?= $row['id'] ?>";
-            const lat_in = <?= $row['lat_in'] ?: 'null' ?>;
-            const lng_in = <?= $row['lng_in'] ?: 'null' ?>;
-            const lat_out = <?= $row['lat_out'] ?: 'null' ?>;
-            const lng_out = <?= $row['lng_out'] ?: 'null' ?>;
-
-            if (!lat_in || !lng_in) return;
-
-            const map = L.map(mapId).setView([lat_in, lng_in], 15);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
-
-            // Add check-in marker
-            L.marker([lat_in, lng_in], {
-                icon: L.icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                })
-            }).addTo(map)
-            .bindPopup(`<strong>Check-in:</strong><br><?= addslashes($row['location_in']) ?><br><?= addslashes($row['time_in']) ?>`)
-            .openPopup();
-
-            // Add check-out marker if exists
-            if (lat_out && lng_out) {
-                L.marker([lat_out, lng_out], {
-                    icon: L.icon({
-                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-                        iconSize: [25, 41],
-                        iconAnchor: [12, 41],
-                        popupAnchor: [1, -34],
-                    })
-                }).addTo(map)
-                .bindPopup(`<strong>Check-out:</strong><br><?= addslashes($row['location_out']) ?><br><?= addslashes($row['time_out']) ?>`);
-
-                // Draw line between check-in and check-out
-                L.polyline([[lat_in, lng_in], [lat_out, lng_out]], {
-                    color: 'blue',
-                    weight: 2,
-                    opacity: 0.7
-                }).addTo(map);
-
-                // Fit map to show both markers
-                map.fitBounds([[lat_in, lng_in], [lat_out, lng_out]], {padding: [20, 20]});
-            }
-        })();
-        <?php endforeach; ?>
-
-        // Control functions
-        function showAllEmployees() {
-            // This function could filter to show all employees
-            console.log('Showing all employees');
-        }
-
-        function showActiveOnly() {
-            // This function could filter to show only active employees
-            console.log('Showing active employees only');
-        }
-
-        function showGeofences() {
-            // Toggle geofence visibility
-            geofenceVisible = !geofenceVisible;
-            console.log('Toggling geofences:', geofenceVisible);
-        }
-
-        function filterByDate() {
-            const selectedDate = document.getElementById('dateFilter').value;
-            console.log('Filtering by date:', selectedDate);
-            // Implement date filtering logic here
-        }
-
-        // Add user's current location if available
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                const userLat = position.coords.latitude;
-                const userLng = position.coords.longitude;
-                
-                L.marker([userLat, userLng], {
-                    icon: L.icon({
-                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-                        iconSize: [25, 41],
-                        iconAnchor: [12, 41],
-                        popupAnchor: [1, -34],
-                    })
-                }).addTo(mainMap)
-                .bindPopup("Your current location")
-                .openPopup();
-            });
-        }
+        });
+        
+        // Add hover effect for better UX
+        row.style.cursor = 'pointer';
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f5f5f5';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
     </script>
 
     <script src="../public/js/session.js"></script>
