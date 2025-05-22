@@ -194,13 +194,13 @@ table tr:last-child {
 .modal-submit-btn,
 .btn-save,
 .confirm-btn {
-  background: #3498db;
+  background: #232738;
   color: #fff;
 }
 .modal-submit-btn:hover,
 .btn-save:hover,
 .confirm-btn:hover {
-  background: #217dbb;
+  background: #3a435d;
 }
 
 .cancel-btn {
