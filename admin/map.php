@@ -379,92 +379,303 @@ employeeData.forEach(emp => {
 });
 <?php endforeach; ?>
 
-            // Function to add employee markers to the map
-            function addEmployeeMarkers() {
-                employeeData.forEach(emp => {
-                    // Function to create a circular marker with profile
-                    function createCircleMarker(lat, lng, isCheckIn, popupContent) {
-                        // Create a custom divIcon for circular profile markers
-                        const markerColor = isCheckIn ? '#27ae60' : '#e74c3c'; // Green for check-in, Red for check-out
-                        
-                        // Use the employee's profile picture from the database if available
-                        // Or fall back to a generated avatar if no profile picture exists
-                        let profileImg;
-                        const employeeName = emp.employee_name || emp.username || "Employee"; 
-                        
-                        // Check if the employee has a profile_pic in the data
-                        if (emp.profile_pic && emp.profile_pic !== 'NULL' && emp.profile_pic !== '') {
-                            // Use the actual profile picture path
-                            profileImg = emp.profile_pic;
-                        } else {
-                            // Generate a placeholder avatar based on username
-                            profileImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(employeeName)}&background=${isCheckIn ? '27ae60' : 'e74c3c'}&color=fff&size=40`;
-                        }
-                        
-                        const customIcon = L.divIcon({
-                            className: 'custom-marker',
-                            html: `
-                                <div style="
-                                    width: 40px;
-                                    height: 40px;
-                                    border-radius: 50%;
-                                    border: 3px solid ${markerColor};
-                                    overflow: hidden;
-                                    background: ${markerColor};
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                ">
-                                    <img src="${profileImg}" style="width: 100%; height: 100%; object-fit: cover;"
-                                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(employeeName)}&background=${isCheckIn ? '27ae60' : 'e74c3c'}&color=fff&size=40';">
-                                </div>
-                            `,
-                            iconSize: [40, 40],
-                            iconAnchor: [20, 20],
-                            popupAnchor: [0, -20]
-                        });
-                        
-                        const marker = L.marker([lat, lng], { icon: customIcon }).addTo(mainMap);
-                        marker.bindPopup(popupContent);
-                        allMarkers.push(marker);
-                        
-                        return marker;
-                    }
-                    
-                    // Create check-in marker if coordinates exist
-                    if (emp.lat_in && emp.lng_in) {
-                        const checkInPopup = `
-                            <strong>${emp.employee_name || emp.username}</strong><br>
-                            ID: ${emp.employee_id}<br>
-                            Date: ${emp.date}<br>
-                            <strong>Check-in:</strong> ${emp.time_in}<br>
-                            Location: ${emp.location_in || 'Unknown'}<br>
-                            Status: ${emp.status}
-                        `;
-                        
-                        createCircleMarker(emp.lat_in, emp.lng_in, true, checkInPopup);
-                    }
 
-                    // Create check-out marker if coordinates exist
-                    if (emp.lat_out && emp.lng_out) {
-                        const checkOutPopup = `
-                            <strong>${emp.employee_name || emp.username}</strong><br>
-                            ID: ${emp.employee_id}<br>
-                            Date: ${emp.date}<br>
-                            <strong>Check-out:</strong> ${emp.time_out}<br>
-                            Location: ${emp.location_out || 'Unknown'}<br>
-                            Status: ${emp.status}
-                        `;
-                        
-                        createCircleMarker(emp.lat_out, emp.lng_out, false, checkOutPopup);
-                    }
-                });
+
+
+
+
+// Replace your existing addEmployeeMarkers function with this improved version
+
+function addEmployeeMarkers() {
+    // Group employees by their location, but track their current status
+    const locationGroups = {};
+    
+    employeeData.forEach(emp => {
+        // Determine the employee's current location and status
+        let currentLat, currentLng, currentStatus, currentTime, currentLocation;
+        
+        // If employee has checked out, use check-out location and status
+        if (emp.lat_out && emp.lng_out && emp.time_out) {
+            currentLat = emp.lat_out;
+            currentLng = emp.lng_out;
+            currentStatus = 'out';
+            currentTime = emp.time_out;
+            currentLocation = emp.location_out || 'Unknown';
+        }
+        // If employee has only checked in, use check-in location
+        else if (emp.lat_in && emp.lng_in) {
+            currentLat = emp.lat_in;
+            currentLng = emp.lng_in;
+            currentStatus = 'in';
+            currentTime = emp.time_in;
+            currentLocation = emp.location_in || 'Unknown';
+        }
+        
+        if (currentLat && currentLng) {
+            const key = `${currentLat}_${currentLng}`;
+            if (!locationGroups[key]) {
+                locationGroups[key] = {
+                    lat: currentLat,
+                    lng: currentLng,
+                    employees: []
+                };
             }
+            
+            // Add employee with their current status
+            locationGroups[key].employees.push({
+                ...emp,
+                currentStatus: currentStatus,
+                currentTime: currentTime,
+                currentLocation: currentLocation
+            });
+        }
+    });
+    
+    // Create markers for each location group
+    Object.values(locationGroups).forEach((group, groupIndex) => {
+        if (group.employees.length === 1) {
+            // Single employee - create normal marker
+            createSingleEmployeeMarker(group.employees[0], group.lat, group.lng);
+        } else {
+            // Multiple employees - create appropriate marker based on count
+            createMultiEmployeeMarker(group.employees, group.lat, group.lng);
+        }
+    });
+}
 
+// Function to create a single employee marker
+function createSingleEmployeeMarker(emp, lat, lng) {
+    const isCheckedIn = emp.currentStatus === 'in';
+    const markerColor = isCheckedIn ? '#27ae60' : '#e74c3c';
+    const employeeName = emp.employee_name || emp.username || "Employee";
+    
+    let profileImg;
+    if (emp.profile_pic && emp.profile_pic !== 'NULL' && emp.profile_pic !== '') {
+        profileImg = emp.profile_pic;
+    } else {
+        profileImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(employeeName)}&background=${isCheckedIn ? '27ae60' : 'e74c3c'}&color=fff&size=40`;
+    }
+    
+    const customIcon = L.divIcon({
+        className: 'custom-marker',
+        html: `
+            <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: 3px solid ${markerColor};
+                overflow: hidden;
+                background: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+            ">
+                <img src="${profileImg}" style="width: 100%; height: 100%; object-fit: cover;"
+                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(employeeName)}&background=${isCheckedIn ? '27ae60' : 'e74c3c'}&color=fff&size=40';">
+            </div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -20]
+    });
+    
+    const statusText = isCheckedIn ? 'Checked In' : 'Checked Out';
+    const popupContent = `
+        <div style="min-width: 200px;">
+            <strong>${employeeName}</strong><br>
+            ID: ${emp.employee_id}<br>
+            Date: ${emp.date}<br>
+            <strong>Status:</strong> <span style="color: ${markerColor}; font-weight: bold;">${statusText}</span><br>
+            <strong>Time:</strong> ${emp.currentTime}<br>
+            <strong>Location:</strong> ${emp.currentLocation}<br>
+            ${emp.time_in ? `<strong>Time In:</strong> ${emp.time_in}<br>` : ''}
+            ${emp.time_out ? `<strong>Time Out:</strong> ${emp.time_out}<br>` : ''}
+        </div>
+    `;
+    
+    const marker = L.marker([lat, lng], { icon: customIcon }).addTo(mainMap);
+    marker.bindPopup(popupContent);
+    allMarkers.push(marker);
+    
+    return marker;
+}
 
+// Function to create markers for multiple employees at same location
+function createMultiEmployeeMarker(employees, baseLat, baseLng) {
+    const checkedInCount = employees.filter(emp => emp.currentStatus === 'in').length;
+    const checkedOutCount = employees.filter(emp => emp.currentStatus === 'out').length;
+    
+    if (employees.length <= 4) {
+        // Small group - create individual markers in circle pattern
+        const radius = 0.0001; // Small radius for clustering (about 10 meters)
+        
+        employees.forEach((emp, index) => {
+            const angle = (2 * Math.PI * index) / employees.length;
+            const offsetLat = baseLat + (radius * Math.cos(angle));
+            const offsetLng = baseLng + (radius * Math.sin(angle));
+            
+            createSingleEmployeeMarker(emp, offsetLat, offsetLng);
+        });
+    } else {
+        // Large group - create cluster marker with mixed status indicator
+        let markerColor, borderColor, statusText;
+        
+        if (checkedInCount > 0 && checkedOutCount > 0) {
+            // Mixed status - use gradient or special indicator
+            markerColor = '#f39c12'; // Orange for mixed
+            borderColor = '#e67e22';
+            statusText = `Mixed (${checkedInCount} in, ${checkedOutCount} out)`;
+        } else if (checkedInCount > 0) {
+            // All checked in
+            markerColor = '#27ae60';
+            borderColor = '#229954';
+            statusText = `All Checked In (${checkedInCount})`;
+        } else {
+            // All checked out
+            markerColor = '#e74c3c';
+            borderColor = '#c0392b';
+            statusText = `All Checked Out (${checkedOutCount})`;
+        }
+        
+        const customIcon = L.divIcon({
+            className: 'custom-marker cluster-marker',
+            html: `
+                <div style="
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    border: 4px solid ${borderColor};
+                    background: ${markerColor};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-weight: bold;
+                    font-size: 14px;
+                    position: relative;
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+                ">
+                    ${employees.length}
+                    ${checkedInCount > 0 && checkedOutCount > 0 ? 
+                        `<div style="
+                            position: absolute;
+                            top: -2px;
+                            right: -2px;
+                            width: 16px;
+                            height: 16px;
+                            border-radius: 50%;
+                            background: linear-gradient(45deg, #27ae60 50%, #e74c3c 50%);
+                            border: 2px solid white;
+                        "></div>` : ''
+                    }
+                </div>
+            `,
+            iconSize: [50, 50],
+            iconAnchor: [25, 25],
+            popupAnchor: [0, -25]
+        });
+        
+        // Create detailed popup content for all employees
+        let popupContent = `<div style="max-height: 400px; overflow-y: auto; min-width: 250px;">`;
+        popupContent += `<div style="text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #eee;">`;
+        popupContent += `<strong style="font-size: 16px;">${employees.length} Employees at Location</strong><br>`;
+        popupContent += `<span style="color: ${borderColor}; font-weight: bold;">${statusText}</span>`;
+        popupContent += `</div>`;
+        
+        // Group employees by status for better organization
+        const checkedInEmployees = employees.filter(emp => emp.currentStatus === 'in');
+        const checkedOutEmployees = employees.filter(emp => emp.currentStatus === 'out');
+        
+        // Show checked in employees first
+        if (checkedInEmployees.length > 0) {
+            popupContent += `<div style="margin-bottom: 15px;">`;
+            popupContent += `<div style="color: #27ae60; font-weight: bold; margin-bottom: 8px;">✓ Checked In (${checkedInEmployees.length})</div>`;
+            
+            checkedInEmployees.forEach((emp, index) => {
+                const employeeName = emp.employee_name || emp.username || "Employee";
+                popupContent += `
+                    <div style="margin-bottom: 8px; padding: 8px; background: #f8f9fa; border-left: 4px solid #27ae60; border-radius: 4px;">
+                        <div style="font-weight: bold; color: #333;">${employeeName}</div>
+                        <div style="font-size: 12px; color: #666;">ID: ${emp.employee_id}</div>
+                        <div style="font-size: 12px; color: #666;">Time In: ${emp.time_in}</div>
+                    </div>
+                `;
+            });
+            popupContent += `</div>`;
+        }
+        
+        // Show checked out employees
+        if (checkedOutEmployees.length > 0) {
+            popupContent += `<div style="margin-bottom: 10px;">`;
+            popupContent += `<div style="color: #e74c3c; font-weight: bold; margin-bottom: 8px;">✗ Checked Out (${checkedOutEmployees.length})</div>`;
+            
+            checkedOutEmployees.forEach((emp, index) => {
+                const employeeName = emp.employee_name || emp.username || "Employee";
+                popupContent += `
+                    <div style="margin-bottom: 8px; padding: 8px; background: #f8f9fa; border-left: 4px solid #e74c3c; border-radius: 4px;">
+                        <div style="font-weight: bold; color: #333;">${employeeName}</div>
+                        <div style="font-size: 12px; color: #666;">ID: ${emp.employee_id}</div>
+                        <div style="font-size: 12px; color: #666;">Time Out: ${emp.time_out}</div>
+                        <div style="font-size: 12px; color: #666;">Time In: ${emp.time_in}</div>
+                    </div>
+                `;
+            });
+            popupContent += `</div>`;
+        }
+        
+        popupContent += `</div>`;
+        
+        const marker = L.marker([baseLat, baseLng], { icon: customIcon }).addTo(mainMap);
+        marker.bindPopup(popupContent);
+        allMarkers.push(marker);
+    }
+}
 
+// Updated legend to explain the new marker system
+function addLegend() {
+    const legend = L.control({position: 'bottomright'});
+    
+    legend.onAdd = function(map) {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.style.backgroundColor = 'white';
+        div.style.padding = '12px';
+        div.style.borderRadius = '8px';
+        div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
+        div.style.fontSize = '12px';
+        div.style.minWidth = '160px';
+        
+        div.innerHTML = `
+            <div style="margin-bottom: 10px;"><strong>Employee Status</strong></div>
+            <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                <div style="width: 16px; height: 16px; border-radius: 50%; background-color: #27ae60; margin-right: 8px;"></div>
+                <span>Checked In</span>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                <div style="width: 16px; height: 16px; border-radius: 50%; background-color: #e74c3c; margin-right: 8px;"></div>
+                <span>Checked Out</span>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <div style="width: 16px; height: 16px; border-radius: 50%; background-color: #f39c12; margin-right: 8px;"></div>
+                <span>Mixed Status</span>
+            </div>
+            <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd;">
+                <div style="margin-bottom: 4px;"><strong>Clustering:</strong></div>
+                <div style="font-size: 11px; color: #666; line-height: 1.3;">
+                    • 1-4 employees: Individual markers<br>
+                    • 5+ employees: Count with status<br>
+                    • Mixed groups show orange
+                </div>
+            </div>
+        `;
+        
+        return div;
+    };
+    
+    legend.addTo(mainMap);
+}
 
-// Add CSS to make sure markers display properly
+// Add enhanced CSS for the new marker system
 document.head.insertAdjacentHTML('beforeend', `
 <style>
     .custom-marker {
@@ -473,21 +684,61 @@ document.head.insertAdjacentHTML('beforeend', `
         justify-content: center;
     }
     
-    /* Optional shadow effect for the markers */
     .custom-marker > div {
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        transition: transform 0.2s ease;
     }
     
-    /* Pulse animation for active employees (optional) */
+    .custom-marker:hover > div {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    
+    .cluster-marker > div {
+        box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+    }
+    
+    /* Enhanced popup styling */
+    .leaflet-popup-content {
+        max-width: 320px !important;
+        margin: 8px 12px !important;
+    }
+    
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+    }
+    
+    /* Custom scrollbar for popup content */
+    .leaflet-popup-content div::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .leaflet-popup-content div::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .leaflet-popup-content div::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+    
+    .leaflet-popup-content div::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    
+    /* Pulse animation for active locations */
     .custom-marker.active > div::after {
         content: '';
         position: absolute;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 100%;
+        height: 100%;
         box-shadow: 0 0 0 rgba(39, 174, 96, 0.4);
         animation: pulse 2s infinite;
         z-index: -1;
+        top: 0;
+        left: 0;
     }
     
     @keyframes pulse {
@@ -507,47 +758,18 @@ document.head.insertAdjacentHTML('beforeend', `
 </style>
 `);
 
-// Add legend to explain marker colors
-function addLegend() {
-    const legend = L.control({position: 'bottomright'});
-    
-    legend.onAdd = function(map) {
-        const div = L.DomUtil.create('div', 'info legend');
-        div.style.backgroundColor = 'white';
-        div.style.padding = '10px';
-        div.style.borderRadius = '5px';
-        div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
-        
-        div.innerHTML = `
-            <div style="margin-bottom: 5px;"><strong>Employee Status</strong></div>
-            <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #27ae60; margin-right: 5px;"></div>
-                Check-in Location
-            </div>
-            <div style="display: flex; align-items: center;">
-                <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #e74c3c; margin-right: 5px;"></div>
-                Check-out Location
-            </div>
-        `;
-        
-        return div;
-    };
-    
-    legend.addTo(mainMap);
-}
 
-// Initialize the map with all components
+
+
+
+
+
+// Event listener 
 document.addEventListener('DOMContentLoaded', function() {
-    // Add geofences (already called earlier)
-    // addGeofences(); 
-    
-    // Add employee markers 
+
     addEmployeeMarkers();
-    
-    // Add legend
     addLegend();
-    
-    // Add click functionality to employee rows
+
     const employeeRows = document.querySelectorAll('.employee-row');
     
     employeeRows.forEach(row => {
@@ -557,10 +779,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const lng = parseFloat(this.getAttribute('data-lng'));
             
             if (!isNaN(lat) && !isNaN(lng)) {
-                // Center the map on this employee's location
                 mainMap.setView([lat, lng], 16);
-                
-                // Find and open the popup for this employee
                 allMarkers.forEach(marker => {
                     const position = marker.getLatLng();
                     if (position.lat === lat && position.lng === lng) {
@@ -570,7 +789,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Add hover effect for better UX
         row.style.cursor = 'pointer';
         row.addEventListener('mouseenter', function() {
             this.style.backgroundColor = '#f5f5f5';
