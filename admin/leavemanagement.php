@@ -160,21 +160,14 @@ include '../includes/isset.php';
 
         try {
             $pdo = new PDO($dsn, $user, $pass, $options);
-
-            // Handle status update
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['status'])) {
                 $id = $_POST['id'];
                 $newStatus = $_POST['status'];
-
                 $updateStmt = $pdo->prepare("UPDATE dbl_leave_requests SET status = ?, updated_at = NOW() WHERE id = ?");
                 $updateStmt->execute([$newStatus, $id]);
-
-                // Refresh the page to show updated status
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit;
             }
-
-            // Fetch leave requests
             $stmt = $pdo->query("SELECT * FROM dbl_leave_requests");
 
             while ($row = $stmt->fetch()) {
