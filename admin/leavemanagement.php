@@ -128,6 +128,7 @@ include '../includes/isset.php';
       </li>  
     </ul>
   </nav>
+  
 <main>
   <h2>Employee Leave Requests</h2>
   <table>
@@ -183,11 +184,11 @@ include '../includes/isset.php';
                 echo "<td>
                         <form method='post' style='display:inline;'>
                             <input type='hidden' name='id' value='{$row['id']}'>
-                            <button type='submit' name='status' value='Approved' style='color:green;'>Approve</button>
+                            <button type='submit' name='status' value='Approved'>Approve</button>
                         </form>
                         <form method='post' style='display:inline; margin-left:5px;'>
                             <input type='hidden' name='id' value='{$row['id']}'>
-                            <button type='submit' name='status' value='Rejected' style='color:red;'>Reject</button>
+                            <button type='submit' name='status' value='Rejected'>Reject</button>
                         </form>
                       </td>";
                 echo "</tr>";
