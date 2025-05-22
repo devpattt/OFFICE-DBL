@@ -288,7 +288,7 @@ if ($activeResult && $activeResult->num_rows > 0) {
                         <td style="padding: 10px; border-bottom: 1px solid #ddd;"><?= htmlspecialchars($employee['time_in']) ?></td>
                         <td style="padding: 10px; border-bottom: 1px solid #ddd;"><?= htmlspecialchars($employee['time_out'] ?: '—') ?></td>
                         <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-                            <?= 'Lat: ' . htmlspecialchars($employee['lat_in']) . ', Lng: ' . htmlspecialchars($employee['lng_in']) ?>
+                            <?= !empty($employee['location_in']) ? htmlspecialchars($employee['location_in']) : ('Lat: ' . htmlspecialchars($employee['lat_in']) . ', Lng: ' . htmlspecialchars($employee['lng_in'])) ?>
                         </td>
                         <td style="padding: 10px; border-bottom: 1px solid #ddd;">
                             <span class="status-badge <?= $employee['current_status'] === 'active' ? 'status-active' : 'status-inactive' ?>">
@@ -561,7 +561,8 @@ function createMultiEmployeeMarker(employees, baseLat, baseLng) {
         // popup content 
         let popupContent = `<div style="max-height: 400px; overflow-y: auto; min-width: 250px;">`;
         popupContent += `<div style="text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #eee;">`;
-        popupContent += `<strong style="font-size: 16px;">${employees.length} Employees at Location</strong><br>`;
+        const locationName = employees[0]?.currentLocation || 'Unknown Location';
+        popupContent += `<strong style="font-size: 16px;">${employees.length} Employees at ${locationName}</strong><br>`;
         popupContent += `<span style="color: ${borderColor}; font-weight: bold;">${statusText}</span>`;
         popupContent += `</div>`;
         
