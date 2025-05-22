@@ -53,6 +53,75 @@ table {
   animation: fadeIn 0.3s ease-in-out;
 }
 
+#employeeModal .modal-content {
+  padding: 22px 20px !important;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.13);
+  max-width: 420px;
+  animation: fadeIn 0.3s;
+}
+
+#confirmModal .modal-content {
+  padding: 32px 28px !important;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
+  max-width: 370px;
+  text-align: center;
+  animation: fadeIn 0.3s;
+}
+
+#confirmModal .modal-content p {
+  font-size: 1.15rem;
+  color: #222;
+  margin-bottom: 28px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+#confirmModal .modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+#confirmModal .confirm-btn {
+  background: linear-gradient(90deg, #e74c3c 0%, #ff7675 100%);
+  color: #fff;
+  border: none;
+  border-radius: 22px;
+  padding: 10px 28px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.08);
+}
+
+#confirmModal .confirm-btn:hover {
+  background: linear-gradient(90deg, #c0392b 0%, #e17055 100%);
+  transform: translateY(-2px) scale(1.04);
+}
+
+#confirmModal .cancel-btn {
+  background: #f2f2f2;
+  color: #444;
+  border: none;
+  border-radius: 22px;
+  padding: 10px 28px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+
+#confirmModal .cancel-btn:hover {
+  background: #e0e0e0;
+  color: #e74c3c;
+  transform: translateY(-2px) scale(1.04);
+}
+
 /* Modal animation */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-20px); }
@@ -108,6 +177,55 @@ table {
   background-color: #3e8e41;
 }
 
+#employeeModal label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #222;
+  letter-spacing: 0.3px;
+}
+
+#employeeModal input,
+#employeeModal select {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1.5px solid #bdbdbd;
+  border-radius: 7px;
+  background: #fafbfc;
+  font-size: 15px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#employeeModal input:focus,
+#employeeModal select:focus {
+  border-color: #232738;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.12);
+}
+
+#employeeModal .modal-submit-btn {
+  background: linear-gradient(90deg, #11121a 0%, #101425 100%);
+  color: #fff;
+  padding: 14px 0;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.08);
+  transition: background 0.3s, box-shadow 0.2s, transform 0.1s;
+  width: 100%;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+}
+
+#employeeModal .modal-submit-btn:hover {
+  background: linear-gradient(90deg, #232738 0%, #3a435d 100%);
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.15);
+  transform: translateY(-2px) scale(1.03);
+}
+
   .btn-active {
     background-color: #4CAF50;
     color: white;
@@ -128,32 +246,6 @@ table {
     cursor: not-allowed;
     opacity: 0.6;
   }
-  
-  /* New styles for action buttons and delete button */
-.action-buttons {
-  display: flex;
-  gap: 5px;
-  justify-content: center;
-}
-
-.delete-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #e74c3c;
-  padding: 5px;
-  border-radius: 4px;
-}
-
-.delete-btn:hover {
-  background-color: rgba(231, 76, 60, 0.1);
-}
-
-.delete-btn svg {
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-}
 
 /* New Action Buttons */
 .btn-edit {
@@ -162,7 +254,7 @@ table {
   border: none;
   padding: 5px 10px;
   font-size: 12px;
-  border-radius: 4px;
+  border-radius: 13px;
   cursor: pointer;
 }
 
@@ -252,4 +344,3 @@ table {
       text-align: center;
     }
   }
-  

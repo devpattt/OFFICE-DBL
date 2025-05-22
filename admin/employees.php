@@ -154,11 +154,9 @@ while ($row = $dept_result->fetch_assoc()) {
           <td data-label="Full Name"><?= htmlspecialchars($row["full_name"]) ?></td>
           <td data-label="Role"><?= htmlspecialchars($row["role"]) ?></td>
           <td data-label="Status">
-          <button 
-            class="<?= strtolower($row['status']) == 'active' ? 'btn-active' : 'btn-inactive' ?>" 
-            disabled>
-            <?= ucfirst(strtolower($row['status'])) ?>
-          </button>
+            <span class="<?= strtolower($row['status']) == 'active' ? 'status-active' : 'status-inactive' ?>">
+              <?= ucfirst(strtolower($row['status'])) ?>
+            </span>
           </td>
           <td data-label="Action">
           <button class="btn-edit" onclick="editEmployee(<?= $row['id'] ?>)">Edit</button>
@@ -178,8 +176,7 @@ while ($row = $dept_result->fetch_assoc()) {
     <?php endif; ?>
   </tbody>
 </table>
-
-    </main>
+</main>
 
     <!-- Modal -->
     <div id="confirmModal" class="modal">
@@ -200,29 +197,29 @@ while ($row = $dept_result->fetch_assoc()) {
 <div id="employeeModal" class="modal">
   <div class="modal-content">
     <span class="close" id="closeModalBtn">&times;</span>
-    <h2>Add New Employee</h2>
-    <form method="POST" action="../includes/admin_add_employee.php">
+    <h2 style="margin-bottom: 18px; color: #2d3436;">Add New Employee</h2>
+    <form method="POST" action="../includes/admin_add_employee.php" autocomplete="off">
       <label for="full_name">Full Name:</label>
-      <input type="text" name="full_name" required>
+      <input type="text" name="full_name" placeholder="Enter full name" required>
 
       <label for="username">Username:</label>
-      <input type="text" name="username" required>
+      <input type="text" name="username" placeholder="Enter username" required>
 
       <label for="email">Email:</label>
-      <input type="email" name="email" required>
+      <input type="email" name="email" placeholder="Enter email address" required>
 
       <label for="password">Password:</label>
-      <input type="password" name="password" required>
+      <input type="password" name="password" placeholder="Enter password" required>
 
       <label for="department">Department:</label>
       <select name="department" required>
         <option value="">Select department</option>
         <?php foreach ($departments as $dept): ?>
-          <option value="<?= $dept ?>"><?= $dept ?></option>
+          <option value="<?= htmlspecialchars($dept) ?>"><?= htmlspecialchars($dept) ?></option>
         <?php endforeach; ?>
       </select>
 
-      <button type="submit">Add Employee</button>
+      <button type="submit" class="modal-submit-btn">Add Employee</button>
     </form>
   </div>
 </div>
