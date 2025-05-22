@@ -14,5 +14,8 @@ client location in db
 user interface 
 btn border radius 
 admin/employee dashboard
+itinerary validation
+leave management date UI
+Profile 
 ////////////////
 
