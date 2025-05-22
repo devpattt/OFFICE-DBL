@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 21, 2025 at 07:19 AM
+-- Generation Time: May 22, 2025 at 09:35 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -73,9 +73,13 @@ CREATE TABLE `dbl_attendance_logs` (
 --
 
 INSERT INTO `dbl_attendance_logs` (`id`, `employee_id`, `username`, `date`, `time_in`, `time_in_raw`, `location_in`, `lat_in`, `lng_in`, `time_out`, `time_out_raw`, `location_out`, `lat_out`, `lng_out`, `status`, `created_at`, `hours_worked`) VALUES
-(17, 'EMP003', 'ken', '2025-05-21', 'Wednesday - 12:01 PM', '2025-05-21 12:01:08', 'WL Headquarter', 14.737567, 120.99018, 'Wednesday - 12:01 PM', '2025-05-21 12:01:16', 'WL Headquarter', 14.737567, 120.99018, 'Under Hours', '2025-05-21 04:01:08', 0.00),
-(19, 'EMP001', 'devpat', '2025-05-21', 'Wednesday - 12:02 PM', '2025-05-21 12:02:16', 'DBL ISTS', 14.73998, 120.9874, NULL, NULL, NULL, NULL, NULL, 'Pending', '2025-05-21 04:02:16', 0.00),
-(20, 'EMP002', 'employee', '2025-05-21', 'Wednesday - 01:13 PM', '2025-05-21 13:13:12', 'Kai Mall', 14.7567, 121.04391, NULL, NULL, NULL, NULL, NULL, 'Pending', '2025-05-21 05:13:12', 0.00);
+(28, 'EMP003', 'ken', '2025-05-22', 'Thursday - 09:11 AM', '2025-05-22 09:11:52', 'DBL ISTS', 14.73998, 120.9874, 'Thursday - 02:42 PM', '2025-05-22 14:42:56', 'DBL ISTS', 14.73998, 120.9874, 'Under Hours', '2025-05-22 01:11:52', 5.52),
+(30, 'EMP002', 'employee', '2025-05-22', 'Thursday - 09:12 AM', '2025-05-22 09:12:25', 'DBL ISTS', 14.73998, 120.9874, NULL, NULL, NULL, NULL, NULL, 'Pending', '2025-05-22 01:12:25', 0.00),
+(34, 'EMP007', 'vin', '2025-05-22', 'Thursday - 10:30 AM', '2025-05-22 10:30:28', 'DBL ISTS', 14.73998, 120.9874, NULL, NULL, NULL, NULL, NULL, 'Pending', '2025-05-22 02:30:28', 0.00),
+(36, 'EMP008', 'asd', '2025-05-22', 'Thursday - 10:35 AM', '2025-05-22 10:35:59', 'DBL ISTS', 14.73998, 120.9874, NULL, NULL, NULL, NULL, NULL, 'Pending', '2025-05-22 02:35:59', 0.00),
+(47, 'EMP001', 'devpat', '2025-05-22', 'Thursday - 11:00 AM', '2025-05-22 11:00:25', 'Labella Villa Homes', 14.74117, 120.98624, 'Thursday - 11:00 AM', '2025-05-22 11:00:35', 'Labella Villa Homes', 14.74117, 120.98624, 'Under Hours', '2025-05-22 03:00:25', 0.00),
+(49, 'EMP005', 'yuji', '2025-05-22', 'Thursday - 11:07 AM', '2025-05-22 11:07:16', 'DBL ISTS', 14.73998, 120.9874, 'Thursday - 11:07 AM', '2025-05-22 11:07:25', 'DBL ISTS', 14.73998, 120.9874, 'Under Hours', '2025-05-22 03:07:16', 0.00),
+(54, 'EMP009', 'emp', '2025-05-22', 'Thursday - 02:47 PM', '2025-05-22 14:47:28', 'Kai Mall', 14.7567, 121.04391, 'Thursday - 02:47 PM', '2025-05-22 14:47:52', 'DBL ISTS', 14.73998, 120.9874, 'Under Hours', '2025-05-22 06:47:28', 0.01);
 
 -- --------------------------------------------------------
 
@@ -135,7 +139,12 @@ INSERT INTO `dbl_employees_acc` (`id`, `employee_id`, `username`, `email`, `pass
 (2, 'ADM001', 'admin', 'admin@example.com', '$2y$10$LLl1.d/qOJDRBgFgbsREE.O6kcO.9sOlNurZMMX4sdipqd8one1F.', 'DBL Admin', 'Admin', 'Admin', 'active', '2025-04-22 01:10:23', NULL),
 (3, 'EMP002', 'employee', 'employee@example.com', '$2y$10$boBoKPni4MbCep63MhB0Qe.TDAGOAWx83OSzzAn1GRn2HLrW6C.Bi', 'Juan Dela Cruz', 'System Integration', 'System Integration', 'active', '2025-04-22 03:19:10', NULL),
 (4, 'EMP003', 'ken', 'ken@gmail.com', '$2y$10$Pd1iIQeigBgGS1rXxy4tnOLXMsg85vUEaD1ikWRvUK.twi9vRkj/y', 'Jobert Ken Bordamonte', 'Intern', 'Intern', 'active', '2025-05-06 06:20:32', 'profile_682d34a2585384.03707639.png'),
-(5, 'EMP004', 'qwee', 'qwe@gmail.com', '$2y$10$rElSgMPZDFQ9NDiAmflMfu.8QijGZ.EB05CUbO.yWnkuU1lm0u3eS', 'qwe', 'System Integration', 'System Integration', 'active', '2025-05-20 07:31:59', NULL);
+(5, 'EMP004', 'qwee', 'qwe@gmail.com', '$2y$10$rElSgMPZDFQ9NDiAmflMfu.8QijGZ.EB05CUbO.yWnkuU1lm0u3eS', 'qwe', 'System Integration', 'System Integration', 'active', '2025-05-20 07:31:59', NULL),
+(6, 'EMP005', 'yuji', 'yuji@gmail.com', '$2y$10$NMeb1C87SAUp4mnefoe1FOceNX.JSiQPhTPA62TwPxuMFkov4MSpW', 'Yuji', 'Intern', 'Intern', 'active', '2025-05-21 05:52:59', NULL),
+(7, 'EMP006', 'pat', 'pat@gmail.com', '$2y$10$X2aSkjhVB0dUdryVppTLpeUkw6Z5pRMWfQ0JddO1Eq57wHVM0ZZJq', 'Patrick San Bartolome', 'Information Technology', 'Information Technology', 'active', '2025-05-22 01:13:03', NULL),
+(8, 'EMP007', 'vin', 'vin@gmail.com', '$2y$10$isAwk5zPgLF2z2mmtlL/3e4BH1jHEEMQJDJOpMOHH22rDjZbpjize', 'Rheybin Pilon', 'Information Technology', 'Information Technology', 'active', '2025-05-22 01:26:39', NULL),
+(9, 'EMP008', 'asd', 'asd@gmail.com', '$2y$10$eikmAaT1SgpocT590pdSzeT/IoE9G54t7EdmSWz5c4uaIiGgHDxR.', 'Hello World', 'System Integration', 'System Integration', 'active', '2025-05-22 02:31:42', NULL),
+(10, 'EMP009', 'emp', 'emp@gmil.com', '$2y$10$KxQwRhD3Puba3Xar2JE3hOTVKSwGhEljNasqw.r8zvjqtBNUuNC2G', 'Test User', 'Information Technology', 'Information Technology', 'active', '2025-05-22 03:43:46', NULL);
 
 -- --------------------------------------------------------
 
@@ -183,9 +192,9 @@ CREATE TABLE `dbl_leave_requests` (
 --
 
 INSERT INTO `dbl_leave_requests` (`id`, `employee_id`, `department_id`, `leave_type`, `start_date`, `end_date`, `reason`, `status`, `created_at`, `updated_at`) VALUES
-(3, 1, 'Information Technolo', 'Sick', '2025-05-15', '2025-05-23', 'sds', 'Rejected', '2025-05-13 03:32:25', '2025-05-20 06:30:30'),
-(4, 3, 'System Integration', 'Sick', '2025-05-14', '2025-05-17', 'sdsd', 'Rejected', '2025-05-13 03:43:10', '2025-05-20 06:30:31'),
-(5, 1, 'Information Technolo', 'Emergency', '2025-05-14', '2025-05-17', 'sds', 'Approved', '2025-05-13 03:46:05', '2025-05-20 06:30:27');
+(3, 1, 'Information Technolo', 'Sick', '2025-05-15', '2025-05-23', 'sds', 'Approved', '2025-05-13 03:32:25', '2025-05-22 01:53:26'),
+(4, 3, 'System Integration', 'Sick', '2025-05-14', '2025-05-17', 'sdsd', 'Rejected', '2025-05-13 03:43:10', '2025-05-22 01:48:06'),
+(5, 1, 'Information Technolo', 'Emergency', '2025-05-14', '2025-05-17', 'sds', 'Approved', '2025-05-13 03:46:05', '2025-05-22 01:48:03');
 
 -- --------------------------------------------------------
 
@@ -225,7 +234,10 @@ INSERT INTO `itinerary` (`id`, `employee_id`, `location`, `date`, `time`, `descr
 (11, 'EMP001', 'DBL ISTS', '2025-05-09', '10:17:53', 'Develop ATS', 'Completed', '2025-05-09 02:17:53', '2025-05-09 03:49:15', NULL, NULL),
 (12, 'EMP002', 'Labella Villa Homes', '2025-05-09', '11:51:57', 'Cables', 'Pending', '2025-05-09 03:51:57', '2025-05-09 03:53:07', '2025-05-09 11:53:05', '2025-05-09 11:53:07'),
 (13, 'EMP001', 'DBL ISTS', '2025-05-20', '14:34:46', 'matulog', 'Pending', '2025-05-20 06:34:46', '2025-05-20 06:34:46', NULL, NULL),
-(14, 'EMP001', 'Kai Mall', '2025-05-21', '08:18:12', 'qwe', 'Pending', '2025-05-21 00:18:12', '2025-05-21 00:19:12', '2025-05-21 08:19:12', NULL);
+(14, 'EMP001', 'Kai Mall', '2025-05-21', '08:18:12', 'qwe', 'Pending', '2025-05-21 00:18:12', '2025-05-21 00:19:12', '2025-05-21 08:19:12', NULL),
+(15, 'EMP006', 'DBL ISTS', '2025-05-22', '14:50:17', 'sdsdsdsds', 'Pending', '2025-05-22 06:50:17', '2025-05-22 06:50:17', NULL, NULL),
+(16, 'EMP004', 'WL Headquarter', '2025-05-22', '14:50:29', 'sdsdsds', 'Pending', '2025-05-22 06:50:29', '2025-05-22 06:50:29', NULL, NULL),
+(17, 'EMP001', 'DBL ISTS', '2025-05-22', '14:50:51', 'sdsdsds', 'Completed', '2025-05-22 06:50:51', '2025-05-22 06:51:18', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -322,7 +334,7 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `dbl_attendance_logs`
 --
 ALTER TABLE `dbl_attendance_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `dbl_client_locations`
@@ -334,7 +346,7 @@ ALTER TABLE `dbl_client_locations`
 -- AUTO_INCREMENT for table `dbl_employees_acc`
 --
 ALTER TABLE `dbl_employees_acc`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `dbl_employees_dept`
@@ -352,7 +364,7 @@ ALTER TABLE `dbl_leave_requests`
 -- AUTO_INCREMENT for table `itinerary`
 --
 ALTER TABLE `itinerary`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `reports`
