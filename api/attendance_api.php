@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!empty($row['time_in']) && !empty($row['time_out'])) {
             echo json_encode([
                 "status" => "error",
-                "message" => "You have already clocked in and out for today. Please try again after 5am."
+                "message" => "You have already clocked in and out for today."
             ]);
             exit;
         }
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         echo json_encode([
             "status" => "error",
-            "message" => "You have already clocked in and out for today. Please try again after 5am."
+            "message" => "You have already clocked in and out for today."
         ]);
         exit;
     } 

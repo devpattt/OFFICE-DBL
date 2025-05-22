@@ -1,5 +1,5 @@
 BUGS
-
+Profile finder bug, when clock in out in diff locations
 
 ////////////////////
 itinerary to maps
@@ -19,4 +19,6 @@ leave management date UI
 Profile UI
 Employee Leave Requests UI
 ////////////////
+
+
 
