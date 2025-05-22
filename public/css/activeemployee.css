@@ -1,346 +1,220 @@
+/* --- Table Button Styles --- */
+table .btn-edit,
+table .btn-deactivate,
+table .btn-activate {
+  padding: 6px 14px;
+  margin: 0 2px;
+  border: none;
+  border-radius: 15px;
+  font-size: 0.95em;
+  cursor: pointer; 
+  transition: background 0.2s, color 0.2s;
+}
+
+table .btn-edit {
+  background: #3498db;
+  color: #fff;
+}
+table .btn-edit:hover {
+  background: #217dbb;
+}
+
+table .btn-deactivate {
+  background: #e74c3c;
+  color: #fff;
+}
+table .btn-deactivate:hover {
+  background: #c0392b;
+}
+
+table .btn-activate {
+  background: #27ae60;
+  color: #fff;
+}
+table .btn-activate:hover {
+  background: #219150;
+}
+
+/* --- Table Styles --- */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  th, td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: center;
-  }
-  th {
-    background-color: #f2f2f2;
-  }
-  .add-btn {
-    display: inline-block;
-    margin-bottom: 10px;
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-  }
-  .status-active {
-    color: green;
-    font-weight: bold;
-  }
-  .status-inactive {
-    color: red;
-    font-weight: bold;
-  }
-  
-/* Modal background */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  overflow-y: auto;
-  padding: 40px 20px;
-}
-
-/* Modal content */
-.modal-content {
-  background-color: #fff;
-  margin: auto;
-  padding: 25px 20px;
-  border-radius: 8px;
-  max-width: 500px;
   width: 100%;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  position: relative;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-#employeeModal .modal-content {
-  padding: 22px 20px !important;
-  border-radius: 14px;
+  border-collapse: collapse;
+  margin: 24px 0 32px 0;
   background: #fff;
-  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.13);
-  max-width: 420px;
-  animation: fadeIn 0.3s;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(44, 62, 80, 0.07);
+  font-size: 1em;
 }
 
-#confirmModal .modal-content {
-  padding: 32px 28px !important;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
-  max-width: 370px;
-  text-align: center;
-  animation: fadeIn 0.3s;
-}
-
-#confirmModal .modal-content p {
-  font-size: 1.15rem;
-  color: #222;
-  margin-bottom: 28px;
-  font-weight: 500;
-  letter-spacing: 0.2px;
-}
-
-#confirmModal .modal-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-}
-
-#confirmModal .confirm-btn {
-  background: linear-gradient(90deg, #e74c3c 0%, #ff7675 100%);
+table thead {
+  background: #232738;
   color: #fff;
-  border: none;
-  border-radius: 22px;
-  padding: 10px 28px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.08);
 }
 
-#confirmModal .confirm-btn:hover {
-  background: linear-gradient(90deg, #c0392b 0%, #e17055 100%);
-  transform: translateY(-2px) scale(1.04);
+table th, table td {
+  padding: 12px 16px;
+  text-align: left;
 }
 
-#confirmModal .cancel-btn {
-  background: #f2f2f2;
-  color: #444;
-  border: none;
-  border-radius: 22px;
-  padding: 10px 28px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s, transform 0.1s;
-}
-
-#confirmModal .cancel-btn:hover {
-  background: #e0e0e0;
-  color: #e74c3c;
-  transform: translateY(-2px) scale(1.04);
-}
-
-/* Modal animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Close button */
-.close {
-  color: #aaa;
-  position: absolute;
-  right: 15px;
-  top: 10px;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.close:hover {
-  color: #000;
-}
-
-/* Form fields */
-.modal-content form label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: bold;
-  color: #333;
-}
-
-.modal-content input,
-.modal-content select {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.modal-content button[type="submit"] {
-  background-color: #4CAF50;
-  color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  transition: background-color 0.3s;
-}
-
-.modal-content button[type="submit"]:hover {
-  background-color: #3e8e41;
-}
-
-#employeeModal label {
-  display: block;
-  margin-bottom: 6px;
+table th {
   font-weight: 600;
-  color: #222;
-  letter-spacing: 0.3px;
-}
-
-#employeeModal input,
-#employeeModal select {
-  width: 100%;
-  padding: 12px 14px;
-  margin-bottom: 16px;
-  border: 1.5px solid #bdbdbd;
-  border-radius: 7px;
-  background: #fafbfc;
-  font-size: 15px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-#employeeModal input:focus,
-#employeeModal select:focus {
-  border-color: #232738;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.12);
-}
-
-#employeeModal .modal-submit-btn {
-  background: linear-gradient(90deg, #11121a 0%, #101425 100%);
-  color: #fff;
-  padding: 14px 0;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 16px;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.08);
-  transition: background 0.3s, box-shadow 0.2s, transform 0.1s;
-  width: 100%;
   letter-spacing: 0.5px;
-  margin-top: 8px;
 }
 
-#employeeModal .modal-submit-btn:hover {
-  background: linear-gradient(90deg, #232738 0%, #3a435d 100%);
-  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.15);
-  transform: translateY(-2px) scale(1.03);
+table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.18s;
 }
 
-  .btn-active {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 2px 6px;
-    font-size: 11px;    
-    border-radius: 4px;
-    cursor: pointer;
+table tbody tr:hover {
+  background: #f4f8fb;
+}
+
+table td[data-label] {
+  font-size: 1em;
+}
+
+table tr:last-child {
+  border-bottom: none;
+}
+
+/* Responsive for small screens */
+@media (max-width: 800px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
   }
-  
-  .btn-inactive {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    padding: 2px 6px;
-    font-size: 11px;
-    border-radius: 4px;
-    cursor: not-allowed;
-    opacity: 0.6;
+  table thead {
+    display: none;
   }
-
-/* New Action Buttons */
-.btn-edit {
-  background-color: #3498db; /* blue */
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  font-size: 12px;
-  border-radius: 13px;
-  cursor: pointer;
+  table tr {
+    margin-bottom: 18px;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(44, 62, 80, 0.08);
+    background: #fff;
+  }
+  table td {
+    padding: 10px 14px;
+    border: none;
+    position: relative;
+  }
+  table td[data-label]:before {
+    content: attr(data-label) ": ";
+    font-weight: 600;
+    color: #3498db;
+    display: block;
+    margin-bottom: 2px;
+  }
 }
 
-.btn-edit:hover {
-  background-color: #2980b9;
+/* --- Modal Styles --- */
+.modal {
+  display: none; 
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background: rgba(0,0,0,0.35);
+  justify-content: center;
+  align-items: center;
 }
 
-.btn-deactivate {
-  background-color: #e74c3c; 
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  font-size: 12px;
+.modal-content {
+  background: #fff;
+  margin: 5% auto;
+  padding: 28px 32px 24px 32px;
   border-radius: 12px;
+  max-width: 400px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  position: relative;
+  animation: modalFadeIn 0.25s;
+}
+
+@keyframes modalFadeIn {
+  from { transform: translateY(-40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal .close {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-size: 1.7em;
+  color: #888;
   cursor: pointer;
+  transition: color 0.2s;
+}
+.modal .close:hover {
+  color: #e74c3c;
 }
 
-.btn-deactivate:hover {
-  background-color: #d35400;
+.modal label {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: #2d3436;
 }
 
-.btn-activate {
-  background-color: #2ecc71; 
-  color: white;
+.modal input[type="text"],
+.modal input[type="email"],
+.modal input[type="password"],
+.modal select {
+  width: 100%;
+  padding: 7px 10px;
+  margin-bottom: 10px;
+  border: 1px solid #dfe6e9;
+  border-radius: 5px;
+  font-size: 1em;
+  background: #f9f9f9;
+  transition: border 0.2s;
+}
+.modal input:focus,
+.modal select:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.modal-submit-btn,
+.btn-save,
+.confirm-btn,
+.cancel-btn {
+  padding: 8px 18px;
+  margin-top: 12px;
   border: none;
-  padding: 5px 10px;
-  font-size: 12px;
-  border-radius: 4px;
+  border-radius: 5px;
+  font-size: 1em;
   cursor: pointer;
+  transition: background 0.2s, color 0.2s;
 }
 
-.btn-activate:hover {
-  background-color: #27ae60;
+.modal-submit-btn,
+.btn-save,
+.confirm-btn {
+  background: #3498db;
+  color: #fff;
+}
+.modal-submit-btn:hover,
+.btn-save:hover,
+.confirm-btn:hover {
+  background: #217dbb;
 }
 
-
-/* Dark mode adjustments */
-.darkmode .delete-btn {
-  color: #ff6b6b;
+.cancel-btn {
+  background: #e0e0e0;
+  color: #333;
+  margin-left: 8px;
+}
+.cancel-btn:hover {
+  background: #b2bec3;
 }
 
-.darkmode .delete-btn:hover {
-  background-color: rgba(255, 107, 107, 0.1);
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
 }
-  
-  /* --------- MOBILE RESPONSIVE DESIGN --------- */
-  @media screen and (max-width: 600px) {
-    table, thead, tbody, th, td, tr {
-      display: block;
-      width: 100%;
-    }
-  
-    thead tr {
-      display: none;
-    }
-  
-    tr {
-      margin-bottom: 15px;
-      background: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-    }
-  
-    td {
-      text-align: right;
-      padding-left: 50%;
-      position: relative;
-    }
-  
-    td::before {
-      content: attr(data-label);
-      position: absolute;
-      left: 10px;
-      top: 12px;
-      font-weight: bold;
-      text-align: left;
-    }
-  
-    .modal-content {
-      width: 90%;
-      margin-top: 50%;
-    }
-  
-    .add-btn {
-      width: 100%;
-      text-align: center;
-    }
-  }
