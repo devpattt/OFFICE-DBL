@@ -16,6 +16,7 @@ btn border radius
 admin/employee dashboard
 itinerary validation
 leave management date UI
-Profile 
+Profile UI
+Employee Leave Requests UI
 ////////////////
 
