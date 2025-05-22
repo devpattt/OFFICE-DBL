@@ -64,21 +64,22 @@ function showMessage(message, type) {
 }
 
 function handleAttendance(action) {
+  if (clockInBtn.disabled && action === 'in') return;
+  if (clockOutBtn.disabled && action === 'out') return;
   if (!isInsideGeofence) {
     showMessage('You must be within a designated work area to clock in/out.', 'error');
     return;
   }
-  
+
   clockInBtn.disabled = true;
   clockOutBtn.disabled = true;
-  
+
   const data = {
     location: currentLocationName,
     latitude: userPosition.lat,
     longitude: userPosition.lng
   };
-  
-  // API call 
+
   fetch('../api/attendance_api.php', {
     method: 'POST',
     headers: {
@@ -86,47 +87,42 @@ function handleAttendance(action) {
     },
     body: JSON.stringify(data)
   })
-  .then(response => response.text())
-  .then(result => {
-    showMessage(result, result.includes('Error') ? 'error' : 'success');
-    
-    if (action === 'in' && !result.includes('Error')) {
-      clockInBtn.disabled = true;
-      clockOutBtn.disabled = false;
-    } else if (action === 'out' && !result.includes('Error')) {
-      clockInBtn.disabled = false;
-      clockOutBtn.disabled = true;
-    } else {
+    .then(response => response.json())
+    .then(result => {
+      showMessage(result.message || JSON.stringify(result), result.status === 'success' ? 'success' : 'error');
       updateButtonStates();
-    }
-  })
-  .catch(error => {
-    showMessage('Error: ' + error.message, 'error');
-    updateButtonStates();
-  });
+    })
+    .catch(error => {
+      showMessage('Error: ' + error.message, 'error');
+      updateButtonStates();
+    });
 }
 
 function updateButtonStates() {
   fetch('../includes/check_status.php')
-  .then(response => response.json())
-  .then(data => {
-    const currentDay = new Date().toISOString().split('T')[0];
-    if (data.status === 'clocked-in' && currentDay === currentDate) {
-      clockInBtn.disabled = true;
-      clockOutBtn.disabled = false;
-    } else if (data.status === 'clocked-out' && currentDay === currentDate) {
-      clockInBtn.disabled = false;
-      clockOutBtn.disabled = true;
-    } else {
+    .then(response => response.json())
+    .then(data => {
+      const currentDay = new Date().toISOString().split('T')[0];
+      if (data.status === 'clocked-in' && currentDay === currentDate) {
+        clockInBtn.disabled = true;
+        clockOutBtn.disabled = false;
+      } else if (data.status === 'clocked-out' && currentDay === currentDate) {
+        clockInBtn.disabled = !isInsideGeofence;
+        clockOutBtn.disabled = true;
+      } else if (data.status === 'done') {
+        // User already clocked in and out for today, disable both
+        clockInBtn.disabled = true;
+        clockOutBtn.disabled = true;
+      } else {
+        clockInBtn.disabled = !isInsideGeofence;
+        clockOutBtn.disabled = true;
+      }
+    })
+    .catch(error => {
+      console.error('Error checking status:', error);
       clockInBtn.disabled = !isInsideGeofence;
-      clockOutBtn.disabled = true;
-    }
-  })
-  .catch(error => {
-    console.error('Error checking status:', error);
-    clockInBtn.disabled = !isInsideGeofence;
-    clockOutBtn.disabled = !isInsideGeofence;
-  });
+      clockOutBtn.disabled = !isInsideGeofence;
+    });
 }
 
 function resetButtonStateAtMidnight() {
@@ -191,8 +187,14 @@ function updateLocation() {
   }
 }
  
-clockInBtn.addEventListener('click', () => handleAttendance('in'));
-clockOutBtn.addEventListener('click', () => handleAttendance('out'));
+clockInBtn.addEventListener('click', () => {
+  if (clockInBtn.disabled) return;
+  handleAttendance('in');
+});
+clockOutBtn.addEventListener('click', () => {
+  if (clockOutBtn.disabled) return;
+  handleAttendance('out');
+});
 
 updateLocation();
 resetButtonStateAtMidnight(); 

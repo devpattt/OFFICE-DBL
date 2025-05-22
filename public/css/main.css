@@ -195,6 +195,12 @@ main p{
 .orange { background: #fd9644; }
 .green { background: #00b894; }
 
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
 
 
 @media(max-width: 800px){
