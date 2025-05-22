@@ -65,8 +65,11 @@ if ($activeResult && $activeResult->num_rows > 0) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
+    <link rel="stylesheet" href="../public/geolocation.css">
     <title>DBL ISTS - Employee Location Map</title>
-    <style>
+</head>
+    <style> 
+                    
         .map-container {
             margin: 20px 0;
             border: 1px solid #ddd;
@@ -147,8 +150,8 @@ if ($activeResult && $activeResult->num_rows > 0) {
             border-radius: 50%;
             margin-right: 10px;
         }
+
     </style>
-</head>
 <body>
 <nav id="sidebar">
     <ul>
@@ -240,7 +243,7 @@ if ($activeResult && $activeResult->num_rows > 0) {
             <div id="main-map"></div>
         </div>
 
-<!-- Make sure this code appears near your active employees table -->
+
 <div class="map-container">
     <div class="map-header">
         <h2>Current Active Employees</h2>
@@ -268,7 +271,6 @@ if ($activeResult && $activeResult->num_rows > 0) {
                             <?= htmlspecialchars($employee['employee_id']) ?>
                         </td>
                         <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-                            <!-- Add the profile picture in a small circle -->
                             <div style="display: flex; align-items: center;">
                                 <div style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; margin-right: 10px; background-color: #eee;">
                                     <?php if(!empty($employee['profile_pic'])): ?>
