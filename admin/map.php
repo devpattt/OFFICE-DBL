@@ -300,14 +300,12 @@ if ($activeResult && $activeResult->num_rows > 0) {
     </div>
 </div>
 
-    <!-- Your existing modals and scripts -->
     <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
         <strong>Inactive for too long.</strong><br>
         Logging out in <span id="countdown">10</span> seconds...
     </div>
 
     <script>
-        // Define geofenced locations
         const locations = [
             { id: "DBL ISTS", name: "DBL ISTS", lat: 14.73990, lng: 120.98754, radius: 50 },
             { id: "WL Headquarter", name: "WL Headquarter", lat: 14.737567, lng: 120.99018, radius: 50 },
@@ -320,7 +318,6 @@ if ($activeResult && $activeResult->num_rows > 0) {
             { id: "Ellec Parada", name: "Ellec Parada", lat: 14.69564, lng: 120.99530, radius: 50 }
         ];
 
-        // Initialize main map
         let mainMap = L.map('main-map').setView([14.73990, 120.98754], 12);
         let geofenceVisible = true;
         let allMarkers = [];
@@ -330,7 +327,6 @@ if ($activeResult && $activeResult->num_rows > 0) {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(mainMap);
 
-        // Add geofences to main map
         function addGeofences() {
             locations.forEach(loc => {
                 L.circle([loc.lat, loc.lng], {
@@ -343,8 +339,6 @@ if ($activeResult && $activeResult->num_rows > 0) {
         }
         addGeofences();
 
-        // Add all employee locations to main map
-// Add all employee locations to main map
 
 // Add all employee locations to main map
 const employeeData = [
@@ -363,13 +357,11 @@ const employeeData = [
         location_in: '<?= htmlspecialchars($row['location_in']) ?>',
         location_out: '<?= htmlspecialchars($row['location_out'] ?? '') ?>',
         status: '<?= htmlspecialchars($row['status']) ?>',
-        // Try to access the employee name and profile pic from data
-        profile_pic: null, // This will be populated if available
+        profile_pic: null, 
         employee_name: '<?= isset($row['username']) ? htmlspecialchars($row['username']) : "Employee" ?>'
     },
     <?php endforeach; ?>
 ];
-// Map employee data with profile information from activeEmployees array
 <?php foreach ($activeEmployees as $employee): ?>
 employeeData.forEach(emp => {
     if (emp.employee_id === '<?= htmlspecialchars($employee['employee_id']) ?>') {
@@ -382,19 +374,13 @@ employeeData.forEach(emp => {
 
 
 
-
-
-// Replace your existing addEmployeeMarkers function with this improved version
-
+// add markers 
 function addEmployeeMarkers() {
-    // Group employees by their location, but track their current status
     const locationGroups = {};
     
     employeeData.forEach(emp => {
-        // Determine the employee's current location and status
         let currentLat, currentLng, currentStatus, currentTime, currentLocation;
         
-        // If employee has checked out, use check-out location and status
         if (emp.lat_out && emp.lng_out && emp.time_out) {
             currentLat = emp.lat_out;
             currentLng = emp.lng_out;
@@ -402,7 +388,6 @@ function addEmployeeMarkers() {
             currentTime = emp.time_out;
             currentLocation = emp.location_out || 'Unknown';
         }
-        // If employee has only checked in, use check-in location
         else if (emp.lat_in && emp.lng_in) {
             currentLat = emp.lat_in;
             currentLng = emp.lng_in;
@@ -420,8 +405,7 @@ function addEmployeeMarkers() {
                     employees: []
                 };
             }
-            
-            // Add employee with their current status
+
             locationGroups[key].employees.push({
                 ...emp,
                 currentStatus: currentStatus,
@@ -431,13 +415,10 @@ function addEmployeeMarkers() {
         }
     });
     
-    // Create markers for each location group
     Object.values(locationGroups).forEach((group, groupIndex) => {
         if (group.employees.length === 1) {
-            // Single employee - create normal marker
             createSingleEmployeeMarker(group.employees[0], group.lat, group.lng);
         } else {
-            // Multiple employees - create appropriate marker based on count
             createMultiEmployeeMarker(group.employees, group.lat, group.lng);
         }
     });
@@ -507,8 +488,7 @@ function createMultiEmployeeMarker(employees, baseLat, baseLng) {
     const checkedOutCount = employees.filter(emp => emp.currentStatus === 'out').length;
     
     if (employees.length <= 4) {
-        // Small group - create individual markers in circle pattern
-        const radius = 0.0001; // Small radius for clustering (about 10 meters)
+        const radius = 0.0001;
         
         employees.forEach((emp, index) => {
             const angle = (2 * Math.PI * index) / employees.length;
@@ -518,12 +498,12 @@ function createMultiEmployeeMarker(employees, baseLat, baseLng) {
             createSingleEmployeeMarker(emp, offsetLat, offsetLng);
         });
     } else {
-        // Large group - create cluster marker with mixed status indicator
+        // Large group 
         let markerColor, borderColor, statusText;
         
         if (checkedInCount > 0 && checkedOutCount > 0) {
-            // Mixed status - use gradient or special indicator
-            markerColor = '#f39c12'; // Orange for mixed
+            // Mixed status
+            markerColor = '#f39c12'; 
             borderColor = '#e67e22';
             statusText = `Mixed (${checkedInCount} in, ${checkedOutCount} out)`;
         } else if (checkedInCount > 0) {
@@ -576,18 +556,16 @@ function createMultiEmployeeMarker(employees, baseLat, baseLng) {
             popupAnchor: [0, -25]
         });
         
-        // Create detailed popup content for all employees
+        // popup content 
         let popupContent = `<div style="max-height: 400px; overflow-y: auto; min-width: 250px;">`;
         popupContent += `<div style="text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #eee;">`;
         popupContent += `<strong style="font-size: 16px;">${employees.length} Employees at Location</strong><br>`;
         popupContent += `<span style="color: ${borderColor}; font-weight: bold;">${statusText}</span>`;
         popupContent += `</div>`;
         
-        // Group employees by status for better organization
         const checkedInEmployees = employees.filter(emp => emp.currentStatus === 'in');
         const checkedOutEmployees = employees.filter(emp => emp.currentStatus === 'out');
         
-        // Show checked in employees first
         if (checkedInEmployees.length > 0) {
             popupContent += `<div style="margin-bottom: 15px;">`;
             popupContent += `<div style="color: #27ae60; font-weight: bold; margin-bottom: 8px;">✓ Checked In (${checkedInEmployees.length})</div>`;
@@ -631,8 +609,7 @@ function createMultiEmployeeMarker(employees, baseLat, baseLng) {
         allMarkers.push(marker);
     }
 }
-
-// Updated legend to explain the new marker system
+//legends
 function addLegend() {
     const legend = L.control({position: 'bottomright'});
     
@@ -675,7 +652,7 @@ function addLegend() {
     legend.addTo(mainMap);
 }
 
-// Add enhanced CSS for the new marker system
+//css
 document.head.insertAdjacentHTML('beforeend', `
 <style>
     .custom-marker {
@@ -757,11 +734,6 @@ document.head.insertAdjacentHTML('beforeend', `
     }
 </style>
 `);
-
-
-
-
-
 
 
 // Event listener 
