@@ -2,7 +2,6 @@
 
 include '../includes/tasklogs.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head> 
