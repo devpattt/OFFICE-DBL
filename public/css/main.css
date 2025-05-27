@@ -154,7 +154,7 @@ main p{
 
 /*dashboard*/
 .dashboard-container {
-  padding: 20px;
+  padding: auto;
 }
 
 .info-cards {
@@ -200,9 +200,80 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* --- Event Table (Upcoming Holidays) --- */
+.event-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    background: var(--base-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 8px rgba(44, 62, 80, 0.06);
+    font-size: 1em;
+}
 
+.event-table th, .event-table td {
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--text-color); 
+}
 
+.event-table thead {
+    background: #232738;
+    color: #fff;
+}
 
+.event-table thead tr {
+    background: #232738;
+    color: #fff;
+}
+
+/* Light mode: force white background for thead and thead tr */
+:not(.darkmode) .event-table thead,
+:not(.darkmode) .event-table thead tr {
+    background: #fff;
+    color: #232738;
+}
+
+.darkmode .event-table thead {
+    background: #232738;
+    color: #fff;
+}
+
+.darkmode .event-table thead tr {
+    background: #232738;
+    color: #fff;
+}
+
+.event-table tbody tr {
+    border-bottom: 1px solid #2d2d2d;
+    transition: background 0.18s;
+}
+
+.event-table tbody tr:hover {
+    background: #f4f8fb;
+}
+
+.darkmode .event-table tbody tr:hover {
+    background: #232738;
+}
+
+.status.regular {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+.status.special {
+    background: #fff3e0;
+    color: #ff9800;
+}
+.status.active {
+    background: #e6f7e6;
+    color: #2e7d32;
+}
+.status.upcoming {
+    background: #e3e3e3;
+    color: #555;
+}
 @media(max-width: 800px){
   body{
     grid-template-columns: 1fr;

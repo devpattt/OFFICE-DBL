@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/css/map.css">
     <link rel="stylesheet" href="../public/css/main.css">
     <link rel="stylesheet" href="../public/css/darkmode.css">
     <link rel="icon" href="../public/img/DBL.png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="../public/css/attendance.css">
-    <link rel="stylesheet" href="../public/css/map.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS - Geo Map</title>
@@ -94,30 +94,30 @@
        <p style="font-size: 16px; color: #555; margin-bottom: 10px;">
             <strong>Note:</strong> <em>This system uses your device's location. Please ensure location services are enabled and you are within the designated area to check in or out.</em>
         </p>
-    <div id="message"></div>
-     <div id="map"></div>
-        <div id="status">Checking your location...</div>
-          <div class="attendance-controls">
-            <button id="clockInBtn" class="btn btn-clockin" disabled>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
-                <path d="M12 6v6l4 2"></path>
-              </svg>
-              Clock In
-            </button>
-            <button id="clockOutBtn" class="btn btn-clockout" disabled>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
-                <path d="M12 6v6l4 2"></path>
-              </svg>
-              Clock Out
-            </button>
-          </div>
+          <div id="message"></div>
+          <div id="map"></div>
+              <div id="status">Checking your location...</div>
+                <div class="attendance-controls">
+                  <button id="clockInBtn" class="btn btn-clockin" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+                      <path d="M12 6v6l4 2"></path>
+                    </svg>
+                    Clock In
+                  </button>
+                  <button id="clockOutBtn" class="btn btn-clockout" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+                      <path d="M12 6v6l4 2"></path>
+                    </svg>
+                    Clock Out
+                  </button>
+                </div>
 
             <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">
-            <strong>Inactive for too long.</strong><br>
-            Logging out in <span id="countdown">10</span> seconds...
-          </div>
+              <strong>Inactive for too long.</strong><br>
+              Logging out in <span id="countdown">10</span> seconds...
+            </div>
 
           <div id="session-expired-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
               <div style="background:#fff; padding:30px; border-radius:12px; text-align:center; max-width:400px; margin:auto; box-shadow:0 4px 20px rgba(0,0,0,0.3);">

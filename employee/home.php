@@ -1,8 +1,9 @@
       <?php
-      session_start(); 
       include '../conn.php';
       include '../includes/total_workinghours.php';
+      include '../includes/isset.php';
       ?>
+
       <!DOCTYPE html>
       <html lang="en">
       <head>
@@ -106,16 +107,25 @@
           </div>
           
         <script src="../public/js/session.js"></script>
-                   <?php
-                   /*
-            $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
-            */?>  
-           <!-- <div class="welcome-message">
-              <h1>Welcome back, <?php /* echo htmlspecialchars($username); */?>!</h1>
-              <div class="active-time">
-                <p>Current Time: <span id="activeTime"></span></p>
-              </div>
-            </div>   -->
+                  
+          <?php
+              $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+              date_default_timezone_set('Asia/Manila');
+              $hour = (int)date('G');
+              if ($hour >= 5 && $hour < 12) {
+                  $greeting = "Good morning";
+              } elseif ($hour >= 12 && $hour < 18) {
+                  $greeting = "Good afternoon";
+              } else {
+                  $greeting = "Good evening";
+              }
+          ?>
+          <div class="welcome-message">
+              <h1>
+                  <?php echo "$greeting, <span style='color:#3498db'>" . htmlspecialchars($username) . "</span>!"; ?>
+              </h1>
+              <p>Welcome to your dashboard. Wishing you a productive day ahead!</p>
+          </div> 
 
             <div class="info-boxes">
               <div class="box box-1">
@@ -128,11 +138,11 @@
                 <?php
                 $today = date('Y-m-d');
                 $countQuery = "SELECT status, COUNT(*) as total FROM dbl_attendance_logs 
-                              WHERE date = ?
+                              WHERE date = ? AND username = ?
                               GROUP BY status";
 
                 $countStmt = $conn->prepare($countQuery);
-                $countStmt->bind_param("s", $today);
+                $countStmt->bind_param("ss", $today, $username);
                 $countStmt->execute();
                 $countResult = $countStmt->get_result();
 
@@ -187,7 +197,7 @@
             <br> 
             
             <div class="box">
-              <h3>Upcoming Holidays</h3>
+              <h2 class="upcoming-holidays-title">Upcoming Holidays</h2>
               <table class="event-table">
                 <thead>
                   <tr>
@@ -201,10 +211,7 @@
                 </tbody>
               </table>
             </div>
-
-
             </main>
-
           <script>
               function updateTime() {
                 const now = new Date();

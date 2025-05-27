@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,6 +11,20 @@
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
   </head>
+  <style> 
+    input[type="date"] {
+    padding: 8px 12px;
+    border: 2px solid #1f1f1f;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    background-color: #fff;
+    color: #1f1f1f;
+    transition: border-color 0.3s ease;
+    outline: none;
+    width: 200px;
+  }
+  </style>
 <body>
 <nav id="sidebar">
           <ul>

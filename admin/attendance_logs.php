@@ -2,7 +2,6 @@
 
 include '../includes/tasklogs.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head> 
@@ -101,7 +100,7 @@ include '../includes/tasklogs.php';
   </nav>
   
   <main>
-  <h2>Itinerary Logs</h2>
+  <h2>Attendance Logs</h2>
   <br>
         <form method="GET" id="filterForm">
             <label for="date">Select Date:</label>
@@ -120,33 +119,80 @@ include '../includes/tasklogs.php';
                 ?>
             </select>
         </form>
+<?php
+include '../conn.php';
 
-        <?php
-        if ($result->num_rows > 0) {
-            echo "<table>";
-            echo "<tr><th>Employee Name</th><th>Location</th><th>Start Time</th><th>Updated Time</th><th>Description</th><th>Status</th></tr>";
-            while($row = $result->fetch_assoc()) {
-                $status_class = strtolower($row["status"]); 
-                
-                $completion_time = ($row["updated_at"] != NULL) ? date("H:i:s", strtotime($row["updated_at"])) : "N/A";
-                $start_time = date("H:i:s", strtotime($row["start_time"]));
+$where = [];
+$params = [];
+$types = '';
 
-                echo "<tr class='" . htmlspecialchars($status_class) . "'>";
-                echo "<td>" . htmlspecialchars($row["employee_name"]) . "</td>";
-                echo "<td>" . htmlspecialchars($row["location"]) . "</td>";
-                echo "<td>" . $start_time . "</td>";
-                echo "<td>" . $completion_time . "</td>";
-                echo "<td>" . htmlspecialchars($row["description"]) . "</td>";
-                echo "<td>" . htmlspecialchars($row["status"]) . "</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-        } else {
-            echo "<p>No tasks found for this filter.</p>";
-        }
-        $conn->close();
-        ?>
-  </main>
+if (!empty($_GET['date'])) {
+    $where[] = "date = ?";
+    $params[] = $_GET['date'];
+    $types .= 's';
+}
+if (!empty($_GET['employee'])) {
+    $where[] = "l.employee_id = ?";
+    $params[] = $_GET['employee'];
+    $types .= 's';
+}
+
+$sql = "SELECT l.*, e.full_name 
+        FROM dbl_attendance_logs l
+        LEFT JOIN dbl_employees_acc e ON l.employee_id = e.employee_id";
+if ($where) {
+    $sql .= " WHERE " . implode(' AND ', $where);
+}
+
+$sql .= " ORDER BY l.date DESC, l.time_in_raw DESC";
+$stmt = $conn->prepare($sql);
+if ($params) {
+    $stmt->bind_param($types, ...$params);
+}
+$stmt->execute();
+$result = $stmt->get_result();
+?>
+
+  <?php if ($result->num_rows > 0): ?>
+    <table>
+      <tr>
+        <th>Employee ID</th>
+        <th>Fullname</th>
+        <th>Date</th>
+        <th>Time In</th>
+        <th>Location In</th>
+        <th>Time Out</th>
+        <th>Location Out</th>
+        <th>Status</th>
+        <th>Hours Worked</th>
+      </tr>
+     <?php while($row = $result->fetch_assoc()): ?>
+      <tr>
+        <td><?php echo htmlspecialchars($row['employee_id']); ?></td>
+        <td><?php echo htmlspecialchars($row['full_name']); ?></td>
+        <td><?php echo htmlspecialchars($row['date']); ?></td>
+        <td><?php echo htmlspecialchars($row['time_in']); ?></td>
+        <td><?php echo htmlspecialchars($row['location_in']); ?></td>
+        <td><?php echo htmlspecialchars($row['time_out']); ?></td>
+        <td><?php echo htmlspecialchars($row['location_out']); ?></td>
+        <td>
+          <?php
+            $status = htmlspecialchars($row['status']);
+            $statusClass = strtolower(str_replace(' ', '-', $status));
+          ?>
+          <span<?php echo $statusClass; ?>>
+            <?php echo $status; ?>
+          </span>
+        </td>
+        <td><?php echo htmlspecialchars($row['hours_worked']); ?></td>
+      </tr>
+    <?php endwhile; ?>
+    </table>
+  <?php else: ?>
+    <p>No attendance logs found.</p>
+  <?php endif; ?>
+  <?php $stmt->close(); $conn->close(); ?>
+</main>
 
 
   <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">

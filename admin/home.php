@@ -23,7 +23,6 @@ $absentToday = $totalEmployees - $presentToday;
 $conn->close();
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,6 +31,7 @@ $conn->close();
   <link rel="stylesheet" href="../public/css/dashboard.css">
   <link rel="stylesheet" href="../public/css/main.css">
   <link rel="stylesheet" href="../public/css/darkmode.css">
+  <link rel="stylesheet" href="../public/css/home.css">
   <link rel="icon" href="../public/img/DBL.png">
   <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -120,8 +120,28 @@ $conn->close();
       </li>  
     </ul>
   </nav>
-
+  
   <main>
+            <?php
+              $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+              date_default_timezone_set('Asia/Manila');
+              $hour = (int)date('G');
+              if ($hour >= 5 && $hour < 12) {
+                  $greeting = "Good morning";
+              } elseif ($hour >= 12 && $hour < 18) {
+                  $greeting = "Good afternoon";
+              } else {
+                  $greeting = "Good evening";
+              }
+          ?>
+          <div class="welcome-message">
+              <h1>
+                  <?php echo "$greeting, <span style='color:#3498db'>" . htmlspecialchars($username) . "</span>!"; ?>
+              </h1>
+              <p>Welcome to your dashboard. Wishing you a productive day ahead!</p>
+          </div> 
+  
+
     <div class="dashboard-container">
       <div class="info-cards">
 
@@ -152,7 +172,7 @@ $conn->close();
     </div>
     
     <div class="box">
-          <h3>Upcoming Holidays</h3>
+        <h2 class="upcoming-holidays-title">Upcoming Holidays</h2>
           <table class="event-table">
             <thead>
               <tr>
@@ -166,21 +186,20 @@ $conn->close();
             </tbody>
           </table>
         </div>
-
-
- <!--
-  <div class="box">
-    <h3>Task Status</h3>
-    <div class="chart-container">
-      <canvas id="itineraryChart"></canvas>
-    </div>
-    <div class="task-legend">
-      <span><span class="dot gold"></span> Active</span>
-      <span><span class="dot green"></span> Completed</span>
-      <span><span class="dot red"></span> Ended</span>
-    </div>
-  </div>
--->
+        
+      <!--
+        <div class="box">
+          <h3>Task Status</h3>
+          <div class="chart-container">
+            <canvas id="itineraryChart"></canvas>
+          </div>
+          <div class="task-legend">
+            <span><span class="dot gold"></span> Active</span>
+            <span><span class="dot green"></span> Completed</span>
+            <span><span class="dot red"></span> Ended</span>
+          </div>
+        </div>
+      -->
 
 </div>
   </main>
