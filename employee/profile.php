@@ -86,86 +86,121 @@ try {
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <title>DBL ISTS</title>
+
     <style>
-       .profile-container {
-    background: #ffffff;
-    padding: 40px;
-    max-width: 600px;
-    margin: 20px auto;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    border: 1px solid #e0e0e0;
+  .password-wrapper {
+    position: relative;
   }
 
-  .profile-container h2 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #1a1a1a;
-    font-size: 24px;
+  .password-wrapper input[type="password"] {
+    padding-right: 40px; 
   }
 
-  label {
-    display: block;
-    margin-top: 20px;
-    margin-bottom: 6px;
-    font-weight: 600;
-    color: #333;
-  }
-
-  input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-  }
-
-  input.readonly {
-    background-color: #f3f4f6;
-    color: #6b7280;
-    cursor: not-allowed;
+  .password-wrapper i.fa-eye {
+    position: absolute;
+    right: 12px;     
+    top: 50%;        
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 18px;
   }
 
 
-
-  button:hover {
-    background: #4338ca;
-  }
-
-  .success {
-    color: #16a34a;
-    background: #ecfdf5;
-    border: 1px solid #bbf7d0;
-    padding: 10px;
-    text-align: center;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    font-size: 14px;
-  }
-  .profile-pic-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+.container {
+  max-width: 900px;
+  margin: 50px auto;
+  background: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
 
-.profile-pic-wrapper img {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
+h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.form-group i {
+  position: absolute;
+  left: 10px;
+  top: 38px;
+  color: #666;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"] {
+  padding: 12px 12px 12px 38px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+input[type="file"] {
+  padding-left: 12px;
+}
+
+label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #444;
+}
+
+button {
+  grid-column: span 2;
+  padding: 14px;
+  border: none;
+  background: #4f46e5;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #3b35c6;
+}
+
+.profile-pic {
+  grid-column: span 2;
+  text-align: center;
+}
+
+.profile-pic img {
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
-  border: 3px solid #4f46e5;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  object-fit: cover;
+  border: 4px solid #4f46e5;
+  margin-bottom: 15px;
 }
 
     </style>
   </head>
+
 <body>
 <nav id="sidebar">
     <ul>
@@ -242,50 +277,41 @@ try {
     </ul>
   </nav>
   <main>
-     <div class="profile-container">
-    <h2>My Profile</h2>
-    <?php if (!empty($employee['profile_pic'])): ?>
-    <div class="profile-pic-wrapper">
-      <img src="../uploads/<?= htmlspecialchars($employee['profile_pic']) ?>">
-    </div>
-  <?php endif; ?>
+   <div class="container">
 
-    <?php if (isset($_GET['success'])): ?>
-      <p class="success">Profile updated successfully!</p>
-    <?php endif; ?>
+    <h2>Edit Profile</h2>
 
-    <form method="POST" enctype="multipart/form-data">
-       <label>Profile Picture</label>
-      <input type="file" name="profile_pic" accept="image/*">
-      
-      <label>Employee ID</label>
-      <input type="text" value="<?= htmlspecialchars($employee['employee_id']) ?>" readonly class="readonly">
+    <form method="post" enctype="multipart/form-data">
+      <div class="profile-pic">
+        <img src="../uploads/<?php echo $employee['profile_pic'] ?? 'default.jpg'; ?>" alt="Profile Picture">
+      </div>
 
-      <label>Username</label>
-      <input type="text" value="<?= htmlspecialchars($employee['username']) ?>" readonly class="readonly">
+      <div class="form-group">
+        <label for="full_name">Full Name</label>
+        <i class="fa fa-user"></i>
+        <input type="text" name="full_name" value="<?php echo $employee['full_name']; ?>" required>
+      </div>
 
-      <label>Full Name</label>
-      <input type="text" name="full_name" value="<?= htmlspecialchars($employee['full_name']) ?>">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <i class="fa fa-envelope"></i>
+        <input type="email" name="email" value="<?php echo $employee['email']; ?>" required>
+      </div>
 
-      <label>Email</label>
-      <input type="email" name="email" value="<?= htmlspecialchars($employee['email']) ?>">
+      <div class="form-group password-wrapper">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password">
+          <i class="fa fa-eye" id="togglePassword" style="cursor: pointer;"></i>
+        </div>
 
-      <label>New Password (leave blank to keep current)</label>
-      <input type="password" name="password">
 
-      <label>Department</label>
-      <input type="text" value="<?= htmlspecialchars($employee['department']) ?>" readonly class="readonly">
+      <div class="form-group">
+        <label for="profile_pic">Update Profile Picture</label>
+        <i class="fa fa-image"></i>
+        <input type="file" name="profile_pic" accept="image/*">
+      </div>
 
-      <label>Status</label>
-      <input type="text" value="<?= htmlspecialchars($employee['status']) ?>" readonly class="readonly">
-
-      <label>Role</label>
-      <input type="text" value="<?= htmlspecialchars($employee['role']) ?>" readonly class="readonly">
-
-      <label>Created At</label>
-      <input type="text" value="<?= htmlspecialchars($employee['created_at']) ?>" readonly class="readonly">
-
-      <button type="submit">Update Profile</button>
+      <button type="submit">Save Changes</button>
     </form>
   </div>
   </main>
