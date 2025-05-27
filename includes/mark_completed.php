@@ -11,6 +11,12 @@ if (!isset($_SESSION['employee_id'])) {
     exit();
 }
 
+$employee_id = $_SESSION['employee_id'];
+$stmt = $conn->prepare("SELECT * FROM itinerary WHERE employee_id = ? AND status != 'Completed' ORDER BY date, time");
+$stmt->bind_param("s", $employee_id); 
+$stmt->execute();
+$result = $stmt->get_result();
+
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
 
