@@ -184,15 +184,22 @@ $result = $stmt->get_result();
             <?php echo $status; ?>
           </span>
         </td>
-        <td><?php echo htmlspecialchars($row['hours_worked']); ?></td>
-      </tr>
-    <?php endwhile; ?>
-    </table>
-  <?php else: ?>
-    <p>No attendance logs found.</p>
-  <?php endif; ?>
-  <?php $stmt->close(); $conn->close(); ?>
-</main>
+        <td>
+              <?php
+                $hours = floor($row['hours_worked']);
+                $minutes = round(($row['hours_worked'] - $hours) * 60);
+                echo "{$hours} hour" . ($hours != 1 ? "s" : "") . 
+                    ($minutes > 0 ? " and {$minutes} minute" . ($minutes != 1 ? "s" : "") : "");
+              ?>
+            </td>
+          </tr>
+        <?php endwhile; ?>
+        </table>
+      <?php else: ?>
+        <p>No attendance logs found.</p>
+      <?php endif; ?>
+      <?php $stmt->close(); $conn->close(); ?>
+    </main>
 
 
   <div id="logout-warning" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff8db; color:#8a6d3b; border:1px solid #f0c36d; padding:15px 20px; z-index:1000; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2);">

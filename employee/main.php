@@ -88,7 +88,7 @@
   <main>
 
   <div class="container mt-5">
-    <h2>Attendance Logs</h2>
+    <h1>Attendance Logs</h1>
     <table class="table table-striped">
       <thead>
         <tr>

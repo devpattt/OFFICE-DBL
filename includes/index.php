@@ -33,11 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
                 exit();
             } else {
-                $errors[] = "Invalid password.";
+                $errors[] = "Invalid login credentials.";
             }
         }
     } else {
-        $errors[] = "Username not found.";
+        $errors[] = "Invalid login credentials.";
     }
 
     $_SESSION['login_errors'] = $errors;

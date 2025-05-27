@@ -239,7 +239,7 @@ if ($activeResult && $activeResult->num_rows > 0) {
     <main>
         <div class="map-container">
             <div class="map-header">
-                <h3>All Employee Locations</h3>
+                <h2>All Employee Locations</h2>
             </div>
             <div id="main-map"></div>
         </div>
