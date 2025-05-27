@@ -61,3 +61,21 @@
         background-color: #e74c3c;
         color: white;
       }
+
+      input[type="date"] {
+      padding: 8px 12px;
+      border: 2px solid #1f1f1f;
+      border-radius: 6px;
+      font-size: 16px;
+      font-family: 'poppins', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fff;
+      color: #1f1f1f;
+      transition: border-color 0.3s ease;
+      outline: none;
+      width: 200px;
+    }
+
+    input[type="date"]:focus {
+      border-color: #4a90e2;
+      box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+    }
