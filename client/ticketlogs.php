@@ -78,7 +78,7 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
     // PDF Export
     if ($action === 'pdf') {
         require('../vendor/fpdf.php');
-        $pdf = new FPDF('L', 'mm', 'A4');
+        $pdf = new fpdf('L', 'mm', 'A4');
         $pdf->AddPage();
 
         $logo1 = '../public/img/logo1.png';
@@ -154,7 +154,7 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
         header('Content-Disposition: attachment;filename="tickets_report.doc"');
 
         // Start RTF Document
-        echo '{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Times New Roman;}}';
+        echo '{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 poppins, sans serif;}}';
         echo '\\f0\\fs24';
 
         // Title and Date
