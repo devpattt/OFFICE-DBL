@@ -110,7 +110,7 @@ $result = $stmt->get_result();
         <th>Arrival Time</th> 
         <th>Departure Time</th> 
         <th>Status</th>
-        <th>Actions</th> 
+        <th>Set Time</th> 
     </tr>
 </thead>
 <tbody>

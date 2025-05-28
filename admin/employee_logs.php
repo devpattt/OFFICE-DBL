@@ -1,6 +1,66 @@
 <?php
 
 include '../includes/tasklogs.php';
+
+if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
+    $from = $_GET['from'];
+    $to = $_GET['to'];
+    $action = $_GET['action'];
+
+    // Query for the date range
+    $sql = "SELECT dbl_employees_acc.full_name AS employee_name, itinerary.location, itinerary.time AS start_time, itinerary.updated_at, itinerary.description, itinerary.status
+            FROM itinerary
+            JOIN dbl_employees_acc ON itinerary.employee_id = dbl_employees_acc.employee_id
+            WHERE itinerary.date BETWEEN ? AND ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $from, $to);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($action === 'csv') {
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment;filename="itinerary_report.csv"');
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['Employee Name', 'Location', 'Start Time', 'Updated Time', 'Description', 'Status']);
+        while ($row = $result->fetch_assoc()) {
+            fputcsv($output, [
+                $row['employee_name'],
+                $row['location'],
+                $row['start_time'],
+                $row['updated_at'],
+                $row['description'],
+                $row['status']
+            ]);
+        }
+        fclose($output);
+        exit;
+    }
+
+    if ($action === 'excel') {
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="itinerary_report.xls"');
+        echo "Employee Name\tLocation\tStart Time\tUpdated Time\tDescription\tStatus\n";
+        while ($row = $result->fetch_assoc()) {
+            echo "{$row['employee_name']}\t{$row['location']}\t{$row['start_time']}\t{$row['updated_at']}\t{$row['description']}\t{$row['status']}\n";
+        }
+        exit;
+    }
+
+    if ($action === 'pdf') {
+        // Use a library like FPDF or TCPDF for PDF export
+        require('../vendor/fpdf.php');
+        $pdf = new FPDF();
+        $pdf->AddPage();
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(0,10,'Itinerary Report',0,1,'C');
+        $pdf->SetFont('Arial','',10);
+        while ($row = $result->fetch_assoc()) {
+            $pdf->Cell(0,8,"{$row['employee_name']} | {$row['location']} | {$row['start_time']} | {$row['updated_at']} | {$row['description']} | {$row['status']}",0,1);
+        }
+        $pdf->Output('D', 'itinerary_report.pdf');
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -13,10 +73,67 @@ include '../includes/tasklogs.php';
     <link rel="icon" href="../public/img/DBL.png">
     <link rel="stylesheet" href="../public/css/task.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script type="text/javascript" src="../public/js/darkmode.js" defer></script>
     <title>DBL ISTS</title>
   </head>
+  <style> 
+#reportForm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#reportForm label {
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+#reportForm input[type="date"] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+#reportForm .icon-btn {
+  background-color: #f9f9f9;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+#reportForm .icon-btn:hover {
+  background-color: #e6f0ff;
+  border-color: #2d7be5;
+  transform: scale(1.05);
+}
+
+#reportForm .icon-btn i {
+  color: #2d7be5;
+  font-size: 18px;
+}
+
+#reportForm .icon-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 600px) {
+  #reportForm {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+  </style>
 <body>
 
 <nav id="sidebar">
@@ -95,6 +212,8 @@ include '../includes/tasklogs.php';
   </nav>
   
   <main>
+
+  
   <h2>Itinerary Logs</h2>
   <br>
         <form method="GET" id="filterForm">
@@ -140,6 +259,26 @@ include '../includes/tasklogs.php';
         }
         $conn->close();
         ?>
+             <br>
+        <h3>Generate Report</h3>
+            <form method="GET" id="reportForm" style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+              <label for="from">From:</label>
+              <input type="date" id="from" name="from" required>
+              <label for="to">To:</label>
+              <input type="date" id="to" name="to" required>
+             <button type="submit" name="action" value="view" class="icon-btn" title="View">
+            <i class="fas fa-eye"></i>
+            </button>
+            <button type="submit" name="action" value="csv" class="icon-btn" title="Export CSV">
+              <i class="fas fa-file-csv"></i>
+            </button>
+            <button type="submit" name="action" value="excel" class="icon-btn" title="Export Excel">
+              <i class="fas fa-file-excel"></i>
+            </button>
+            <button type="submit" name="action" value="pdf" class="icon-btn" title="Export PDF">
+              <i class="fas fa-file-pdf"></i>
+            </button>
+            </form>
   </main>
 
 
@@ -157,7 +296,6 @@ include '../includes/tasklogs.php';
   </div>
   
 <script src="../public/js/session.js"></script>
-</body>
-
 <script src="../public/js/main.js"></script>
+</body>
 </html>
