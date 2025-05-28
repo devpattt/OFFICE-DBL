@@ -28,8 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 if ($row['role'] === 'Admin') {
                     header("Location: ../admin/home.php");
-                } else {
+                } else if ($row['role'] === 'Employee') {
                     header("Location: ../employee/home.php");
+                } else {
+                    header("Location: ../client/ticketing.php");
                 }
                 exit();
             } else {

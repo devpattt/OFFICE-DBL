@@ -13,7 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $role = $department;
         $status = 'active';
 
-        $prefix = (strtolower($department) === 'admin') ? 'ADM' : 'EMP';
+        if (strtolower($department) === 'admin') {
+            $prefix = 'ADM';
+        } else if (strtolower($department) === 'client') {
+            $prefix = 'CLT';
+        } else {
+            $prefix = 'EMP';
+        }
 
         $stmt = $conn->prepare("SELECT employee_id FROM dbl_employees_acc WHERE employee_id LIKE ? ORDER BY id DESC LIMIT 1");
         $likePrefix = $prefix . '%';
