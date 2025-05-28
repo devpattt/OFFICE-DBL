@@ -127,8 +127,34 @@ form {
     text-align: center;
   }
 
+  /*image attachment*/ 
+ 
+  input[type="file"] {
+    display: block;
+    margin-bottom: 20px;
+    padding: 10px 0;
+    font-size: 15px;
+    color: #232738;
+    background: #f1f3f7;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
 
-  
+  input[type="file"]:focus {
+    border-color: var(--accent-color);
+    outline: none;
+  }
+
+  label[for="image"] {
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+
   @media (max-width: 480px) {
     #confirmationModal {
       padding: 1.5rem;
@@ -199,4 +225,4 @@ form {
       font-size: 15px;
     }
   }
-  
+

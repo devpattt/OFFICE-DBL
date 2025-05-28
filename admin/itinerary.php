@@ -1,4 +1,3 @@
-
 <?php 
 include '../includes/isset.php';
 ?>
@@ -133,6 +132,10 @@ include '../includes/isset.php';
 
   <label for="description">Task:</label><br>
   <textarea name="description" id="description" rows="4" cols="50"></textarea>
+
+  <label for="image">Attach Image:</label>
+  <input type="file" name="image" id="image" accept="image/*">
+
 
   <button type="submit">Assign Itinerary</button>
 </form>
