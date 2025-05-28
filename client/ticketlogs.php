@@ -15,54 +15,186 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
     $stmt->execute();
     $result = $stmt->get_result();
 
+    // CSV Export
     if ($action === 'csv') {
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment;filename="tickets_report.csv"');
         $output = fopen('php://output', 'w');
         fputcsv($output, ['ID', 'Subject', 'Description', 'Submitted By', 'Remarks', 'Attachment', 'Submitted At', 'Status']);
+
         while ($row = $result->fetch_assoc()) {
+            $description = str_replace(["\r", "\n", "\t"], ' ', $row['description']);
+            $remarks = str_replace(["\r", "\n", "\t"], ' ', $row['remarks']);
             fputcsv($output, [
                 $row['id'],
                 $row['subject'],
-                $row['description'],
+                $description,
                 $row['submitted_by'],
-                $row['remarks'],
+                $remarks,
                 $row['attachment'],
                 $row['submitted_at'],
                 $row['status']
             ]);
         }
+
         fclose($output);
         exit;
+    }
+
+    // Excel Export
+    function excel_wrap($text, $length = 30) {
+        return wordwrap($text, $length, "\n", true);
     }
 
     if ($action === 'excel') {
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="tickets_report.xls"');
-        echo "ID\tSubject\tDescription\tSubmitted By\tRemarks\tAttachment\tSubmitted At\tStatus\n";
+
+        echo '<html><head><meta charset="UTF-8">';
+        echo '<style>td { mso-data-placement:same-cell; white-space:pre-wrap; }</style>';
+        echo '</head><body><table border="1">';
+        echo '<tr><th>ID</th><th>Subject</th><th>Description</th><th>Submitted By</th><th>Remarks</th><th>Attachment</th><th>Submitted At</th><th>Status</th></tr>';
+
         while ($row = $result->fetch_assoc()) {
-            echo "{$row['id']}\t{$row['subject']}\t{$row['description']}\t{$row['submitted_by']}\t{$row['remarks']}\t{$row['attachment']}\t{$row['submitted_at']}\t{$row['status']}\n";
+            $description = htmlspecialchars(excel_wrap(str_replace(["\r", "\n", "\t"], ' ', $row['description'])));
+            $remarks = htmlspecialchars(excel_wrap(str_replace(["\r", "\n", "\t"], ' ', $row['remarks'])));
+
+            echo '<tr>';
+            echo '<td>' . htmlspecialchars($row['id']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['subject']) . '</td>';
+            echo '<td style="white-space:pre-wrap;">' . nl2br($description) . '</td>';
+            echo '<td>' . htmlspecialchars($row['submitted_by']) . '</td>';
+            echo '<td style="white-space:pre-wrap;">' . nl2br($remarks) . '</td>';
+            echo '<td>' . htmlspecialchars($row['attachment']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['submitted_at']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['status']) . '</td>';
+            echo '</tr>';
         }
+
+        echo '</table></body></html>';
         exit;
     }
 
+    // PDF Export
     if ($action === 'pdf') {
-        // Use a library like FPDF or TCPDF for PDF export
         require('../vendor/fpdf.php');
-        $pdf = new FPDF();
+        $pdf = new FPDF('L', 'mm', 'A4');
         $pdf->AddPage();
-        $pdf->SetFont('Arial','B',12);
-        $pdf->Cell(0,10,'Tickets Report',0,1,'C');
-        $pdf->SetFont('Arial','',10);
-        while ($row = $result->fetch_assoc()) {
-            $line = "{$row['id']} | {$row['subject']} | {$row['description']} | {$row['submitted_by']} | {$row['remarks']} | {$row['attachment']} | {$row['submitted_at']} | {$row['status']}";
-            $pdf->Cell(0,8,$line,0,1);
+
+        $logo1 = '../public/img/logo1.png';
+        $logo2 = '../public/img/logo2.png';
+
+        if (file_exists($logo1)) {
+            $pdf->Image($logo1, 10, 8, 30);
         }
+
+        if (file_exists($logo2)) {
+            $pdf->Image($logo2, 250, 8, 30);
+        }
+
+        $pdf->SetY(25);
+        $pdf->SetFont('Arial', 'B', 16);
+        $pdf->Cell(0, 12, 'Tickets Report', 0, 1, 'C');
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(0, 8, 'From: ' . $from . ' To: ' . $to, 0, 1, 'C');
+        $pdf->Ln(5);
+
+        $pdf->SetFont('Arial', 'B', 9);
+        $header = ['ID', 'Subject', 'Description', 'Submitted By', 'Remarks', 'Attachment', 'Submitted At', 'Status'];
+        $widths = [15, 35, 60, 35, 60, 30, 35, 20];
+
+        foreach ($header as $i => $col) {
+            $pdf->Cell($widths[$i], 10, $col, 1, 0, 'C');
+        }
+        $pdf->Ln();
+
+        $pdf->SetFont('Arial', '', 8);
+        while ($row = $result->fetch_assoc()) {
+            $description = substr($row['description'], 0, 200);
+            $remarks = substr($row['remarks'], 0, 200);
+
+            $desc_lines = max(1, ceil(strlen($description) / 40));
+            $remarks_lines = max(1, ceil(strlen($remarks) / 40));
+            $max_lines = max($desc_lines, $remarks_lines, 1);
+            $row_height = 6 * $max_lines;
+
+            $x_start = $pdf->GetX();
+            $y_start = $pdf->GetY();
+
+            $pdf->Cell($widths[0], $row_height, $row['id'], 1, 0, 'C');
+            $pdf->Cell($widths[1], $row_height, substr($row['subject'], 0, 30), 1, 0, 'L');
+
+            $x = $pdf->GetX();
+            $y = $pdf->GetY();
+            $pdf->MultiCell($widths[2], 6, $description, 1, 'L');
+            $pdf->SetXY($x + $widths[2], $y);
+
+            $pdf->Cell($widths[3], $row_height, substr($row['submitted_by'], 0, 25), 1, 0, 'L');
+
+            $x2 = $pdf->GetX();
+            $y2 = $pdf->GetY();
+            $pdf->MultiCell($widths[4], 6, $remarks, 1, 'L');
+            $pdf->SetXY($x2 + $widths[4], $y2);
+
+            $pdf->Cell($widths[5], $row_height, substr($row['attachment'], 0, 20), 1, 0, 'L');
+            $pdf->Cell($widths[6], $row_height, $row['submitted_at'], 1, 0, 'C');
+            $pdf->Cell($widths[7], $row_height, $row['status'], 1, 0, 'C');
+
+            $pdf->SetXY($x_start, $y_start + $row_height);
+        }
+
         $pdf->Output('D', 'tickets_report.pdf');
+        exit;
+    }
+
+    
+    // DOC Export
+    if ($action === 'doc') {
+        header('Content-Type: application/msword');
+        header('Content-Disposition: attachment;filename="tickets_report.doc"');
+
+        // Start RTF Document
+        echo '{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Times New Roman;}}';
+        echo '\\f0\\fs24';
+
+        // Title and Date
+        echo '\\qc\\b\\fs28 Tickets Report\\b0\\fs24\\par';
+        echo '\\qc From: ' . $from . ' To: ' . $to . '\\par\\par';
+
+        // Table Header
+        echo '\\trowd\\trgaph108\\trleft-108';
+        echo '\\cellx1000\\cellx2500\\cellx4500\\cellx6000\\cellx7500\\cellx8500\\cellx10000\\cellx11000';
+        echo '\\b ID\\cell Subject\\cell Description\\cell Submitted By\\cell Remarks\\cell Attachment\\cell Submitted At\\cell Status\\cell\\b0\\row';
+
+        while ($row = $result->fetch_assoc()) {
+            echo '\\trowd\\trgaph108\\trleft-108';
+            echo '\\cellx1000\\cellx2500\\cellx4500\\cellx6000\\cellx7500\\cellx8500\\cellx10000\\cellx11000';
+
+            $id = str_replace(['{', '}', '\\'], '', $row['id']);
+            $subject = str_replace(['{', '}', '\\'], '', $row['subject']);
+            $description = str_replace(['{', '}', '\\', "\n", "\r"], ' ', substr($row['description'], 0, 100));
+            $submitted_by = str_replace(['{', '}', '\\'], '', $row['submitted_by']);
+            $remarks = str_replace(['{', '}', '\\', "\n", "\r"], ' ', substr($row['remarks'], 0, 100));
+            $attachment = str_replace(['{', '}', '\\'], '', $row['attachment']);
+            $submitted_at = str_replace(['{', '}', '\\'], '', $row['submitted_at']);
+            $status = str_replace(['{', '}', '\\'], '', $row['status']);
+
+            echo $id . '\\cell ';
+            echo $subject . '\\cell ';
+            echo $description . '\\cell ';
+            echo $submitted_by . '\\cell ';
+            echo $remarks . '\\cell ';
+            echo $attachment . '\\cell ';
+            echo $submitted_at . '\\cell ';
+            echo $status . '\\cell\\row ';
+        }
+
+        echo '}'; // End RTF document
         exit;
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -80,59 +212,59 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
     <title>DBL ISTS</title>
   </head>
   <style> 
-#reportForm {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+    #reportForm {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-#reportForm label {
-  font-weight: 500;
-  margin-right: 4px;
-}
+    #reportForm label {
+      font-weight: 500;
+      margin-right: 4px;
+    }
 
-#reportForm input[type="date"] {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
+    #reportForm input[type="date"] {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
 
-#reportForm .icon-btn {
-  background-color: #f9f9f9;
-  border: 1px solid #bbb;
-  border-radius: 6px;
-  padding: 8px 12px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
-}
+    #reportForm .icon-btn {
+      background-color: #f9f9f9;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+    }
 
-#reportForm .icon-btn:hover {
-  background-color: #e6f0ff;
-  border-color: #2d7be5;
-  transform: scale(1.05);
-}
+    #reportForm .icon-btn:hover {
+      background-color: #e6f0ff;
+      border-color: #2d7be5;
+      transform: scale(1.05);
+    }
 
-#reportForm .icon-btn i {
-  color: #2d7be5;
-  font-size: 18px;
-}
+    #reportForm .icon-btn i {
+      color: #2d7be5;
+      font-size: 18px;
+    }
 
-#reportForm .icon-btn img {
-  width: 20px;
-  height: 20px;
-}
+    #reportForm .icon-btn img {
+      width: 20px;
+      height: 20px;
+    }
 
-@media (max-width: 600px) {
-  #reportForm {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
+    @media (max-width: 600px) {
+      #reportForm {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
 
   </style>
 <body>
@@ -232,25 +364,28 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
                   }
                   ?>
              <br>
-        <h3>Generate Report</h3>
-            <form method="GET" id="reportForm" style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
-              <label for="from">From:</label>
-              <input type="date" id="from" name="from" required>
-              <label for="to">To:</label>
-              <input type="date" id="to" name="to" required>
-             <button type="submit" name="action" value="view" class="icon-btn" title="View">
-            <i class="fas fa-eye"></i>
-            </button>
-            <button type="submit" name="action" value="csv" class="icon-btn" title="Export CSV">
-              <i class="fas fa-file-csv"></i>
-            </button>
-            <button type="submit" name="action" value="excel" class="icon-btn" title="Export Excel">
-              <i class="fas fa-file-excel"></i>
-            </button>
-            <button type="submit" name="action" value="pdf" class="icon-btn" title="Export PDF">
-              <i class="fas fa-file-pdf"></i>
-            </button>
-            </form>
+              <h3>Generate Report</h3>
+              <form method="GET" id="reportForm" style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+                <label for="from">From:</label>
+                <input type="date" id="from" name="from" required>
+                <label for="to">To:</label>
+                <input type="date" id="to" name="to" required>
+                <button type="submit" name="action" value="view" class="icon-btn" title="View">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button type="submit" name="action" value="csv" class="icon-btn" title="Export CSV">
+                  <i class="fas fa-file-csv"></i>
+                </button>
+                <button type="submit" name="action" value="excel" class="icon-btn" title="Export Excel">
+                  <i class="fas fa-file-excel"></i>
+                </button>
+                <button type="submit" name="action" value="pdf" class="icon-btn" title="Export PDF">
+                  <i class="fas fa-file-pdf"></i>
+                </button>
+                <button type="submit" name="action" value="doc" class="icon-btn" title="Export DOC">
+                  <i class="fas fa-file-word"></i>
+                </button>
+              </form>
   </main>
 
 

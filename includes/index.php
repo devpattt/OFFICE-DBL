@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } else if ($row['role'] === 'Employee') {
                     header("Location: ../employee/home.php");
                 } else {
-                    header("Location: ../client/ticketing.php");
+                    header("Location: ../client/home.php");
                 }
                 exit();
             } else {
