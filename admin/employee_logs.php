@@ -17,11 +17,13 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
     $stmt->execute();
     $result = $stmt->get_result();
 
+    // CSV Export
     if ($action === 'csv') {
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment;filename="itinerary_report.csv"');
         $output = fopen('php://output', 'w');
         fputcsv($output, ['Employee Name', 'Location', 'Start Time', 'Updated Time', 'Description', 'Status']);
+
         while ($row = $result->fetch_assoc()) {
             fputcsv($output, [
                 $row['employee_name'],
@@ -32,31 +34,62 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
                 $row['status']
             ]);
         }
+
         fclose($output);
         exit;
     }
 
+    // Excel Export (Tab-separated)
     if ($action === 'excel') {
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="itinerary_report.xls"');
+
         echo "Employee Name\tLocation\tStart Time\tUpdated Time\tDescription\tStatus\n";
         while ($row = $result->fetch_assoc()) {
-            echo "{$row['employee_name']}\t{$row['location']}\t{$row['start_time']}\t{$row['updated_at']}\t{$row['description']}\t{$row['status']}\n";
+            echo implode("\t", [
+                $row['employee_name'],
+                $row['location'],
+                $row['start_time'],
+                $row['updated_at'],
+                str_replace(["\t", "\n", "\r"], ' ', $row['description']),
+                $row['status']
+            ]) . "\n";
         }
+
         exit;
     }
 
+    // PDF Export
     if ($action === 'pdf') {
-        // Use a library like FPDF or TCPDF for PDF export
         require('../vendor/fpdf.php');
         $pdf = new FPDF();
         $pdf->AddPage();
         $pdf->SetFont('Arial','B',12);
         $pdf->Cell(0,10,'Itinerary Report',0,1,'C');
-        $pdf->SetFont('Arial','',10);
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(30,8,'Employee',1);
+        $pdf->Cell(30,8,'Location',1);
+        $pdf->Cell(25,8,'Start Time',1);
+        $pdf->Cell(30,8,'Updated Time',1);
+        $pdf->Cell(45,8,'Description',1);
+        $pdf->Cell(25,8,'Status',1);
+        $pdf->Ln();
+
+        $pdf->SetFont('Arial','',9);
         while ($row = $result->fetch_assoc()) {
-            $pdf->Cell(0,8,"{$row['employee_name']} | {$row['location']} | {$row['start_time']} | {$row['updated_at']} | {$row['description']} | {$row['status']}",0,1);
+            $pdf->Cell(30,8,$row['employee_name'],1);
+            $pdf->Cell(30,8,$row['location'],1);
+            $pdf->Cell(25,8,$row['start_time'],1);
+            $pdf->Cell(30,8,$row['updated_at'],1);
+            $x = $pdf->GetX();
+            $y = $pdf->GetY();
+            $pdf->MultiCell(45,8,$row['description'],1);
+            $pdf->SetXY($x+45, $y);
+            $pdf->Cell(25,8,$row['status'],1);
+            $pdf->Ln();
         }
+
         $pdf->Output('D', 'itinerary_report.pdf');
         exit;
     }
