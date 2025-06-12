@@ -124,6 +124,7 @@ $totalPages = ceil($totalRows / $itemsPerPage);
 
 $sql = "
     SELECT 
+        r.id,   
         r.client_name, 
         r.issue_type, 
         r.issue_description, 
@@ -186,7 +187,9 @@ $result = $conn->query($sql);
                                             background-color:rgb(57, 63, 60);
                                           }
                                         </style>
-                                        <a href="make_itinerary.php" class="btn-make-itinerary">Make Itinerary</a>
+                                       
+                                        <a href="itinerary.php?report_id=<?php echo $row['id']; ?>" class="btn-make-itinerary">Make Itinerary</a>
+                                      
                                       </div>
                 </a>
             </div>

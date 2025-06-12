@@ -1,5 +1,15 @@
 <?php 
 include '../includes/isset.php';
+include '../conn.php';
+
+$report = null;
+if (isset($_GET['report_id'])) {
+    $report_id = intval($_GET['report_id']);
+    $result = $conn->query("SELECT * FROM reports WHERE id = $report_id");
+    if ($result && $result->num_rows > 0) {
+        $report = $result->fetch_assoc();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -112,26 +122,37 @@ include '../includes/isset.php';
     </select>
 
   <br><br>
+<label for="location">Client Location:</label>
+<select name="location" id="location" onchange="checkLocation()" required>
+  <option value="" disabled selected>— Choose Client Location —</option>
+  <?php
+    $clientResult = $conn->query("SELECT client FROM dbl_client_locations");
+    $selectedClient = isset($report) ? $report['client_name'] : '';
+    while($client = $clientResult->fetch_assoc()) {
+        $selected = ($client['client'] == $selectedClient) ? 'selected' : '';
+        echo "<option value='{$client['client']}' $selected>{$client['client']}</option>";
+    }
+  ?>
+  <?php if ($selectedClient && !$clientResult->num_rows): ?>
+    <option value="<?php echo htmlspecialchars($selectedClient); ?>" selected><?php echo htmlspecialchars($selectedClient); ?></option>
+  <?php endif; ?>
+  <option value="Others">Others</option> 
+</select>
 
-  <label for="location">Client Location:</label>
-  <select name="location" id="location" onchange="checkLocation()" required>
-    <option value="" disabled selected>— Choose Client Location —</option>
-    <?php
-      $clientResult = $conn->query("SELECT client FROM dbl_client_locations");
-      while($client = $clientResult->fetch_assoc()) {
-          echo "<option value='{$client['client']}'>{$client['client']}</option>";
-      }
-    ?>
-    <option value="Others">Others</option> 
-  </select>
+<div id="otherLocationDiv" style="display: none;">
+  <label for="other_location">Enter Other Location:</label>
+  <input type="text" name="other_location" id="other_location">
+</div>
 
-  <div id="otherLocationDiv" style="display: none;">
-    <label for="other_location">Enter Other Location:</label>
-    <input type="text" name="other_location" id="other_location">
-  </div>
-
-  <label for="description">Task:</label><br>
-  <textarea name="description" id="description" rows="4" cols="50"></textarea>
+<label for="description">Task:</label><br>
+<textarea name="description" id="description" rows="4" cols="50"><?php
+  if (isset($report)) {
+      echo "Issue Type: " . htmlspecialchars($report['issue_type']) . "\n";
+      echo "Description: " . htmlspecialchars($report['issue_description']) . "\n";
+      echo "Priority: " . htmlspecialchars($report['priority']) . "\n";
+      echo "Date Observed: " . htmlspecialchars($report['date_observed']);
+  }
+?></textarea>
 
   <label for="image">Attach Image:</label>
   <input type="file" name="image" id="image" accept="image/*">
