@@ -169,7 +169,25 @@ $result = $conn->query($sql);
           <td>
             <div class="btn-container d-flex flex-column gap-1">
                     <class="custom-btn info";>
-                    <span class="text-container">Create Itinerary</span>
+                                      <div style="margin: 20px;">
+                                        <style>
+                                          .btn-make-itinerary {
+                                            display: inline-block;
+                                            padding: 10px 20px;
+                                            background-color: #232738; 
+                                            color: white;
+                                            font-weight: 600;
+                                            text-decoration: none;
+                                            border-radius: 6px;
+                                            transition: background-color 0.3s ease;
+                                          }
+
+                                          .btn-make-itinerary:hover {
+                                            background-color:rgb(57, 63, 60);
+                                          }
+                                        </style>
+                                        <a href="make_itinerary.php" class="btn-make-itinerary">Make Itinerary</a>
+                                      </div>
                 </a>
             </div>
         </td>
