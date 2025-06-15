@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } else if ($row['role'] === 'Employee') {
                     header("Location: ../employee/home.php");
                 } else {
-                    header("Location: ../client/home.php");
+                    header("Location: ../employee/home.php"); //binago ko muna pathway wala kasi yung db
                 }
                 exit();
             } else {

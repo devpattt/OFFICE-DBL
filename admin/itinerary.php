@@ -103,7 +103,10 @@ if (isset($_GET['report_id'])) {
   </nav>
 
   <main>
-  <form id="itineraryForm" action="../includes/save_itinerary.php" method="POST">
+<form id="itineraryForm" action="../includes/save_itinerary.php" method="POST" enctype="multipart/form-data">
+  <?php if (isset($_GET['report_id'])): ?>
+    <input type="hidden" name="report_id" value="<?php echo intval($_GET['report_id']); ?>">
+  <?php endif; ?>
   <label for="department_id">Select Department:</label>
   <select name="department_id" id="department_id" required>
     <option value="" disabled selected>— Choose Department —</option>

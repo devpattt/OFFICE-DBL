@@ -1,5 +1,9 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 header('Content-Type: application/json');
+
 
 include '../conn.php';
 
@@ -37,13 +41,15 @@ $stmt = $conn->prepare("INSERT INTO itinerary (employee_id, location, date, time
 $stmt->bind_param("ssssss", $employee_id, $location, $current_date, $current_time, $description, $imagePath);
 
 if ($stmt->execute()) {
-    $response = ['status' => 'success', 'message' => 'Itinerary assigned successfully!'];
+    if (isset($_POST['report_id']) && intval($_POST['report_id']) > 0) {
+        $report_id = intval($_POST['report_id']);
+        $conn->query("DELETE FROM reports WHERE id = $report_id");
+    }
+    echo json_encode(['status' => 'success', 'message' => 'Itinerary submitted successfully!']);
 } else {
-    $response = ['status' => 'error', 'message' => 'Error: ' . $stmt->error];
+    echo json_encode(['status' => 'error', 'message' => 'Error: ' . $stmt->error]);
 }
 
 $stmt->close();
 $conn->close();
-
-echo json_encode($response);
 ?>
