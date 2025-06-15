@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 22, 2025 at 09:35 AM
+-- Generation Time: Jun 15, 2025 at 06:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -73,13 +73,8 @@ CREATE TABLE `dbl_attendance_logs` (
 --
 
 INSERT INTO `dbl_attendance_logs` (`id`, `employee_id`, `username`, `date`, `time_in`, `time_in_raw`, `location_in`, `lat_in`, `lng_in`, `time_out`, `time_out_raw`, `location_out`, `lat_out`, `lng_out`, `status`, `created_at`, `hours_worked`) VALUES
-(28, 'EMP003', 'ken', '2025-05-22', 'Thursday - 09:11 AM', '2025-05-22 09:11:52', 'DBL ISTS', 14.73998, 120.9874, 'Thursday - 02:42 PM', '2025-05-22 14:42:56', 'DBL ISTS', 14.73998, 120.9874, 'Under Hours', '2025-05-22 01:11:52', 5.52),
-(30, 'EMP002', 'employee', '2025-05-22', 'Thursday - 09:12 AM', '2025-05-22 09:12:25', 'DBL ISTS', 14.73998, 120.9874, NULL, NULL, NULL, NULL, NULL, 'Pending', '2025-05-22 01:12:25', 0.00),
-(34, 'EMP007', 'vin', '2025-05-22', 'Thursday - 10:30 AM', '2025-05-22 10:30:28', 'DBL ISTS', 14.73998, 120.9874, NULL, NULL, NULL, NULL, NULL, 'Pending', '2025-05-22 02:30:28', 0.00),
-(36, 'EMP008', 'asd', '2025-05-22', 'Thursday - 10:35 AM', '2025-05-22 10:35:59', 'DBL ISTS', 14.73998, 120.9874, NULL, NULL, NULL, NULL, NULL, 'Pending', '2025-05-22 02:35:59', 0.00),
-(47, 'EMP001', 'devpat', '2025-05-22', 'Thursday - 11:00 AM', '2025-05-22 11:00:25', 'Labella Villa Homes', 14.74117, 120.98624, 'Thursday - 11:00 AM', '2025-05-22 11:00:35', 'Labella Villa Homes', 14.74117, 120.98624, 'Under Hours', '2025-05-22 03:00:25', 0.00),
-(49, 'EMP005', 'yuji', '2025-05-22', 'Thursday - 11:07 AM', '2025-05-22 11:07:16', 'DBL ISTS', 14.73998, 120.9874, 'Thursday - 11:07 AM', '2025-05-22 11:07:25', 'DBL ISTS', 14.73998, 120.9874, 'Under Hours', '2025-05-22 03:07:16', 0.00),
-(54, 'EMP009', 'emp', '2025-05-22', 'Thursday - 02:47 PM', '2025-05-22 14:47:28', 'Kai Mall', 14.7567, 121.04391, 'Thursday - 02:47 PM', '2025-05-22 14:47:52', 'DBL ISTS', 14.73998, 120.9874, 'Under Hours', '2025-05-22 06:47:28', 0.01);
+(1, 'EMP006', 'pat', '2025-06-15', 'Sunday - 03:08 PM', '2025-06-15 15:08:33', 'DBL ISTS', 14.7399, 120.98754, NULL, NULL, NULL, NULL, NULL, 'Pending', '2025-06-15 07:08:33', 0.00),
+(2, 'EMP001', 'devpat', '2025-06-15', 'Sunday - 03:30 PM', '2025-06-15 15:30:36', 'DBL ISTS', 14.7399, 120.98754, 'Monday - 12:37 AM', '2025-06-16 00:37:56', 'DBL ISTS', 14.7399, 120.98754, 'Overtime', '2025-06-15 07:30:36', 9.12);
 
 -- --------------------------------------------------------
 
@@ -187,15 +182,6 @@ CREATE TABLE `dbl_leave_requests` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `dbl_leave_requests`
---
-
-INSERT INTO `dbl_leave_requests` (`id`, `employee_id`, `department_id`, `leave_type`, `start_date`, `end_date`, `reason`, `status`, `created_at`, `updated_at`) VALUES
-(3, 1, 'Information Technolo', 'Sick', '2025-05-15', '2025-05-23', 'sds', 'Approved', '2025-05-13 03:32:25', '2025-05-22 01:53:26'),
-(4, 3, 'System Integration', 'Sick', '2025-05-14', '2025-05-17', 'sdsd', 'Rejected', '2025-05-13 03:43:10', '2025-05-22 01:48:06'),
-(5, 1, 'Information Technolo', 'Emergency', '2025-05-14', '2025-05-17', 'sds', 'Approved', '2025-05-13 03:46:05', '2025-05-22 01:48:03');
-
 -- --------------------------------------------------------
 
 --
@@ -213,31 +199,26 @@ CREATE TABLE `itinerary` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `arrival_time` datetime DEFAULT NULL,
-  `departure_time` datetime DEFAULT NULL
+  `departure_time` datetime DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `auto_moved` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `itinerary`
 --
 
-INSERT INTO `itinerary` (`id`, `employee_id`, `location`, `date`, `time`, `description`, `status`, `created_at`, `updated_at`, `arrival_time`, `departure_time`) VALUES
-(1, 'EMP001', 'Code Helix', '2025-04-28', '14:10:23', 'Fix CCTVs', 'Pending', '2025-04-28 06:10:23', '2025-05-21 00:19:37', NULL, NULL),
-(2, 'EMP001', 'Code Helix', '2025-04-28', '16:11:49', 'Fix servers', 'Completed', '2025-04-28 08:11:49', '2025-04-28 08:12:19', NULL, NULL),
-(3, 'EMP002', 'Code Helix', '2025-04-28', '16:24:54', 'dsadsdsds', 'Completed', '2025-04-28 08:24:54', '2025-04-30 06:18:56', NULL, NULL),
-(4, 'EMP001', 'WL Valenzuela', '2025-04-29', '16:15:30', 'fix cctvs', 'Completed', '2025-04-29 08:15:30', '2025-04-30 06:18:40', NULL, NULL),
-(5, 'EMP002', 'Code Helix', '2025-04-30', '08:38:42', 'fix cctv', 'Completed', '2025-04-30 00:38:42', '2025-04-30 06:18:58', NULL, NULL),
-(6, 'EMP001', 'WL Main', '2025-04-30', '14:35:54', 'Server Daily Checkup', 'Completed', '2025-04-30 06:35:54', '2025-05-09 03:51:05', NULL, NULL),
-(7, 'EMP001', 'WL Main', '2025-05-06', '08:43:20', 'Check CCTV', 'Completed', '2025-05-06 00:43:20', '2025-05-09 03:51:07', NULL, NULL),
-(8, 'EMP003', 'BCP MAIN', '2025-05-06', '14:28:47', 'SUNUGIN MO', 'Pending', '2025-05-06 06:28:47', '2025-05-06 06:28:47', NULL, NULL),
-(9, 'EMP001', 'Code Helix', '2025-05-07', '09:21:40', 'Develop a Attendance Tracking System', 'Completed', '2025-05-07 01:21:40', '2025-05-09 03:51:06', NULL, NULL),
-(10, 'EMP001', 'Code Helix', '2025-05-07', '15:49:22', 'Fix Internet', 'Completed', '2025-05-07 07:49:22', '2025-05-09 03:51:09', '2025-05-07 15:49:45', NULL),
-(11, 'EMP001', 'DBL ISTS', '2025-05-09', '10:17:53', 'Develop ATS', 'Completed', '2025-05-09 02:17:53', '2025-05-09 03:49:15', NULL, NULL),
-(12, 'EMP002', 'Labella Villa Homes', '2025-05-09', '11:51:57', 'Cables', 'Pending', '2025-05-09 03:51:57', '2025-05-09 03:53:07', '2025-05-09 11:53:05', '2025-05-09 11:53:07'),
-(13, 'EMP001', 'DBL ISTS', '2025-05-20', '14:34:46', 'matulog', 'Pending', '2025-05-20 06:34:46', '2025-05-20 06:34:46', NULL, NULL),
-(14, 'EMP001', 'Kai Mall', '2025-05-21', '08:18:12', 'qwe', 'Pending', '2025-05-21 00:18:12', '2025-05-21 00:19:12', '2025-05-21 08:19:12', NULL),
-(15, 'EMP006', 'DBL ISTS', '2025-05-22', '14:50:17', 'sdsdsdsds', 'Pending', '2025-05-22 06:50:17', '2025-05-22 06:50:17', NULL, NULL),
-(16, 'EMP004', 'WL Headquarter', '2025-05-22', '14:50:29', 'sdsdsds', 'Pending', '2025-05-22 06:50:29', '2025-05-22 06:50:29', NULL, NULL),
-(17, 'EMP001', 'DBL ISTS', '2025-05-22', '14:50:51', 'sdsdsds', 'Completed', '2025-05-22 06:50:51', '2025-05-22 06:51:18', NULL, NULL);
+INSERT INTO `itinerary` (`id`, `employee_id`, `location`, `date`, `time`, `description`, `status`, `created_at`, `updated_at`, `arrival_time`, `departure_time`, `image`, `auto_moved`) VALUES
+(1, 'EMP006', 'WL Bignay', '2025-06-15', '15:19:42', 'Issue Type: Electronics\r\nDescription: Sira printers\r\nPriority: low\r\nDate Observed: 2025-05-13', 'Pending', '2025-06-15 07:19:42', '2025-06-15 07:19:42', NULL, NULL, NULL, 0),
+(2, 'EMP006', 'WL Bignay', '2025-06-15', '15:19:48', 'Issue Type: Electronics\r\nDescription: Sira printers\r\nPriority: low\r\nDate Observed: 2025-05-13', 'Pending', '2025-06-15 07:19:48', '2025-06-15 07:19:48', NULL, NULL, NULL, 0),
+(3, 'EMP002', 'DBL ISTS', '2025-06-15', '15:20:10', 'Issue Type: Network\r\nDescription: No internet connection\r\nPriority: medium\r\nDate Observed: 2025-05-07', 'Pending', '2025-06-15 07:20:10', '2025-06-15 07:20:10', NULL, NULL, NULL, 0),
+(4, 'EMP006', 'Demo Location', '2025-06-15', '15:21:13', '3456U7I9[', 'Pending', '2025-06-15 07:21:13', '2025-06-15 07:21:13', NULL, NULL, NULL, 0),
+(5, 'EMP007', 'WL Bignay', '2025-06-15', '15:21:38', 'sdsd', 'Pending', '2025-06-15 07:21:38', '2025-06-15 07:21:38', NULL, NULL, NULL, 0),
+(6, 'EMP002', 'WL Bignay', '2025-06-15', '15:23:11', '12e3r5tyio', 'Pending', '2025-06-15 07:23:11', '2025-06-15 07:23:11', NULL, NULL, NULL, 0),
+(7, 'EMP002', 'WL Bignay', '2025-06-15', '15:24:09', 'sdsdsd', 'Pending', '2025-06-15 07:24:09', '2025-06-15 07:24:09', NULL, NULL, NULL, 0),
+(8, 'EMP002', 'DBL ISTS', '2025-06-15', '15:26:57', 'Issue Type: Electronics\r\nDescription: SDSDSDSDSDSDSDSDS\r\nPriority: high\r\nDate Observed: 2025-06-15', 'Pending', '2025-06-15 07:26:57', '2025-06-15 07:26:57', NULL, NULL, NULL, 0),
+(9, 'EMP001', 'WL Headquarter', '2025-06-15', '15:30:10', 'sdsdsd', 'Pending', '2025-06-15 07:30:10', '2025-06-15 07:30:10', NULL, NULL, NULL, 0),
+(10, 'EMP002', 'WL Headquarter', '2025-06-15', '15:31:24', 'Issue Type: Network\r\nDescription: No Internet Connection\r\nPriority: medium\r\nDate Observed: 2025-06-15', 'Pending', '2025-06-15 07:31:24', '2025-06-15 07:31:24', NULL, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -261,8 +242,12 @@ CREATE TABLE `reports` (
 --
 
 INSERT INTO `reports` (`id`, `client_name`, `issue_type`, `issue_description`, `priority`, `date_observed`, `attachments`, `submitted_at`) VALUES
-(1, 'CodeHelixCorp', 'Network', 'No internet connection', 'medium', '2025-05-07', 'uploads/1746598738-SHREK ASH.jfif', '2025-05-07 06:18:58'),
-(2, 'WL Bignay', 'Electronics', 'Sira printers', 'low', '2025-05-13', 'uploads/1747098171-SHREK ASH.jfif', '2025-05-13 01:02:51');
+(5, 'DBL ISTS', 'Software', 'qwerty', 'low', '2025-06-16', '', '2025-06-15 16:10:30'),
+(6, 'DBL ISTS', 'Network', 'SDSD', 'low', '2025-06-16', '', '2025-06-15 16:11:48'),
+(7, 'WL MAIN', 'Software', 'ergtju', 'high', '2025-06-16', '', '2025-06-15 16:26:28'),
+(8, 'DBL ISTS', 'Software', 's', 'medium', '2025-06-16', '', '2025-06-15 16:27:40'),
+(9, 'DBL ISTS', 'Network', 'SDSD', 'medium', '2025-06-16', '', '2025-06-15 16:29:04'),
+(10, 'DBL ISTS', 'Network', 'sdsd', 'high', '2025-06-17', '', '2025-06-15 16:37:41');
 
 --
 -- Indexes for dumped tables
@@ -334,7 +319,7 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `dbl_attendance_logs`
 --
 ALTER TABLE `dbl_attendance_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `dbl_client_locations`
@@ -364,13 +349,13 @@ ALTER TABLE `dbl_leave_requests`
 -- AUTO_INCREMENT for table `itinerary`
 --
 ALTER TABLE `itinerary`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables

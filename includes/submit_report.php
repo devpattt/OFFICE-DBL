@@ -29,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $stmt->bind_param("ssssss", $client_name, $issue_type, $issue_description, $priority, $date_observed, $attachments);
 
   if ($stmt->execute()) {
-    echo "<h2>Report submitted successfully!</h2><p><a href='report.html'>Submit another</a></p>";
+    header("Location: ../employee/reports.php?success=1");
+    exit;
   } else {
     echo "Error: " . $stmt->error;
   }
@@ -41,3 +42,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $conn->close();
 ?>
+

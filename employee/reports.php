@@ -131,6 +131,27 @@
   </div>
   
 <script src="../public/js/session.js"></script>
+
+<!-- Toast notification -->
+<div id="custom-toast" style="display:none; position:fixed; top:30px; right:30px; z-index:10000;">
+  <div class="custom-toast-content" style="background-color:#4caf50; color:#fff; padding:15px; border-radius:5px; font-size:14px;">
+    Report submitted successfully!
+  </div>
+</div>
+
+<script>
+  function showCustomToast() {
+    var toast = document.getElementById('custom-toast');
+    toast.style.display = 'block';
+    setTimeout(function() {
+      toast.style.display = 'none';
+    }, 3000);
+  }
+
+  <?php if (isset($_GET['success']) && $_GET['success'] == 1) : ?>
+    showCustomToast();
+  <?php endif; ?>
+</script>
 </body>
 <script src="../public/js/main.js"></script>
 </html>
