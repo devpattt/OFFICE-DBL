@@ -1,6 +1,7 @@
 <?php
 
 include '../includes/tasklogs.php';
+date_default_timezone_set('Asia/Manila');
 
 if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
     $from = $_GET['from'];
@@ -8,7 +9,7 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
     $action = $_GET['action'];
 
     // Query for the date range
-    $sql = "SELECT dbl_employees_acc.full_name AS employee_name, itinerary.location, itinerary.time AS start_time, itinerary.updated_at, itinerary.description, itinerary.status
+    $sql = "SELECT itinerary.itinerary_id, dbl_employees_acc.full_name AS employee_name, itinerary.location, itinerary.time AS start_time, itinerary.updated_at, itinerary.description, itinerary.status, itinerary.auto_moved
             FROM itinerary
             JOIN dbl_employees_acc ON itinerary.employee_id = dbl_employees_acc.employee_id
             WHERE itinerary.date BETWEEN ? AND ?";
@@ -24,6 +25,7 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
         $output = fopen('php://output', 'w');
         fputcsv($output, ['Employee Name', 'Location', 'Start Time', 'Updated Time', 'Description', 'Status']);
 
+        
         while ($row = $result->fetch_assoc()) {
             fputcsv($output, [
                 $row['employee_name'],
@@ -277,14 +279,21 @@ if (isset($_GET['from'], $_GET['to'], $_GET['action'])) {
                 $completion_time = ($row["updated_at"] != NULL) ? date("H:i:s", strtotime($row["updated_at"])) : "N/A";
                 $start_time = date("H:i:s", strtotime($row["start_time"]));
 
-                echo "<tr class='" . htmlspecialchars($status_class) . "'>";
-                echo "<td>" . htmlspecialchars($row["employee_name"]) . "</td>";
-                echo "<td>" . htmlspecialchars($row["location"]) . "</td>";
-                echo "<td>" . $start_time . "</td>";
-                echo "<td>" . $completion_time . "</td>";
-                echo "<td>" . htmlspecialchars($row["description"]) . "</td>";
-                echo "<td>" . htmlspecialchars($row["status"]) . "</td>";
-                echo "</tr>";
+              echo "<tr class='" . htmlspecialchars($status_class) . "'>";
+              echo "<td>" . htmlspecialchars($row["employee_name"]) . "</td>";
+              echo "<td>" . htmlspecialchars($row["location"]) . "</td>";
+              echo "<td>" . $start_time . "</td>";
+              echo "<td>" . $completion_time . "</td>";
+              echo "<td>" . htmlspecialchars($row["description"]) . "</td>";
+              echo "<td>" . htmlspecialchars($row["status"]);
+              if (!empty($row['auto_moved']) && $row['auto_moved'] == 1) {
+                  echo " <form method='POST' action='reassign_itinerary.php' style='display:inline;'>
+                          <input type='hidden' name='itinerary_id' value='" . htmlspecialchars($row['itinerary_id']) . "'>
+                          <button type='submit' class='icon-btn' title='Reassign'><i class='fas fa-user-edit'></i> Reassign</button>
+                        </form>";
+              }
+              echo "</td>";
+              echo "</tr>";
             }
             echo "</table>";
         } else {
