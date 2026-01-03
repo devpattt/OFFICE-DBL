@@ -1,24 +1,83 @@
-BUGS
-Profile finder bug, when clock in out in diff locations
+Bugs to Fix
 
-////////////////////
-itinerary to maps
-itinerary have unique id, so one itnierary can search in maps or input the unique id to show the location.  
-only the itinerary locations will show in the map
-multiple itinerary 
-client location in db
-2fa for clock in and out/ disable gallery selection, only camera to avoid uploading old pics, vpn detector.
-//////////////////
+Profile Finder Bug
 
-////////////////
-user interface 
-btn border radius 
-admin/employee dashboard
-itinerary validation
-leave management date UI
-Profile UI
+Issue occurs when employees clock in/out from different locations
+
+Needs validation to ensure correct profile + location matching
+
+//////////////////////////////////////////////////////////////////
+
+Itinerary & Map Features
+
+Itinerary System
+
+Each itinerary has a unique ID
+
+Itinerary can be:
+
+Searched in the map
+
+Displayed by entering its unique ID
+
+Map Integration
+
+Only locations tied to the selected itinerary should appear on the map
+
+Support for multiple itineraries
+
+Database
+
+Store client locations in the database
+
+Validation
+
+Itinerary validation before use (clock-in, map display, etc.)
+
+///////////////////////////////////////////////////////////////
+
+Security & Attendance Controls
+
+Clock In / Clock Out Security
+
+Enable 2FA for clock-in and clock-out
+
+Disable gallery selection
+
+Camera-only capture to prevent uploading old photos
+
+VPN Detection
+
+Detect and block clock-in/out attempts using VPNs
+
+
+User Interface (UI) Improvements
+
+Button border radius consistency
+
+Separate and improve:
+
+Admin Dashboard UI
+
+Employee Dashboard UI
+
+Profile UI enhancement
+
+Leave Management UI
+
+Date selection improvements
+
+Clearer leave request flow
+
 Employee Leave Requests UI
-////////////////
 
 
+Overall Goals
 
+Improve accuracy of attendance tracking
+
+Strengthen security (2FA, camera-only, VPN detection)
+
+Enhance usability and clarity of the UI
+
+Ensure itinerary-based location validation across the system
